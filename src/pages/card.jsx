@@ -65,7 +65,12 @@ function CardPage() {
   };
 
   function saveform() {
-    addDoc(collection(db, 'products'), formData)
+
+
+
+
+
+    addDoc(collection(db, 'invoices'), formData)
       .then(resp => {
         console.log('DataAdded')
         clearForm()
