@@ -1,0 +1,11 @@
+.add-more-btn {
+  margin-top: 20px;
+  border: 2px dashed black;
+  background-color: transparent;
+  border-radius: 3px;
+  padding: 10px;
+}
+
+.add-more-btn:hover {
+  background-color: #f4f4f4  !important;
+}

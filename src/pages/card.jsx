@@ -10,7 +10,10 @@ function CardPage() {
     customername: '',
     mobileno: '',
     address: '',
-    date:'',
+    date: '',
+    Discount: '',
+    Tax: '',
+    Shipping: '',
     fields: [
       {
         sn: '',
@@ -124,7 +127,7 @@ function CardPage() {
                 type="text"
                 name="customername"
                 value={formData.customername}
-                className='form-control p-3 border border-3 rounded-3'
+                className='form-control p-2 border border-2 rounded-3'
                 placeholder="Enter Customer Name"
                 onChange={handleChange}
               />
@@ -135,7 +138,7 @@ function CardPage() {
                 type="number"
                 name="mobileno"
                 value={formData.mobileno}
-                className='form-control  p-3 border border-3 rounded-3'
+                className='form-control  p-2 border border-2 rounded-3'
                 placeholder="Enter Mobile No."
                 onChange={handleChange}
               />
@@ -146,18 +149,18 @@ function CardPage() {
                 type="text"
                 name="address"
                 value={formData.address}
-                className='form-control  p-3 border border-3 rounded-3 '
+                className='form-control  p-2 border border-2 rounded-3 '
                 placeholder="Enter Address"
                 onChange={handleChange}
               />
             </div>
-             <div className="col-md-3">
+            <div className="col-md-3">
 
               <input
                 type="date"
                 name="date"
                 value={formData.date}
-                className='form-control  p-3 border border-3 rounded-3 '
+                className='form-control  p-2 border border-2 rounded-3 '
                 placeholder="Enter Date"
                 onChange={handleChange}
               />
@@ -187,7 +190,7 @@ function CardPage() {
               <div className='col-md-1'>
 
               </div>
-             
+
 
 
             </div>
@@ -234,7 +237,7 @@ function CardPage() {
                   <input
                     type="text"
                     name="amount"
-                    value={field.amount}
+                    value={field.quantity * field.rate}
                     className='form-control p-1 border border-2 rounded-3'
                     placeholder="Enter amount"
                     onChange={(e) => handleChange(e, index)}
@@ -242,11 +245,11 @@ function CardPage() {
 
                 </div>
                 <div className='col-md-1'>
-                 
+
                   <button
                     type="button"
                     className="btn btn-danger btn-sm "
-                     onChange={(e) => handleChange(e, index)}
+                    onChange={(e) => handleChange(e, index)}
                     onClick={() => handleRemoveField(index)}
                   >
                     <i className='bi bi-x'></i>
@@ -255,18 +258,37 @@ function CardPage() {
                 </div>
 
               </div>
+
+
             </>)}
 
           </div>
           {/* ADD FIELD */}
-          <button onClick={handleAddField}>Add More</button>
+          <button className='add-more-btn' onClick={handleAddField}>Add More</button>
 
 
         </div>
       </div>
-      <button className='btn btn-primary px-4 py-2 rounded-3' onClick={saveform}>Save</button>
+      <div class="d-flex justify-content-between align-items-center ">
+        <div>
+          <button className='btn btn-primary px-4 py-2 rounded-3' onClick={saveform}>Save</button>
+        </div>
+        <div>
+          <div className='d-flex justify-content-between align-items-center'>
+          <p className='text-muted fs-4 fw-normal'>Discount:</p>
+          <p className='text-muted fs-4 fw-normal'>20%</p>
+          </div>
+          <div className='d-flex justify-content-between align-items-center'>
+          <p className='text-muted fs-4 fw-normal'>Shipping:</p>
+          <p className='text-muted fs-4 fw-normal'>ok</p>
+          </div>
+          <div className='d-flex justify-content-between align-items-center'>
+          <p className='text-muted fs-4 fw-normal'>Tax:</p>
+          <p className='text-muted fs-4 fw-normal'>10%</p>
+          </div>
+        </div>
 
-
+      </div>
     </>
   )
 }
