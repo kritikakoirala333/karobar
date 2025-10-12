@@ -4,6 +4,7 @@ import Home from './Home'
 import CardPage from './pages/card'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import Invoices from './Invoices';
 
 function App() {
 
@@ -58,6 +59,7 @@ function App() {
             <Route path='/' element={<Home />}></Route>
             <Route path='/sales' element={<Sales />}></Route>
             <Route path='/card' element={<CardPage />}></Route>
+            <Route path='/invoices' element={<Invoices/>}/>
           </Routes>
 
         </div>
