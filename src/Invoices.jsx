@@ -72,7 +72,7 @@ export default function Invoices() {
   };
 
   return (
-    <div className="px-10 py-6">
+    <div className="px-10 pt-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className=" font-semibold">Invoices</h3>
         {/* 🔍 Search Bar */}
@@ -133,7 +133,7 @@ export default function Invoices() {
           </span>
         </div>
       </div>
-      <div className="flex mb-8 justify-end gap-8">
+      <div className="flex mb-4 justify-end gap-8">
           <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
             This year
           </div>
@@ -186,7 +186,7 @@ export default function Invoices() {
           </div>
         ) : (
           <div className="bg-white border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
-            <div className="max-h-100 overflow-y-auto">
+            <div className="max-h-94 overflow-y-auto">
               <table className="min-w-full border-collapse">
                 <thead className="bg-gray-700 text-left text-sm font-semibold text-white sticky top-0 z-10">
                   <tr>

@@ -10,8 +10,6 @@ import Payment from "./Payment";
 function App() {
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
 
-  console.log(showPaymentSlide);
-
   return (
     <BrowserRouter>
       {/* Header */}
