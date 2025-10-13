@@ -8,6 +8,9 @@ export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
   const [searchTerm, setSearchTerm] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -52,10 +55,50 @@ export default function Invoices() {
     );
   });
 
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    setInvoices(invoices.filter((inv) => inv.id !== deleteId));
+    setShowConfirm(false);
+    setDeleteId(null);
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setDeleteId(null);
+  };
+
   return (
     <div className="px-10 py-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">Invoices</h2>
+        <h3 className=" font-semibold">Invoices</h3>
+        {/* 🔍 Search Bar */}
+        <div className="relative w-full md:w-[320px]">
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm" />
+          <input
+            type="text"
+            placeholder="Search invoices..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-3 py-[6px] text-sm border-1 border-gray-400 rounded-md focus:outline-none focus:border-black  transition-all"
+          />
+        </div>
+        <div className="border-1 flex items-center gap-8 px-8 py-[6px] rounded-md border-gray-400">
+          <select name="" id="" className="outline-none cursor-pointer text-gray-600">
+            <option value="">Sort By</option>
+            <option value="address">Address</option>
+            <option value="customer">Customer</option>
+          </select>
+
+          <div className="hover:text-blue-400 cursor-pointer text-gray-600">Pending</div>
+          <div className="hover:text-blue-400 cursor-pointer text-gray-600">Paid</div>
+          <div className="hover:text-blue-400 cursor-pointer text-gray-600">Delete</div>
+        </div>
+
+        
         <div
           onClick={() =>
             setViewMode((prev) => (prev === "grid" ? "table" : "grid"))
@@ -90,17 +133,18 @@ export default function Invoices() {
           </span>
         </div>
       </div>
-      {/* 🔍 Search Bar */}
-      <div className="relative w-full md:w-[300px] mb-10">
-        <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg" />
-        <input
-          type="text"
-          placeholder="Search invoices..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-3 py-2 border-1 border-gray-400 rounded-md focus:outline-none focus:border-black  transition-all"
-        />
-      </div>
+      <div className="flex mb-8 justify-end gap-8">
+          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
+            This year
+          </div>
+          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
+            This month
+          </div>
+          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
+            This day
+          </div>
+        </div>
+
 
       {invoices.length > 0 ? (
         viewMode === "grid" ? (
@@ -128,7 +172,10 @@ export default function Invoices() {
                     </div>
                     <div className="text-right flex flex-col justify-between items-end">
                       <p className="text-sm">{invoice.mobileno}</p>
-                      <span className="bg-red-400 p-2 rounded-md text-white text-xs">
+                      <span
+                        onClick={() => handleDeleteClick(invoice.id)}
+                        className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer"
+                      >
                         <FaTrashAlt />
                       </span>
                     </div>
@@ -138,10 +185,10 @@ export default function Invoices() {
             })}
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
+          <div className="bg-white border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
             <div className="max-h-100 overflow-y-auto">
               <table className="min-w-full border-collapse">
-                <thead className="bg-gray-50 text-left text-sm font-semibold text-gray-600 sticky top-0 z-10">
+                <thead className="bg-gray-700 text-left text-sm font-semibold text-white sticky top-0 z-10">
                   <tr>
                     <th className="py-3 px-4 border-b">Number</th>
                     <th className="py-3 px-4 border-b ">Customer</th>
@@ -151,11 +198,12 @@ export default function Invoices() {
                     <th className="py-3 px-4 border-b">Status</th>
                     <th className="py-3 px-4 border-b">Total</th>
                     <th className="py-3 px-4 border-b">Quantity</th>
+                    <th className="py-3 px-4 border-b text-center">Delete</th>
                   </tr>
                 </thead>
 
                 <tbody className="text-gray-700 text-sm">
-                  {filteredInvoices.map((invoice, i) => {
+                  {filteredInvoices.slice(0, visibleCount).map((invoice, i) => {
                     const totalQty = getTotalQuantity(invoice.fields);
                     const status = randomStatus();
                     return (
@@ -211,6 +259,14 @@ export default function Invoices() {
                         <td className="py-3 px-4 border-b text-left">
                           {totalQty}
                         </td>
+                        <td className="py-3 px-4 border-b text-center">
+                          <span
+                            onClick={() => handleDeleteClick(invoice.id)}
+                            className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
+                          >
+                            <FaTrashAlt />
+                          </span>
+                        </td>
                       </tr>
                     );
                   })}
@@ -219,8 +275,8 @@ export default function Invoices() {
             </div>
 
             <div className="flex justify-between items-center px-4 py-3 bg-gray-50 rounded-b-xl text-sm text-gray-600">
-              <p>Showing 10 of {invoices.length} results</p>
-              <button className="text-purple-600 hover:text-purple-800 font-medium">
+              <p>Showing {Math.min(visibleCount, filteredInvoices.length)} of {filteredInvoices.length} results</p>
+              <button  onClick={() => setVisibleCount((prev) => prev + 10)} className="text-purple-600 hover:text-purple-800 font-medium">
                 Show More
               </button>
             </div>
@@ -228,6 +284,29 @@ export default function Invoices() {
         )
       ) : (
         <p>No invoices found.</p>
+      )}
+      {showConfirm && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-md bg-white/20">
+          <div className="bg-white/80 backdrop-blur-xl p-6 rounded-2xl shadow-[0px_0px_15px_gray] text-center w-[90%] sm:w-[400px]">
+            <h5 className="text-lg font-semibold mb-4 text-gray-800">
+              Are you sure you want to delete this invoice?
+            </h5>
+            <div className="flex justify-center gap-5 mt-5">
+              <div
+                onClick={confirmDelete}
+                className="bg-red-500 text-white cursor-pointer px-5 rounded-md py-2 hover:bg-red-600 transition-all"
+              >
+                OK
+              </div>
+              <div
+                onClick={cancelDelete}
+                className="bg-gray-300 px-5 py-2 cursor-pointer rounded-md hover:bg-gray-400 transition-all"
+              >
+                Cancel
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
