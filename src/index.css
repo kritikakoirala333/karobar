@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 .add-more-btn {
   margin-top: 20px;
   border: 2px dashed black;
@@ -8,4 +10,8 @@
 
 .add-more-btn:hover {
   background-color: #f4f4f4  !important;
+}
+
+.customerCard:hover {
+  background-color: #f4f4f4; 
 }

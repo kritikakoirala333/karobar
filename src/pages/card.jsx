@@ -2,9 +2,52 @@ import React, { useEffect } from 'react'
 import { db } from '../firebase'
 import { addDoc, collection } from 'firebase/firestore'
 import { useState } from 'react'
+import CustomerCard from '../ui/customer-card';
 
 
 function CardPage() {
+
+  const [selectedCustomer, setSelectedCustomer] = useState();
+
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
+
+  const [customerData, setCustomerData] = useState([
+    {
+      name: "Rajesh Hamal",
+      address: "Somewhere",
+      uid: 'ASDKJKAJSDKJAKSJD',
+      phone: "98123123123"
+    },
+    {
+      name: "Niraj Bhandari",
+      address: "Somewhereasd",
+      uid: 'KJSAHDKJASJKDH',
+      phone: "98123123123"
+    },
+    {
+      name: "Sarthak Adhikari",
+      address: "Somewhere",
+      uid: 'AKSDJKJASD',
+      phone: "98123123123"
+    },
+    {
+      name: "Kritika Koirala",
+      address: "Somewhere",
+      uid: 'AKSDJKAJSD',
+      phone: "98123123123"
+    }
+  ]);
+
+
+  const handleCustomerSelection = (customerInfo) => {
+    setSelectedCustomer(customerInfo);
+    setFormData(prev => ({
+      ...prev,
+      ['selectedCustomerName']: customerInfo.name,   // overwrites only that key safely
+      ['selectedCustomerId']: customerInfo.uid   // overwrites only that key safely
+    }));
+    console.log(customerInfo)
+  }
 
   const [formData, setFormData] = useState({
     customername: '',
@@ -14,6 +57,9 @@ function CardPage() {
     Discount: '',
     Tax: '',
     Shipping: '',
+    SubTotal: '',
+    GrandTotal: '',
+    InvoiceNo: '',
     fields: [
       {
         sn: '',
@@ -44,11 +90,24 @@ function CardPage() {
   };
 
 
+  const handleFilter = (e) => {
+    console.log("Handling Filters", e.target.value)
+
+
+    const lowerSearch = e.target.value.toLowerCase();
+
+    setFilteredCustomers(customerData.filter(item =>
+      item.name.toLowerCase().includes(lowerSearch) ||
+      item.address.toLowerCase().includes(lowerSearch) ||
+      item.phone.includes(lowerSearch)
+    ));
+  }
+
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
 
-    console.log(name, value, e, index)
+    // console.log(name, value, e, index)
     // if index is provided, we are editing a nested field
     if (index !== undefined) {
       setFormData(prev => {
@@ -83,14 +142,18 @@ function CardPage() {
   function saveform() {
 
 
+    
+
+    console.log(formData)
 
 
 
-    addDoc(collection(db, 'invoices'), formData)
-      .then(resp => {
-        console.log('DataAdded')
-        clearForm()
-      })
+    // addDoc(collection(db, 'invoices'), formData)
+
+    //   .then(resp => {
+    //     console.log('DataAdded')
+    //     clearForm()
+    //   })
   }
 
   //   useEffect(() =>{
@@ -121,55 +184,105 @@ function CardPage() {
 
 
           <div className="row m-0 p-0 col-12 mt-4">
-            <div className="col-md-3">
+            <div className='col-md-6 border-end'>
+              {/* {selectedCustomer ? selectedCustomer.name : 'No Customer'} */}
+              <div className='mb-3 position-relative' style={{ display: selectedCustomer ? 'none' : 'block' }}>
 
-              <input
-                type="text"
-                name="customername"
-                value={formData.customername}
-                className='form-control p-2 border border-2 rounded-3'
-                placeholder="Enter Customer Name"
-                onChange={handleChange}
-              />
+                <input
+                  type="text"
+                  name="customername"
+                  value={formData.customername}
+                  className='form-control p-2 border border-2 rounded-3'
+                  placeholder="Enter Customer Name"
+                  onChange={(e) => {
+                    handleChange(e),
+                      handleFilter(e)
+                  }}
+                />
+                <div className={formData.customername ? 'col-12 position-absolute p-2 bg-white shadow ' : 'col-12 position-absolute bg-white shadow d-none'} style={{ zIndex: 100 }}>
+                  {filteredCustomers.map(customerInfo => <CustomerCard key={customerInfo.name} handler={handleCustomerSelection} onClick={() =>
+                    handleCustomerSelection(customerInfo)
+                  } customerInfo={customerInfo} />)}
+                  <button className='add-more-btn form-control'>Add Customer</button>
+
+                </div>
+              </div>
+              <div className='mb-3' style={{ display: !selectedCustomer ? 'none' : 'block' }}>
+                <div className="row m-0 p-0 bg-light rounded border p-2">
+                  <div className="col-11">
+                    <span className="fw-semibold">
+                      Customer Name : {selectedCustomer?.name}
+                    </span>
+                    <br />
+                    <span className="fw-normal">
+                      {selectedCustomer?.address}, <span className="px-1"></span>
+                      {selectedCustomer?.phone}
+                    </span>
+                  </div>
+                  <div className="col-1">
+                    <button onClick={() => setSelectedCustomer()}><i className="bi bi-x"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div className='mb-3' >
+
+                <input
+                  type="number"
+                  name="mobileno"
+                  value={formData.mobileno}
+                  className='form-control  p-2 border border-2 rounded-3'
+                  placeholder="Enter Mobile No."
+                  onChange={handleChange}
+                />
+              </div>
+              <div className='mb-3'>
+
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  className='form-control  p-2 border border-2 rounded-3 '
+                  placeholder="Enter Address"
+                  onChange={handleChange}
+                />
+              </div>
+
+
             </div>
-            <div className="col-md-3">
+            <div className='col-md-6'>
+              <div className='mb-3 d-flex align-items-center' >
+                <div className='text-dark fs-6 me-2'>Date:</div>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  className='form-control  p-2 border border-2 rounded-3 '
+                  placeholder="Enter Date"
+                  onChange={handleChange}
+                />
+              </div>
 
-              <input
-                type="number"
-                name="mobileno"
-                value={formData.mobileno}
-                className='form-control  p-2 border border-2 rounded-3'
-                placeholder="Enter Mobile No."
-                onChange={handleChange}
-              />
+              <div className='d-flex align-items-center' >
+                <div>
+                  <p className='text-dark fs-6 mb-0 me-2 '>Invoice No-</p>
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    name="InvoiceNo"
+                    value={formData.InvoiceNo}
+                    className='form-control  p-2 border border-2 rounded-3'
+                    placeholder="Enter InvoiceNo."
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+
             </div>
-            <div className="col-md-3">
-
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                className='form-control  p-2 border border-2 rounded-3 '
-                placeholder="Enter Address"
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-3">
-
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                className='form-control  p-2 border border-2 rounded-3 '
-                placeholder="Enter Date"
-                onChange={handleChange}
-              />
-            </div>
-
-
           </div>
 
-          <div className='card mt-4 p-2'>
+          <div className='card mt-4 p-3'>
             <div className='row' >
               <div className='col-md-1'>
                 <p className='fs-6 fw-bold text-muted'>SN</p>
@@ -269,26 +382,86 @@ function CardPage() {
 
         </div>
       </div>
-      <div class="d-flex justify-content-between align-items-center ">
+      <div className="d-flex justify-content-between align-items-start mt-4">
+
         <div>
-          <button className='btn btn-primary px-4 py-2 rounded-3' onClick={saveform}>Save</button>
+          <button
+            className="btn btn-primary px-4 py-2 rounded-3 shadow-sm"
+            onClick={saveform}
+          >
+            Save
+          </button>
         </div>
-        <div>
-          <div className='d-flex justify-content-between align-items-center'>
-          <p className='text-muted fs-4 fw-normal'>Discount:</p>
-          <p className='text-muted fs-4 fw-normal'>20%</p>
+
+
+
+        <div className="p-3 rounded-3 bg-light" style={{ minWidth: "280px" }}>
+
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <p className="text-dark fs-6 mb-0 me-2">SubTotal:</p>
+            <input
+              type="number"
+              name="subtotal"
+              // value={field.quantity * field.rate}
+              className='form-control form-control-sm border border-2 rounded-3'
+              placeholder="0.00"
+              onChange={(e) => handleChange(e)}
+            ></input>
+
           </div>
-          <div className='d-flex justify-content-between align-items-center'>
-          <p className='text-muted fs-4 fw-normal'>Shipping:</p>
-          <p className='text-muted fs-4 fw-normal'>ok</p>
+          <div className="d-flex justify-content-between align-items-center mb-2 border-top pt-2">
+            <p className="text-dark fs-6 mb-0 me-2">Discount:</p>
+            <input
+              type="number"
+              name="discount"
+              // value={field.quantity * field.rate}
+              className='form-control  form-control-sm border border-2 rounded-3'
+              placeholder="0"
+              onChange={(e) => handleChange(e)}
+            ></input>
+
           </div>
-          <div className='d-flex justify-content-between align-items-center'>
-          <p className='text-muted fs-4 fw-normal'>Tax:</p>
-          <p className='text-muted fs-4 fw-normal'>10%</p>
+
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <p className="text-dark fs-6 mb-0 me-2">Shipping:</p>
+            <input
+              type="number"
+              name="shipping"
+              // value={field.quantity * field.rate}
+              className='form-control  border border-1 rounded-3'
+              placeholder="0"
+              onChange={(e) => handleChange(e)}
+            ></input>
+
+          </div>
+
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <p className="text-dark fs-6 mb-0 me-2">Tax:</p>
+            <input
+              type="number"
+              name="tax"
+              className="form-control form-control-sm border border-2 rounded-3 text-end w-50"
+              placeholder="10%"
+              onChange={(e) => handleChange(e)}
+            />
+
+          </div>
+          <div className="d-flex justify-content-between align-items-center border-top pt-3">
+            <p className="text-dark fs-5 fw-semibold mb-0">GrandTotal:</p>
+            <input
+              type="number"
+              name="grandtotal"
+              // value={field.quantity * field.rate}
+              className='form-control form-control-sm border-0 bg-transparent fw-bold text-end w-50  rounded-3'
+              placeholder="0.00"
+              onChange={(e) => handleChange(e)}
+            ></input>
+
           </div>
         </div>
 
       </div>
+
     </>
   )
 }
