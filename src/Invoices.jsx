@@ -110,87 +110,82 @@ export default function Invoices() {
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
-  <div className="overflow-x-auto">
-    <table className="min-w-full border-collapse">
-      <thead className="bg-gray-50 text-left text-sm font-semibold text-gray-600 sticky top-0 z-10">
-        <tr>
-          <th className="py-3 px-4 border-b">Number</th>
-          <th className="py-3 px-4 border-b">Customer</th>
-          <th className="py-3 px-4 border-b">Date</th>
-          <th className="py-3 px-4 border-b">Status</th>
-          <th className="py-3 px-4 border-b text-right">Total</th>
-          <th className="py-3 px-4 border-b text-right">Quantity</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
+            <div className="max-h-100 overflow-y-auto">
+              <table className="min-w-full border-collapse">
+                <thead className="bg-gray-50 text-left text-sm font-semibold text-gray-600 sticky top-0 z-10">
+                  <tr>
+                    <th className="py-3 px-4 border-b">Number</th>
+                    <th className="py-3 px-4 border-b ">Customer</th>
+                    <th className="py-3 px-4 border-b">Date</th>
+                    <th className="py-3 px-4 border-b">Status</th>
+                    <th className="py-3 px-4 border-b">Total</th>
+                    <th className="py-3 px-4 border-b">Quantity</th>
+                  </tr>
+                </thead>
 
-  {/* Scrollable body */}
-  <div className="max-h-80 overflow-y-auto">
-    <table className="min-w-full border-collapse">
-      <tbody className="text-gray-700 text-sm">
-        {invoices.map((invoice, i) => {
-          const totalQty = getTotalQuantity(invoice.fields);
-          const status = randomStatus();
-          return (
-            <tr
-              key={invoice.id}
-              className="hover:bg-gray-50 transition duration-200 ease-in-out"
-            >
-              <td className="py-3 px-4 border-b font-medium text-gray-800">
-                {invoice.number || `INV${1000 + i}`}
-              </td>
+                <tbody className="text-gray-700 text-sm">
+                  {invoices.map((invoice, i) => {
+                    const totalQty = getTotalQuantity(invoice.fields);
+                    const status = randomStatus();
+                    return (
+                      <tr
+                        key={invoice.id}
+                        className="hover:bg-gray-50 cursor-pointer transition duration-200 ease-in-out"
+                      >
+                        <td className="py-3 px-4 border-b font-medium text-gray-800">
+                          {invoice.number || `INV${1000 + i}`}
+                        </td>
 
-              <td className="py-3 px-4 border-b flex items-center gap-3">
-                <img
-                  src={invoice.avatar || "https://i.pravatar.cc/30"}
-                  alt="Avatar"
-                  className="w-8 h-8 rounded-full"
-                />
-                <span>{invoice.customername}</span>
-              </td>
+                        <td className="py-3 px-4 border-b flex items-center gap-3 ">
+                          <img
+                            src={invoice.avatar || "https://i.pravatar.cc/30"}
+                            alt="Avatar"
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <span>{invoice.customername}</span>
+                        </td>
 
-              <td className="py-3 px-4 border-b">
-                {invoice.date || "27th Jul 2021"}
-              </td>
+                        <td className="py-3 px-4 border-b ">
+                          {invoice.date || "27th Jul 2021"}
+                        </td>
 
-              <td className="py-3 px-4 border-b">
-                <span
-                  className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    status === "Paid"
-                      ? "bg-green-100 text-green-700"
-                      : status === "Draft"
-                      ? "bg-gray-200 text-gray-700"
-                      : status === "Overdue"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
-                  }`}
-                >
-                  {status}
-                </span>
-              </td>
+                        <td className="py-3 px-4 border-b">
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              status === "Paid"
+                                ? "bg-green-100 text-green-700"
+                                : status === "Draft"
+                                ? "bg-gray-200 text-gray-700"
+                                : status === "Overdue"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {status}
+                          </span>
+                        </td>
 
-              <td className="py-3 px-4 border-b text-left">
-                {invoice.total ? `${invoice.total} US$` : "0.00 US$"}
-              </td>
+                        <td className="py-3 px-4 border-b text-left">
+                          {invoice.total ? `${invoice.total} US$` : "0.00 US$"}
+                        </td>
 
-              <td className="py-3 px-4 border-b text-left">{totalQty}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
+                        <td className="py-3 px-4 border-b text-left">
+                          {totalQty}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-  {/* Footer */}
-  <div className="flex justify-between items-center px-4 py-3 bg-gray-50 rounded-b-xl text-sm text-gray-600">
-    <p>Showing 10 of {invoices.length} results</p>
-    <button className="text-purple-600 hover:text-purple-800 font-medium">
-      Show More
-    </button>
-  </div>
-</div>
-
+            <div className="flex justify-between items-center px-4 py-3 bg-gray-50 rounded-b-xl text-sm text-gray-600">
+              <p>Showing 10 of {invoices.length} results</p>
+              <button className="text-purple-600 hover:text-purple-800 font-medium">
+                Show More
+              </button>
+            </div>
+          </div>
         )
       ) : (
         <p>No invoices found.</p>
