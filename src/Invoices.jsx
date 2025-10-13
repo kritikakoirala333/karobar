@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
 import { getDocs, collection } from "firebase/firestore";
+import { FiSearch } from "react-icons/fi";
+import { FaTrashAlt } from "react-icons/fa";
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -39,9 +42,19 @@ export default function Invoices() {
   const randomStatus = () =>
     statuses[Math.floor(Math.random() * statuses.length)];
 
+  const filteredInvoices = invoices.filter((inv) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      inv.customername?.toLowerCase().includes(term) ||
+      inv.address?.toLowerCase().includes(term) ||
+      inv.mobileno?.toLowerCase().includes(term) ||
+      inv.number?.toString().includes(term)
+    );
+  });
+
   return (
     <div className="px-10 py-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Invoices</h2>
         <div
           onClick={() =>
@@ -77,31 +90,47 @@ export default function Invoices() {
           </span>
         </div>
       </div>
+      {/* 🔍 Search Bar */}
+      <div className="relative w-full md:w-[300px] mb-10">
+        <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg" />
+        <input
+          type="text"
+          placeholder="Search invoices..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-3 py-2 border-1 border-gray-400 rounded-md focus:outline-none focus:border-black  transition-all"
+        />
+      </div>
 
       {invoices.length > 0 ? (
         viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {invoices.map((invoice, index) => {
+            {filteredInvoices.map((invoice, index) => {
               const totalQty = getTotalQuantity(invoice.fields);
               const bgColor = colors[index % colors.length];
               return (
                 <div
                   key={invoice.id}
-                  className={`shadow-[0px_0px_5px_grey] cursor-pointer rounded-xl pl-[5px] ${bgColor}`}
+                  className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
                 >
-                  <div className="bg-white rounded-xl h-full p-3 flex justify-between">
-                    <div>
-                      <h5 className="font-semibold text-lg">
-                        {invoice.customername}
-                      </h5>
-                      <p>{invoice.address}</p>
-                      <p className="mt-2 font-medium">
+                  <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
+                    <div className="flex flex-col justify-between">
+                      <div>
+                        <h5 className="font-semibold  text-lg">
+                          {invoice.customername}
+                        </h5>
+                        <p>{invoice.address}</p>
+                      </div>
+                      <span className=" font-medium">
                         Total Quantity:{" "}
                         <span className="text-purple-700">{totalQty}</span>
-                      </p>
+                      </span>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex flex-col justify-between items-end">
                       <p className="text-sm">{invoice.mobileno}</p>
+                      <span className="bg-red-400 p-2 rounded-md text-white text-xs">
+                        <FaTrashAlt />
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -117,6 +146,8 @@ export default function Invoices() {
                     <th className="py-3 px-4 border-b">Number</th>
                     <th className="py-3 px-4 border-b ">Customer</th>
                     <th className="py-3 px-4 border-b">Date</th>
+                    <th className="py-3 px-4 border-b">Address</th>
+                    <th className="py-3 px-4 border-b">Mobile No.</th>
                     <th className="py-3 px-4 border-b">Status</th>
                     <th className="py-3 px-4 border-b">Total</th>
                     <th className="py-3 px-4 border-b">Quantity</th>
@@ -124,7 +155,7 @@ export default function Invoices() {
                 </thead>
 
                 <tbody className="text-gray-700 text-sm">
-                  {invoices.map((invoice, i) => {
+                  {filteredInvoices.map((invoice, i) => {
                     const totalQty = getTotalQuantity(invoice.fields);
                     const status = randomStatus();
                     return (
@@ -142,11 +173,19 @@ export default function Invoices() {
                             alt="Avatar"
                             className="w-8 h-8 rounded-full"
                           />
-                          <span>{invoice.customername}</span>
+                          <span>{invoice.customername || "-"}</span>
                         </td>
 
                         <td className="py-3 px-4 border-b ">
                           {invoice.date || "27th Jul 2021"}
+                        </td>
+
+                        <td className="py-3 px-4 border-b ">
+                          {invoice.address || "-"}
+                        </td>
+
+                        <td className="py-3 px-4 border-b ">
+                          {invoice.mobileno || "-"}
                         </td>
 
                         <td className="py-3 px-4 border-b">
