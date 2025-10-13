@@ -11,3 +11,7 @@
 .add-more-btn:hover {
   background-color: #f4f4f4  !important;
 }
+
+.customerCard:hover {
+  background-color: #f4f4f4; 
+}
