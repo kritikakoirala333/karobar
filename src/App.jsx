@@ -43,13 +43,13 @@ function App() {
         {/* Sidebar */}
         <div className="col-2 card vh-100 sidebar-links-wrapper">
           <div style={{ height: '110px' }}></div>
-          <a href="#"><i className="bi bi-house"></i> <span>Dashboard</span></a>
-          <a href="#"><i className="bi bi-box"></i> <span>Layouts</span></a>
-          <a href="#"><i className="bi bi-file"></i> <span>Pages</span></a>
-          <a href="#"><i className="bi bi-app"></i> <span>Tables</span></a>
-          <a href="#"><i className="bi bi-map"></i> <span>Map</span></a>
-          <a href="#"><i className="bi bi-house"></i> <span>Departments</span></a>
-          <a href="#"><i className="bi bi-hourglass"></i> <span>History</span></a>
+          <Link to={'/'}><i className="bi bi-house"></i> <span>Dashboard</span></Link>
+          <Link><i className="bi bi-box"></i> <span>Layouts</span></Link>
+          <Link to={'/card'}><i className="bi bi-file"></i> <span>Invoices</span></Link>
+          <Link><i className="bi bi-app"></i> <span>Tables</span></Link>
+          <Link><i className="bi bi-map"></i> <span>Map</span></Link>
+          <Link><i className="bi bi-house"></i> <span>Departments</span></Link>
+          <Link><i className="bi bi-hourglass"></i> <span>History</span></Link>
         </div>
 
         {/* Main Content */}
@@ -63,6 +63,7 @@ function App() {
           </Routes>
 
         </div>
+        
       </div>
 
 
