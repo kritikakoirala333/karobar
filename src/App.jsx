@@ -1,9 +1,11 @@
-import { useState } from "react";
-import Sales from "./sales";
-import Home from "./Home";
-import CardPage from "./pages/card";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+
+import { useState } from 'react'
+import Sales from './sales'
+import Home from './Home'
+import CardPage from './pages/card'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import InvoicePage from './pages/InvoicePage';
 import Invoices from "./Invoices";
 import Payment from "./Payment";
 
@@ -88,10 +90,15 @@ function App() {
         <div className="col-10 vh-100 bg-white" style={{ overflowY: "scroll" }}>
           <div style={{ height: "100px" }}></div>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/sales" element={<Sales />}></Route>
-            <Route path="/card" element={<CardPage />}></Route>
-            <Route path="/invoices" element={<Invoices />} />
+
+          
+
+            <Route path='/' element={<Home />}></Route>
+            <Route path='/sales' element={<Sales />}></Route>
+            <Route path='/card' element={<CardPage />}></Route>
+            <Route path='/invoicepage/:id' element={<InvoicePage />}></Route>
+  <Route path="/invoices" element={<Invoices />} />
+
           </Routes>
         </div>
       </div>
