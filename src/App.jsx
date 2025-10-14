@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import InvoicePage from './pages/InvoicePage';
 import Invoices from "./Invoices";
 import Payment from "./Payment";
+import Purchase from './pages/Purchase';
 
 function App() {
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
@@ -17,7 +18,7 @@ function App() {
       {/* Header */}
       <div
         className="container-fluid bg-white"
-        style={{ height: "103px", position: "fixed", zIndex: 100 }}
+        style={{ height: "103px", position: "fixed", zIndex: 5000 }}
       >
         <header className="row m-0 py-2">
           <div className="col-3 d-flex align-items-center">
@@ -72,8 +73,8 @@ function App() {
           <Link to={"/card"}>
             <i className="bi bi-file"></i> <span>Invoices</span>
           </Link>
-          <Link>
-            <i className="bi bi-app"></i> <span>Tables</span>
+          <Link to={"/purchase"}>
+            <i className="bi bi-app"></i> <span>Purchase</span>
           </Link>
           <Link>
             <i className="bi bi-map"></i> <span>Map</span>
@@ -98,6 +99,7 @@ function App() {
             <Route path='/card' element={<CardPage />}></Route>
             <Route path='/invoicepage/:id' element={<InvoicePage />}></Route>
   <Route path="/invoices" element={<Invoices />} />
+              <Route path="/purchase" element={<Purchase />} />
 
           </Routes>
         </div>

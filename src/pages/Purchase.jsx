@@ -2,46 +2,46 @@ import React, { useEffect } from 'react'
 import { db } from '../firebase'
 import { addDoc,getDocs, collection, doc } from 'firebase/firestore'
 import { useState } from 'react'
-import CustomerCard from '../ui/customer-card';
-import CustomerForm from './add-customer';
+import SupplierCard from '../ui/SupplierCard';
+import AddSupplier from './AddSupplier';
 
 
 
-function CardPage() {
+function Purchase() {
 
-  const [selectedCustomer, setSelectedCustomer] = useState();
-  const [showAddCustomerForm, setShowAddCustomerForm] = useState(false);
-  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  const [selectedSupplier, setSelectedSupplier] = useState();
+  const [showAddSupplierForm, setShowAddSupplierForm] = useState(false);
+  const [filteredsuppliers, setFilteredSuppliers] = useState([]);
   
-  console.log(showAddCustomerForm)
+  console.log(showAddSupplierForm)
 
-  const [customerData, setCustomerData] = useState([ ]);
+  const [supplierData, setSupplierData] = useState([ ]);
    useEffect(() => {
-      const getCustomersFromFirebase = async () => {
-        const resp = await getDocs(collection(db, "customers"));
+      const getSuppliersFromFirebase = async () => {
+        const resp = await getDocs(collection(db, "suppliers"));
         const data = resp.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setCustomerData(data);
+        setSupplierData(data);
       }
-      getCustomersFromFirebase();
+      getSuppliersFromFirebase();
   
     }, [])
 
 
-  const handleCustomerSelection = (customerInfo) => {
-    setSelectedCustomer(customerInfo);
+  const handleSupplierSelection = (supplierInfo) => {
+    setSelectedSupplier(supplierInfo);
     setFormData(prev => ({
       ...prev,
-      ['selectedCustomerName']: customerInfo.customername,   // overwrites only that key safely
-      ['selectedCustomerId']: customerInfo.id   // overwrites only that key safely
+      ['selectedSupplierName']: supplierInfo.suppliername,   // overwrites only that key safely
+      ['selectedSupplierId']: supplierInfo.id   // overwrites only that key safely
     }));
-    console.log(customerInfo)
+    console.log(supplierInfo)
   }
 
   const [formData, setFormData] = useState({
-    customername: '',
+    suppliername: '',
     mobileno: '',
     address: '',
     date: '',
@@ -87,8 +87,8 @@ function CardPage() {
 
     const lowerSearch = e.target.value.toLowerCase();
 
-    setFilteredCustomers(customerData.filter(item =>
-      item.customername.toLowerCase().includes(lowerSearch) ||
+    setFilteredSuppliers(supplierData.filter(item =>
+      item.suppliername.toLowerCase().includes(lowerSearch) ||
       item.address.toLowerCase().includes(lowerSearch) ||
       item.mobileno.includes(lowerSearch)
     ));
@@ -139,7 +139,7 @@ function CardPage() {
 
 
 
-    addDoc(collection(db, 'invoices'), formData)
+    addDoc(collection(db, 'purchaseinvoices'), formData)
 
       .then(resp => {
         console.log('DataAdded')
@@ -158,7 +158,7 @@ function CardPage() {
       <div className='container p-2'>
         <div className='card p-3 '>
           <div className='d-flex justify-content-between p-3 border-bottom '>
-            <div className='fw-bold fs-5'>Sales Return</div>
+            <div className='fw-bold fs-5'>Purchase Invoice</div>
             <div className='fw-bold fs-5'>Invoice No:</div>
             <div className='fw-bold fs-5'>Date:</div>
           </div>
@@ -169,43 +169,43 @@ function CardPage() {
           <div className="row m-0 p-0 col-12 mt-4">
             <div className='col-md-6 border-end'>
               {/* {selectedCustomer ? selectedCustomer.name : 'No Customer'} */}
-              <div className='mb-3 position-relative' style={{ display: selectedCustomer ? 'none' : 'block' }}>
+              <div className='mb-3 position-relative' style={{ display: selectedSupplier ? 'none' : 'block' }}>
 
                 <input
                   type="text"
-                  name="customername"
-                  value={formData.customername}
+                  name="suppliername"
+                  value={formData.suppliername}
                   className='form-control p-2 border border-2 rounded-3'
-                  placeholder="Enter Customer Name"
+                  placeholder="Enter Supplier Name"
                   onChange={(e) => {
                     handleChange(e),
                       handleFilter(e)
                   }}
                 />
-                <div className={formData.customername ? 'col-12 position-absolute p-2 bg-white shadow ' : 'col-12 position-absolute bg-white shadow d-none'} style={{ zIndex: 100 }}>
-                  {filteredCustomers.map(customerInfo => <CustomerCard key={customerInfo.customername} handler={handleCustomerSelection} onClick={() =>
-                    handleCustomerSelection(customerInfo)
-                  } customerInfo={customerInfo} />)}
-                  <button onClick={() => setShowAddCustomerForm(true)} className='add-more-btn form-control'>Add Customer</button>
+                <div className={formData.suppliername ? 'col-12 position-absolute p-2 bg-white shadow ' : 'col-12 position-absolute bg-white shadow d-none'} style={{ zIndex: 100 }}>
+                  {filteredsuppliers.map(supplierInfo => <SupplierCard key={supplierInfo.suppliername} handler={handleSupplierSelection} onClick={() =>
+                    handleSupplierSelection(supplierInfo)
+                  } supplierInfo={supplierInfo} />)}
+                  <button onClick={() => setShowAddSupplierForm(true)} className='add-more-btn form-control'>Add Supplier</button>
 
                 </div>
 
 
               </div>
-              <div className='mb-3' style={{ display: !selectedCustomer ? 'none' : 'block' }}>
+              <div className='mb-3' style={{ display: !selectedSupplier ? 'none' : 'block' }}>
                 <div className="row m-0 p-0 bg-light rounded border p-2">
                   <div className="col-11">
                     <span className="fw-semibold">
-                      Customer Name : {selectedCustomer?.customername}
+                      Supplier Name : {selectedSupplier?.suppliername}
                     </span>
                     <br />
                     <span className="fw-normal">
-                      {selectedCustomer?.address}, <span className="px-1"></span>
-                      {selectedCustomer?.mobileno}
+                      {selectedSupplier?.address}, <span className="px-1"></span>
+                      {selectedSupplier?.mobileno}
                     </span>
                   </div>
                   <div className="col-1">
-                    <button onClick={() => setSelectedCustomer()}><i className="bi bi-x"></i></button>
+                    <button onClick={() => setSelectedSupplier()}><i className="bi bi-x"></i></button>
                   </div>
                 </div>
               </div>
@@ -450,8 +450,8 @@ function CardPage() {
 
       </div>
 
-      {showAddCustomerForm && (
-        <CustomerForm setShowAddCustomerForm={setShowAddCustomerForm} />
+      {showAddSupplierForm && (
+        <AddSupplier setShowAddSupplierForm={setShowAddSupplierForm} />
       )}
 
       
@@ -459,4 +459,4 @@ function CardPage() {
   )
 }
 
-export default CardPage
+export default Purchase;
