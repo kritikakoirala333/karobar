@@ -14,8 +14,12 @@ import {
 import InvoicePage from "./pages/InvoicePage";
 import Invoices from "./Invoices";
 import Payment from "./Payment";
+
 import SignIn from "./SignIn";
 import axios from "axios";
+
+import Purchase from './pages/Purchase';
+
 
 function App() {
   return (
@@ -82,7 +86,7 @@ function MainApp() {
       {/* Header */}
       <div
         className="container-fluid bg-white"
-        style={{ height: "103px", position: "fixed", zIndex: 100 }}
+        style={{ height: "103px", position: "fixed", zIndex: 5000 }}
       >
         <header className="row m-0 py-2">
           <div className="col-3 d-flex align-items-center">
@@ -142,7 +146,7 @@ function MainApp() {
           <Link to={"/invoices"}>
             <i className="bi bi-file"></i> <span>Invoices</span>
           </Link>
-          <Link>
+          <Link to={"/purchase"}>
             <i className="bi bi-app"></i> <span>Purchase</span>
           </Link>
           <Link>
@@ -160,12 +164,16 @@ function MainApp() {
         <div className="col-10 vh-100 bg-white" style={{ overflowY: "scroll" }}>
           <div style={{ height: "100px" }}></div>
           <Routes>
+
             <Route authUser={userInfo} path="/" element={<Home />}></Route>
             <Route authUser={userInfo} path="/sales" element={<Sales />}></Route>
             <Route authUser={userInfo} path="/card" element={<CardPage />}></Route>
             <Route authUser={userInfo} path="/invoicepage/:id" element={<InvoicePage />}></Route>
             <Route authUser={userInfo} path="/invoices" element={<Invoices />} />
             <Route authUser={userInfo} path="/signin" element={<SignIn />} />
+            <Route authUser={userInfo} path="/purchase" element={<Purchase />} />
+
+
           </Routes>
         </div>
       </div>
