@@ -3,6 +3,7 @@ import { db } from "./firebase";
 import { getDocs, collection } from "firebase/firestore";
 import { FiSearch } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
@@ -11,6 +12,8 @@ export default function Invoices() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [visibleCount, setVisibleCount] = useState(10);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -87,18 +90,27 @@ export default function Invoices() {
           />
         </div>
         <div className="border-1 flex items-center gap-8 px-8 py-[6px] rounded-md border-gray-400">
-          <select name="" id="" className="outline-none cursor-pointer text-gray-600">
+          <select
+            name=""
+            id=""
+            className="outline-none cursor-pointer text-gray-600"
+          >
             <option value="">Sort By</option>
             <option value="address">Address</option>
             <option value="customer">Customer</option>
           </select>
 
-          <div className="hover:text-blue-400 cursor-pointer text-gray-600">Pending</div>
-          <div className="hover:text-blue-400 cursor-pointer text-gray-600">Paid</div>
-          <div className="hover:text-blue-400 cursor-pointer text-gray-600">Delete</div>
+          <div className="hover:text-blue-400 cursor-pointer text-gray-600">
+            Pending
+          </div>
+          <div className="hover:text-blue-400 cursor-pointer text-gray-600">
+            Paid
+          </div>
+          <div className="hover:text-blue-400 cursor-pointer text-gray-600">
+            Delete
+          </div>
         </div>
 
-        
         <div
           onClick={() =>
             setViewMode((prev) => (prev === "grid" ? "table" : "grid"))
@@ -134,17 +146,16 @@ export default function Invoices() {
         </div>
       </div>
       <div className="flex mb-4 justify-end gap-8">
-          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-            This year
-          </div>
-          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-            This month
-          </div>
-          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-            This day
-          </div>
+        <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
+          This year
         </div>
-
+        <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
+          This month
+        </div>
+        <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
+          This day
+        </div>
+      </div>
 
       {invoices.length > 0 ? (
         viewMode === "grid" ? (
@@ -153,34 +164,43 @@ export default function Invoices() {
               const totalQty = getTotalQuantity(invoice.fields);
               const bgColor = colors[index % colors.length];
               return (
-                <div
-                  key={invoice.id}
-                  className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
+                <Link
+                  to={`/invoicepage/${invoice.id}`}
+                  className="text-decoration-none text-black"
                 >
-                  <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
-                    <div className="flex flex-col justify-between">
-                      <div>
-                        <h5 className="font-semibold  text-lg">
-                          {invoice.customername}
-                        </h5>
-                        <p>{invoice.address}</p>
+                  <div
+                    key={invoice.id}
+                    className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
+                  >
+                    <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
+                      <div className="flex flex-col justify-between">
+                        <div>
+                          <h5 className="font-semibold  text-lg">
+                            {invoice.customername}
+                          </h5>
+                          <p>{invoice.address}</p>
+                        </div>
+                        <span className=" font-medium">
+                          Total Quantity:{" "}
+                          <span className="text-purple-700">{totalQty}</span>
+                        </span>
                       </div>
-                      <span className=" font-medium">
-                        Total Quantity:{" "}
-                        <span className="text-purple-700">{totalQty}</span>
-                      </span>
-                    </div>
-                    <div className="text-right flex flex-col justify-between items-end">
-                      <p className="text-sm">{invoice.mobileno}</p>
-                      <span
-                        onClick={() => handleDeleteClick(invoice.id)}
-                        className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer"
-                      >
-                        <FaTrashAlt />
-                      </span>
+                      <div className="text-right flex flex-col justify-between items-end">
+                        <p className="text-sm">{invoice.mobileno}</p>
+                        <span
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevent Link navigation
+                            e.stopPropagation(); // Stop event bubbling
+                            handleDeleteClick(invoice.id);
+                          }}
+                          className="bg-red-400 z-100 p-2 rounded-md text-white text-xs cursor-pointer"
+                        >
+                          <FaTrashAlt />
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -209,6 +229,7 @@ export default function Invoices() {
                     return (
                       <tr
                         key={invoice.id}
+                        onClick={() => navigate(`/invoicepage/${invoice.id}`)}
                         className="hover:bg-gray-50 cursor-pointer transition duration-200 ease-in-out"
                       >
                         <td className="py-3 px-4 border-b font-medium text-gray-800">
@@ -261,7 +282,10 @@ export default function Invoices() {
                         </td>
                         <td className="py-3 px-4 border-b text-center">
                           <span
-                            onClick={() => handleDeleteClick(invoice.id)}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent Link navigation
+                              handleDeleteClick(invoice.id);
+                            }}
                             className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
                           >
                             <FaTrashAlt />
@@ -275,8 +299,14 @@ export default function Invoices() {
             </div>
 
             <div className="flex justify-between items-center px-4 py-3 bg-gray-50 rounded-b-xl text-sm text-gray-600">
-              <p>Showing {Math.min(visibleCount, filteredInvoices.length)} of {filteredInvoices.length} results</p>
-              <button  onClick={() => setVisibleCount((prev) => prev + 10)} className="text-purple-600 hover:text-purple-800 font-medium">
+              <p>
+                Showing {Math.min(visibleCount, filteredInvoices.length)} of{" "}
+                {filteredInvoices.length} results
+              </p>
+              <button
+                onClick={() => setVisibleCount((prev) => prev + 10)}
+                className="text-purple-600 hover:text-purple-800 font-medium"
+              >
                 Show More
               </button>
             </div>

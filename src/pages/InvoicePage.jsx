@@ -4,6 +4,7 @@ import { IoIosPrint } from "react-icons/io";
 import { db } from "../firebase";
 import { getDoc, doc } from "firebase/firestore";
 import company from "../assets/company.jpg";
+import { useParams  } from "react-router-dom";
 
 const InvoicePage = () => {
   const [invoice, setInvoice] = useState(null);
@@ -11,10 +12,12 @@ const InvoicePage = () => {
   const [tax, setTax] = useState(0);
   const [total, setTotal] = useState(0);
 
+  const { id } = useParams();
+
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const docRef = doc(db, "invoices", "sHVJ2NHbLSlW6nqg4Bfp");
+        const docRef = doc(db, "invoices", id);
         const snapshot = await getDoc(docRef);
 
         if (snapshot.exists()) {
