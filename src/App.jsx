@@ -98,7 +98,6 @@ function App() {
             <Route path='/card' element={<CardPage />}></Route>
             <Route path='/invoicepage/:id' element={<InvoicePage />}></Route>
   <Route path="/invoices" element={<Invoices />} />
-
           </Routes>
         </div>
       </div>
