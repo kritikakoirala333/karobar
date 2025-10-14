@@ -1,11 +1,10 @@
-
-import { useState } from 'react'
-import Sales from './sales'
-import Home from './Home'
-import CardPage from './pages/card'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import InvoicePage from './pages/InvoicePage';
+import { useState } from "react";
+import Sales from "./sales";
+import Home from "./Home";
+import CardPage from "./pages/card";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import InvoicePage from "./pages/InvoicePage";
 import Invoices from "./Invoices";
 import Payment from "./Payment";
 
@@ -46,7 +45,13 @@ function App() {
             <button className="btn btn-primary btn-sm">Reports</button>
             <button className="btn btn-primary btn-sm">Settings</button>
           </header>
-          <div>
+          <div className="flex gap-6">
+            <Link to="/card" className="text-decoration-none">
+              <div className="border-2 text-black  px-3 py-1 rounded-md text-semibold cursor-pointer">
+                {" "}
+                <span className="pr-2 ">+</span> Create Customer
+              </div>
+            </Link>
             <div
               onClick={() => setShowPaymentSlide(true)}
               className="border-2 px-3 py-1 rounded-md text-semibold cursor-pointer"
@@ -69,11 +74,11 @@ function App() {
           <Link>
             <i className="bi bi-box"></i> <span>Layouts</span>
           </Link>
-          <Link to={"/card"}>
+          <Link to={"/invoices"}>
             <i className="bi bi-file"></i> <span>Invoices</span>
           </Link>
           <Link>
-            <i className="bi bi-app"></i> <span>Tables</span>
+            <i className="bi bi-app"></i> <span>Purchase</span>
           </Link>
           <Link>
             <i className="bi bi-map"></i> <span>Map</span>
@@ -90,15 +95,11 @@ function App() {
         <div className="col-10 vh-100 bg-white" style={{ overflowY: "scroll" }}>
           <div style={{ height: "100px" }}></div>
           <Routes>
-
-          
-
-            <Route path='/' element={<Home />}></Route>
-            <Route path='/sales' element={<Sales />}></Route>
-            <Route path='/card' element={<CardPage />}></Route>
-            <Route path='/invoicepage/:id' element={<InvoicePage />}></Route>
-  <Route path="/invoices" element={<Invoices />} />
-
+            <Route path="/" element={<Home />}></Route>
+            <Route path="/sales" element={<Sales />}></Route>
+            <Route path="/card" element={<CardPage />}></Route>
+            <Route path="/invoicepage/:id" element={<InvoicePage />}></Route>
+            <Route path="/invoices" element={<Invoices />} />
           </Routes>
         </div>
       </div>
@@ -113,13 +114,18 @@ function App() {
         {/* backdrop (frosted glass) */}
         <div
           className={`absolute inset-0 backdrop-blur-md transition-opacity duration-200 ${
-            showPaymentSlide ? "bg-black/30 opacity-100" : "bg-transparent opacity-0"
+            showPaymentSlide
+              ? "bg-black/30 opacity-100"
+              : "bg-transparent opacity-0"
           }`}
           onClick={() => setShowPaymentSlide(false)} // click outside to close
         />
 
         {/* Payment panel (slide-in) */}
-        <Payment show={showPaymentSlide} setShowPaymentSlide={setShowPaymentSlide} />
+        <Payment
+          show={showPaymentSlide}
+          setShowPaymentSlide={setShowPaymentSlide}
+        />
       </div>
     </BrowserRouter>
   );
