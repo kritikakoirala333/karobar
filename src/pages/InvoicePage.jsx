@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
-import { MdFileDownload } from "react-icons/md";
+import { MdOutlineFileDownload  } from "react-icons/md";
 import { IoIosPrint } from "react-icons/io";
 import { db } from "../firebase";
 import { getDoc, doc } from "firebase/firestore";
 import company from "../assets/company.jpg";
 import { jsPDF } from "jspdf";
 import Swal from "sweetalert2";
+import { MdStore } from "react-icons/md";
 import html2canvas from "html2canvas-pro"; // ✅ Import added
 
 const InvoicePage = () => {
@@ -99,28 +100,48 @@ const InvoicePage = () => {
 
   return (
     <>
+
+    <div className="flex">
       {/* Header Section */}
-      <section>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <section className="leftContainer w-[70%]">
+      <section className="invoiceHeader px-4">
+        <div className="flex items-center justify-between  ">
           <div>
-            <p className="text-2xl font-semibold">Invoice</p>
+            <p className="text-2xl font-semibold mt-1">Invoice {invoice.invoiceno}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <MdFileDownload
+          <div>
+          <div className="flex items-center gap-2 text-xs "> 
+           <div className="border border-gray-500 flex justify-center items-center  gap-1 p-1 rounded">
+             <MdOutlineFileDownload 
               onClick={handleDownloadPdf}
-              className="ml-2 size-7 cursor-pointer"
-            />
-              <IoIosPrint className="ml-2 size-7 cursor-pointer" />
-         
+              className=" size-4 cursor-pointer"/> 
+           <div className=""> Export</div>
+            </div>
+             <div className="border border-gray-500 flex justify-center items-center gap-1 p-1 rounded">
+             <IoIosPrint 
+              onClick={handleDownloadPdf}
+              className=" size-4 cursor-pointer"/> 
+           <div> print</div>
+            </div>
+          </div>
           </div>
         </div>
+          <div className="flex justify-between">
+              <div>
+                <div className="flex gap-2">
+                <p className="text-gray-500">Ordered <span className="text-gray-800">Via Website</span></p>
+                <MdStore className="size-4 mt-[6px]"/>
+                <p>pickedup up in-store</p>
+              </div>
+              </div>
+              <div>  <span className="text-gray-500 mr-2">odercreated</span> {currentDateTime.toLocaleString()}</div>
+          </div>
       </section>
 
-      <div className="min-h-screen flex justify-center py-10 px-4">
-       
+      <div className="min-h-screen flex justify-center  px-4">
             <div
            ref={printRef}
-              className="w-full  max-w-4xl bg-white rounded-lg overflow-hidden border border-black"
+              className="w-full  max-w-4xl bg-white rounded-lg overflow-hidden border-gray-100 border-2 "
             >
               {/* Header */}
               <div className="p-6">
@@ -262,7 +283,15 @@ const InvoicePage = () => {
                 </div>
               </div>
             </div>
-         
+      </div>
+      </section>
+
+
+
+
+      <section className="rightContainer w-[30%] bg-red-400">
+
+      </section>
       </div>
     </>
   );

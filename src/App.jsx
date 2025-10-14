@@ -29,7 +29,7 @@ function App() {
           <div className="col-3"></div>
         </header>
 
-        <div className="flex items-center justify-between pr-16">
+        <div className="flex items-center justify-between pr-16 border-bottom">
           <header className="m-0 py-2 d-flex gap-2 border-bottom">
             <Link to="/product">
               {" "}
