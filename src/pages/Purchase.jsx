@@ -158,7 +158,7 @@ function Purchase() {
       <div className='container p-2'>
         <div className='card p-3 '>
           <div className='d-flex justify-content-between p-3 border-bottom '>
-            <div className='fw-bold fs-5'>Purchase Invoice:</div>
+            <div className='fw-bold fs-5'>Purchase Invoice</div>
             <div className='fw-bold fs-5'>Invoice No:</div>
             <div className='fw-bold fs-5'>Date:</div>
           </div>
