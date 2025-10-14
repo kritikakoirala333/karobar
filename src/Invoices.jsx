@@ -188,8 +188,12 @@ export default function Invoices() {
                       <div className="text-right flex flex-col justify-between items-end">
                         <p className="text-sm">{invoice.mobileno}</p>
                         <span
-                          onClick={() => handleDeleteClick(invoice.id)}
-                          className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevent Link navigation
+                            e.stopPropagation(); // Stop event bubbling
+                            handleDeleteClick(invoice.id);
+                          }}
+                          className="bg-red-400 z-100 p-2 rounded-md text-white text-xs cursor-pointer"
                         >
                           <FaTrashAlt />
                         </span>
@@ -223,70 +227,71 @@ export default function Invoices() {
                     const totalQty = getTotalQuantity(invoice.fields);
                     const status = randomStatus();
                     return (
-                        <tr
-                          key={invoice.id}
-                          onClick={() => navigate(`/invoicepage/${invoice.id}`)}
-                          className="hover:bg-gray-50 cursor-pointer transition duration-200 ease-in-out"
-                        >
-                          <td className="py-3 px-4 border-b font-medium text-gray-800">
-                            {invoice.number || `INV${1000 + i}`}
-                          </td>
+                      <tr
+                        key={invoice.id}
+                        onClick={() => navigate(`/invoicepage/${invoice.id}`)}
+                        className="hover:bg-gray-50 cursor-pointer transition duration-200 ease-in-out"
+                      >
+                        <td className="py-3 px-4 border-b font-medium text-gray-800">
+                          {invoice.number || `INV${1000 + i}`}
+                        </td>
 
-                          <td className="py-3 px-4 border-b flex items-center gap-3 ">
-                            <img
-                              src={invoice.avatar || "https://i.pravatar.cc/30"}
-                              alt="Avatar"
-                              className="w-8 h-8 rounded-full"
-                            />
-                            <span>{invoice.customername || "-"}</span>
-                          </td>
+                        <td className="py-3 px-4 border-b flex items-center gap-3 ">
+                          <img
+                            src={invoice.avatar || "https://i.pravatar.cc/30"}
+                            alt="Avatar"
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <span>{invoice.customername || "-"}</span>
+                        </td>
 
-                          <td className="py-3 px-4 border-b ">
-                            {invoice.date || "27th Jul 2021"}
-                          </td>
+                        <td className="py-3 px-4 border-b ">
+                          {invoice.date || "27th Jul 2021"}
+                        </td>
 
-                          <td className="py-3 px-4 border-b ">
-                            {invoice.address || "-"}
-                          </td>
+                        <td className="py-3 px-4 border-b ">
+                          {invoice.address || "-"}
+                        </td>
 
-                          <td className="py-3 px-4 border-b ">
-                            {invoice.mobileno || "-"}
-                          </td>
+                        <td className="py-3 px-4 border-b ">
+                          {invoice.mobileno || "-"}
+                        </td>
 
-                          <td className="py-3 px-4 border-b">
-                            <span
-                              className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                status === "Paid"
-                                  ? "bg-green-100 text-green-700"
-                                  : status === "Draft"
-                                  ? "bg-gray-200 text-gray-700"
-                                  : status === "Overdue"
-                                  ? "bg-red-100 text-red-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                              }`}
-                            >
-                              {status}
-                            </span>
-                          </td>
+                        <td className="py-3 px-4 border-b">
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              status === "Paid"
+                                ? "bg-green-100 text-green-700"
+                                : status === "Draft"
+                                ? "bg-gray-200 text-gray-700"
+                                : status === "Overdue"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {status}
+                          </span>
+                        </td>
 
-                          <td className="py-3 px-4 border-b text-left">
-                            {invoice.total
-                              ? `${invoice.total} US$`
-                              : "0.00 US$"}
-                          </td>
+                        <td className="py-3 px-4 border-b text-left">
+                          {invoice.total ? `${invoice.total} US$` : "0.00 US$"}
+                        </td>
 
-                          <td className="py-3 px-4 border-b text-left">
-                            {totalQty}
-                          </td>
-                          <td className="py-3 px-4 border-b text-center">
-                            <span
-                              onClick={() => handleDeleteClick(invoice.id)}
-                              className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
-                            >
-                              <FaTrashAlt />
-                            </span>
-                          </td>
-                        </tr>
+                        <td className="py-3 px-4 border-b text-left">
+                          {totalQty}
+                        </td>
+                        <td className="py-3 px-4 border-b text-center">
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent Link navigation
+                              handleDeleteClick(invoice.id);
+                            }}
+                            className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
+                          >
+                            <FaTrashAlt />
+                          </span>
+                        </td>
+                      </tr>
                     );
                   })}
                 </tbody>

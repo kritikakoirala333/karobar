@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sales from "./sales";
 import Home from "./Home";
 import CardPage from "./pages/card";
@@ -9,11 +9,13 @@ import {
   Route,
   Link,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import InvoicePage from "./pages/InvoicePage";
 import Invoices from "./Invoices";
 import Payment from "./Payment";
 import SignIn from "./SignIn";
+import axios from "axios";
 
 function App() {
   return (
@@ -25,12 +27,53 @@ function App() {
 
 function MainApp() {
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
+
+  const [userInfo, setUserInfo] = useState();
+  const navigator = useNavigate();
+  const [authCheck, setAuthCheck] = useState(true);
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
 
-    const isSignInPage = path === "/signin";
+  const isSignInPage = path === "/signin";
 
-    if (isSignInPage) {
+  const checkLoginInfo = () => {
+    console.log("Checking for Login Session");
+    let sessionToken = localStorage.getItem("login_token");
+    console.log("Session Token:", sessionToken);
+    axios
+      .post(
+        "http://192.168.1.11:8000/api/auth/me",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((resp) => {
+        if (resp.data.name) {
+          console.log(resp);
+          setUserInfo(resp.data)
+        } else {
+          navigator("/signin");
+        }
+        setAuthCheck(false);
+      });
+  };
+
+  useEffect(() => {
+    checkLoginInfo();
+  }, []);
+
+  if (authCheck)
+    return (
+      <>
+        <h2>Wait I am Checking</h2>
+      </>
+    );
+
+  if (isSignInPage) {
     return <SignIn />;
   }
 
@@ -48,7 +91,10 @@ function MainApp() {
           <div className="col-6">
             <input type="text" placeholder="Search" className="form-control" />
           </div>
-          <div className="col-3"></div>
+          <div className="col-3">
+            <small>{userInfo.name}</small>
+            <small>{userInfo.role}</small>
+          </div>
         </header>
 
         <div className="flex items-center justify-between pr-16">
@@ -118,12 +164,12 @@ function MainApp() {
         <div className="col-10 vh-100 bg-white" style={{ overflowY: "scroll" }}>
           <div style={{ height: "100px" }}></div>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/sales" element={<Sales />}></Route>
-            <Route path="/card" element={<CardPage />}></Route>
-            <Route path="/invoicepage/:id" element={<InvoicePage />}></Route>
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/signin" element={<SignIn />} />
+            <Route authUser={userInfo} path="/" element={<Home />}></Route>
+            <Route authUser={userInfo} path="/sales" element={<Sales />}></Route>
+            <Route authUser={userInfo} path="/card" element={<CardPage />}></Route>
+            <Route authUser={userInfo} path="/invoicepage/:id" element={<InvoicePage />}></Route>
+            <Route authUser={userInfo} path="/invoices" element={<Invoices />} />
+            <Route authUser={userInfo} path="/signin" element={<SignIn />} />
           </Routes>
         </div>
       </div>
