@@ -91,14 +91,10 @@ function MainApp() {
           <div className="col-6">
             <input type="text" placeholder="Search" className="form-control" />
           </div>
-          <div className="col-3">
-            <small>{userInfo.name}</small>
-            <small>{userInfo.role}</small>
-          </div>
         </header>
 
-        <div className="flex items-center justify-between pr-16">
-          <header className="m-0 py-2 d-flex gap-2 border-bottom">
+        <div className="flex items-center border-b-1 border-gray-300 justify-between pr-16">
+          <header className="m-0 py-2 d-flex gap-2">
             <Link to="/product">
               {" "}
               <button className="btn btn-primary btn-sm">
