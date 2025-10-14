@@ -9,9 +9,19 @@
 }
 
 .add-more-btn:hover {
-  background-color: #f4f4f4  !important;
+  background-color: #f4f4f4 !important;
 }
 
 .customerCard:hover {
-  background-color: #f4f4f4; 
+  background-color: #f4f4f4;
+}
+
+.signinImg {
+  background-image: url("./assets/Login.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.py-custom {
+  padding-top: 5rem;   /* or any value you want */
 }
