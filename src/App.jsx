@@ -167,7 +167,7 @@ function MainApp() {
             <button className="btn btn-primary btn-sm">Settings</button>
           </header>
           <div className="flex gap-6">
-            <Link to="/card" className="text-decoration-none">
+            <Link to="" className="text-decoration-none">
               <div className="border-2 text-black  px-3 py-1 rounded-md text-semibold cursor-pointer">
                 {" "}
                 <span className="pr-2 ">+</span> Create Customer
@@ -202,6 +202,14 @@ function MainApp() {
             <span className="fs-6">Invoices</span>
           </Link>
           <Link to={"/purchase"}>
+           <i class="bi bi-bag"></i> <span>Purchase Invoice</span>
+          </Link>
+           <Link to={"/card"}>
+            <i className="bi bi-app"></i> <span>Sales Invoice</span>
+          </Link>
+
+          <Link>
+            <i className="bi bi-map"></i> <span>Map</span>
             <i className="bi bi-app text-lg"></i>{" "}
             <span className="fs-6">Purchase</span>
           </Link>
