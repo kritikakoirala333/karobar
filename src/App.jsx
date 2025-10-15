@@ -47,48 +47,35 @@ function MainApp() {
 
   const isSignInPage = path === "/signin";
 
-  // const checkLoginInfo = () => {
-  //   console.log("Checking for Login Session");
-  //   let sessionToken = localStorage.getItem("login_token");
-  //   console.log("Session Token:", sessionToken);
-  //   axios
-  //     .post(
-  //       "http://192.168.1.11:8000/api/auth/me",
-  //       {},
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${sessionToken}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     )
-  //     .then((resp) => {
-  //       if (resp.data.name) {
-  //         console.log(resp);
-  //         setUserInfo(resp.data)
-  //       } else {
-  //         navigator("/signin");
-  //       }
-  //       setAuthCheck(false);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   checkLoginInfo();
-  // }, []);
-
-  // if (authCheck)
-  //   return (
-  //     <>
-  //       <h2>Wait I am Checking</h2>
-  //     </>
-  //   );
-
-  if (isSignInPage) {
-    return <SignIn />;
-  }
+  const checkLoginInfo = () => {
+    console.log("Checking for Login Session");
+    let sessionToken = localStorage.getItem("login_token");
+    console.log("Session Token:", sessionToken);
+    axios
+      .post(
+        "https://invoicer-backend.azure.com.np/api/auth/me",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((resp) => {
+        if (resp.data.name) {
+          console.log(resp);
+          setUserInfo(resp.data);
+        } else {
+          navigator("/signin");
+        }
+        setAuthCheck(false);
+      });
+  };
 
   useEffect(() => {
+    checkLoginInfo();
+
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       setDarkMode(true);
@@ -98,6 +85,17 @@ function MainApp() {
       document.documentElement.classList.remove("dark");
     }
   }, []);
+
+  if (authCheck)
+    return (
+      <>
+        <h2>Wait I am Checking</h2>
+      </>
+    );
+
+  if (isSignInPage) {
+    return <SignIn />;
+  }
 
   const toggleTheme = () => {
     if (darkMode) {
@@ -125,8 +123,17 @@ function MainApp() {
           </div>
           <div className="flex gap-7 items-center">
             <div>
-              <div onClick={toggleTheme} className={`bg-gray-300 w-[48px] h-[23px] rounded-xl transition-colors duration-300 cursor-pointer relative ${darkMode? "bg-black": "left-1"}`}>
-                <div className={`bg-white w-[16px] rounded-full h-[17px] absolute top-[3px] transition-all duration-300 ${darkMode? "right-1": "left-1"}`} >
+              <div
+                onClick={toggleTheme}
+                className={`bg-gray-300 w-[48px] h-[23px] rounded-xl transition-colors duration-300 cursor-pointer relative ${
+                  darkMode ? "bg-black" : "left-1"
+                }`}
+              >
+                <div
+                  className={`bg-white w-[16px] rounded-full h-[17px] absolute top-[3px] transition-all duration-300 ${
+                    darkMode ? "right-1" : "left-1"
+                  }`}
+                >
                   {""}
                 </div>
               </div>
@@ -178,28 +185,36 @@ function MainApp() {
         <div className="col-2 card vh-100 sidebar-links-wrapper">
           <div style={{ height: "110px" }}></div>
           <Link to={"/"}>
-            <i className="bi bi-house text-lg"></i> <span className="fs-6">Dashboard</span>
+            <i className="bi bi-house text-lg"></i>{" "}
+            <span className="fs-6">Dashboard</span>
           </Link>
           <Link>
-            <i className="bi bi-columns-gap text-lg"></i> <span className="fs-6">Layouts</span>
+            <i className="bi bi-columns-gap text-lg"></i>{" "}
+            <span className="fs-6">Layouts</span>
           </Link>
           <Link to={"/invoices"}>
-            <i className="bi bi-file text-lg"></i> <span className="fs-6">Invoices</span>
+            <i className="bi bi-file text-lg"></i>{" "}
+            <span className="fs-6">Invoices</span>
           </Link>
           <Link to={"/purchase"}>
-            <i className="bi bi-app text-lg"></i> <span className="fs-6">Purchase</span>
+            <i className="bi bi-app text-lg"></i>{" "}
+            <span className="fs-6">Purchase</span>
           </Link>
           <Link to={"/customers"}>
-            <i className="bi bi-app text-lg"></i> <span className="fs-6">Customers</span>
+            <i className="bi bi-app text-lg"></i>{" "}
+            <span className="fs-6">Customers</span>
           </Link>
           <Link to={"/inventory"}>
-            <i className="bi bi-map text-lg"></i> <span className="fs-6">Inventory</span>
+            <i className="bi bi-map text-lg"></i>{" "}
+            <span className="fs-6">Inventory</span>
           </Link>
           <Link>
-            <i className="bi bi-house text-lg"></i> <span className="fs-6">Departments</span>
+            <i className="bi bi-house text-lg"></i>{" "}
+            <span className="fs-6">Departments</span>
           </Link>
           <Link>
-            <i className="bi bi-hourglass text-lg"></i> <span className="fs-6">History</span>
+            <i className="bi bi-hourglass text-lg"></i>{" "}
+            <span className="fs-6">History</span>
           </Link>
         </div>
 
