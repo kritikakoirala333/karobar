@@ -27,12 +27,12 @@ function CustomerForm({ setShowAddCustomerForm }) {
 
     
 
-    //  addDoc(collection(db, 'customers'), formData)
+     addDoc(collection(db, 'customers'), formData)
   
-    //     .then(resp => {
-    //       console.log('DataAdded')
-    //       clearForm()
-    //     })
+        .then(resp => {
+          console.log('DataAdded')
+          clearForm()
+        })
   };
  
   

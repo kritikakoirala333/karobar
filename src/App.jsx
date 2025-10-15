@@ -40,42 +40,42 @@ function MainApp() {
 
   const isSignInPage = path === "/signin";
 
-  const checkLoginInfo = () => {
-    console.log("Checking for Login Session");
-    let sessionToken = localStorage.getItem("login_token");
-    console.log("Session Token:", sessionToken);
-    axios
-      .post(
-        "http://192.168.1.11:8000/api/auth/me",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((resp) => {
-        if (resp.data.name) {
-          console.log(resp);
-          setUserInfo(resp.data)
-        } else {
-          navigator("/signin");
-        }
-        setAuthCheck(false);
-      });
-  };
+  // const checkLoginInfo = () => {
+  //   console.log("Checking for Login Session");
+  //   let sessionToken = localStorage.getItem("login_token");
+  //   console.log("Session Token:", sessionToken);
+  //   axios
+  //     .post(
+  //       "http://192.168.1.11:8000/api/auth/me",
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${sessionToken}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     )
+  //     .then((resp) => {
+  //       if (resp.data.name) {
+  //         console.log(resp);
+  //         setUserInfo(resp.data)
+  //       } else {
+  //         navigator("/signin");
+  //       }
+  //       setAuthCheck(false);
+  //     });
+  // };
 
-  useEffect(() => {
-    checkLoginInfo();
-  }, []);
+  // useEffect(() => {
+  //   checkLoginInfo();
+  // }, []);
 
-  if (authCheck)
-    return (
-      <>
-        <h2>Wait I am Checking</h2>
-      </>
-    );
+  // if (authCheck)
+  //   return (
+  //     <>
+  //       <h2>Wait I am Checking</h2>
+  //     </>
+  //   );
 
   if (isSignInPage) {
     return <SignIn />;
@@ -115,7 +115,7 @@ function MainApp() {
             <button className="btn btn-primary btn-sm">Settings</button>
           </header>
           <div className="flex gap-6">
-            <Link to="/card" className="text-decoration-none">
+            <Link to="" className="text-decoration-none">
               <div className="border-2 text-black  px-3 py-1 rounded-md text-semibold cursor-pointer">
                 {" "}
                 <span className="pr-2 ">+</span> Create Customer
@@ -147,8 +147,12 @@ function MainApp() {
             <i className="bi bi-file"></i> <span>Invoices</span>
           </Link>
           <Link to={"/purchase"}>
-            <i className="bi bi-app"></i> <span>Purchase</span>
+           <i class="bi bi-bag"></i> <span>Purchase Invoice</span>
           </Link>
+           <Link to={"/card"}>
+            <i className="bi bi-app"></i> <span>Sales Invoice</span>
+          </Link>
+
           <Link>
             <i className="bi bi-map"></i> <span>Map</span>
           </Link>
@@ -165,13 +169,13 @@ function MainApp() {
           <div style={{ height: "100px" }}></div>
           <Routes>
 
-            <Route authUser={userInfo} path="/" element={<Home />}></Route>
-            <Route authUser={userInfo} path="/sales" element={<Sales />}></Route>
-            <Route authUser={userInfo} path="/card" element={<CardPage />}></Route>
-            <Route authUser={userInfo} path="/invoicepage/:id" element={<InvoicePage />}></Route>
-            <Route authUser={userInfo} path="/invoices" element={<Invoices />} />
-            <Route authUser={userInfo} path="/signin" element={<SignIn />} />
-            <Route authUser={userInfo} path="/purchase" element={<Purchase />} />
+            <Route  authUser={userInfo} path="/" element={<Home />}></Route>
+            <Route  authUser={userInfo} path="/sales" element={<Sales />}></Route>
+            <Route  authUser={userInfo} path="/card" element={<CardPage />}></Route>
+            <Route  authUser={userInfo} path="/invoicepage/:id" element={<InvoicePage />}></Route>
+            <Route  authUser={userInfo} path="/invoices" element={<Invoices />} />
+            <Route  authUser={userInfo} path="/signin" element={<SignIn />} />
+            <Route  authUser={userInfo} path="/purchase" element={<Purchase />} />
 
 
           </Routes>
