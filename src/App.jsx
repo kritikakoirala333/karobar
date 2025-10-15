@@ -26,6 +26,7 @@ import { FaBell } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
+import axiosInstance from "./axiosConfig";
 
 function App() {
   return (
@@ -51,9 +52,9 @@ function MainApp() {
     console.log("Checking for Login Session");
     let sessionToken = localStorage.getItem("login_token");
     console.log("Session Token:", sessionToken);
-    axios
+    axiosInstance
       .post(
-        "https://invoicer-backend.azure.com.np/api/auth/me",
+        "/auth/me",
         {},
         {
           headers: {
@@ -70,6 +71,10 @@ function MainApp() {
           navigator("/signin");
         }
         setAuthCheck(false);
+      }).catch(ex => {
+        navigator("/signin");
+        setAuthCheck(false);
+
       });
   };
 

@@ -11,6 +11,7 @@ import {
 import signIn from "./assets/signIn.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "./axiosConfig";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +27,7 @@ export default function SignIn() {
     console.log("Session Token:", sessionToken)
 
 
-    axios.post("https://invoicer-backend.azure.com.np/api/auth/login", {
+    axiosInstance.post("/auth/login", {
       email: email,
       password: password,
     }).then(resp => {
