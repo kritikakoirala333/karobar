@@ -40,42 +40,42 @@ function MainApp() {
 
   const isSignInPage = path === "/signin";
 
-  const checkLoginInfo = () => {
-    console.log("Checking for Login Session");
-    let sessionToken = localStorage.getItem("login_token");
-    console.log("Session Token:", sessionToken);
-    axios
-      .post(
-        "http://192.168.1.11:8000/api/auth/me",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((resp) => {
-        if (resp.data.name) {
-          console.log(resp);
-          setUserInfo(resp.data)
-        } else {
-          navigator("/signin");
-        }
-        setAuthCheck(false);
-      });
-  };
+  // const checkLoginInfo = () => {
+  //   console.log("Checking for Login Session");
+  //   let sessionToken = localStorage.getItem("login_token");
+  //   console.log("Session Token:", sessionToken);
+  //   axios
+  //     .post(
+  //       "http://192.168.1.11:8000/api/auth/me",
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${sessionToken}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     )
+  //     .then((resp) => {
+  //       if (resp.data.name) {
+  //         console.log(resp);
+  //         setUserInfo(resp.data)
+  //       } else {
+  //         navigator("/signin");
+  //       }
+  //       setAuthCheck(false);
+  //     });
+  // };
 
-  useEffect(() => {
-    checkLoginInfo();
-  }, []);
+  // useEffect(() => {
+  //   checkLoginInfo();
+  // }, []);
 
-  if (authCheck)
-    return (
-      <>
-        <h2>Wait I am Checking</h2>
-      </>
-    );
+  // if (authCheck)
+  //   return (
+  //     <>
+  //       <h2>Wait I am Checking</h2>
+  //     </>
+  //   );
 
   if (isSignInPage) {
     return <SignIn />;

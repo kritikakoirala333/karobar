@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { MdOutlineFileDownload  } from "react-icons/md";
+import { MdOutlineFileDownload } from "react-icons/md";
 import { IoIosPrint } from "react-icons/io";
 import { db } from "../firebase";
 import { getDoc, doc } from "firebase/firestore";
@@ -8,7 +8,8 @@ import { jsPDF } from "jspdf";
 import Swal from "sweetalert2";
 import { MdStore } from "react-icons/md";
 import html2canvas from "html2canvas-pro"; // ✅ Import added
-import { useParams  } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { MdLocationPin } from "react-icons/md";
 
 const InvoicePage = () => {
   const [invoice, setInvoice] = useState(null);
@@ -103,47 +104,56 @@ const InvoicePage = () => {
 
   return (
     <>
-
-    <div className="flex">
-      {/* Header Section */}
-      <section className="leftContainer w-[70%]">
-      <section className="invoiceHeader px-4">
-        <div className="flex items-center justify-between  ">
-          <div>
-            <p className="text-2xl font-semibold mt-1">Invoice {invoice.invoiceno}</p>
-          </div>
-          <div>
-          <div className="flex items-center gap-2 text-xs "> 
-           <div className="border border-gray-500 flex justify-center items-center  gap-1 p-1 rounded">
-             <MdOutlineFileDownload 
-              onClick={handleDownloadPdf}
-              className=" size-4 cursor-pointer"/> 
-           <div className=""> Export</div>
-            </div>
-             <div className="border border-gray-500 flex justify-center items-center gap-1 p-1 rounded">
-             <IoIosPrint 
-              onClick={handleDownloadPdf}
-              className=" size-4 cursor-pointer"/> 
-           <div> print</div>
-            </div>
-          </div>
-          </div>
-        </div>
-          <div className="flex justify-between">
+      <div className="flex">
+        {/* Header Section */}
+        <section className="leftContainer w-[70%]">
+          <section className="invoiceHeader px-4">
+            <div className="flex items-center justify-between  ">
               <div>
-                <div className="flex gap-2">
-                <p className="text-gray-500">Ordered <span className="text-gray-800">Via Website</span></p>
-                <MdStore className="size-4 mt-[6px]"/>
-                <p>pickedup up in-store</p>
+                <p className="text-2xl font-semibold mt-1">
+                  Invoice {invoice.invoiceno}
+                </p>
               </div>
+              <div>
+                <div className="flex items-center gap-2 text-xs ">
+                  <div
+                    className="border border-gray-500 flex justify-center items-center cursor-pointer  gap-1 p-1 rounded"
+                    onClick={handleDownloadPdf}
+                  >
+                    <MdOutlineFileDownload className=" size-4 " />
+                    <div className=""> Export</div>
+                  </div>
+                  <div className="border border-gray-500 flex justify-center cursor-pointer items-center gap-1 p-1 rounded">
+                    <IoIosPrint
+                      onClick={handleDownloadPdf}
+                      className=" size-4 cursor-pointer"
+                    />
+                    <div> print</div>
+                  </div>
+                </div>
               </div>
-              <div>  <span className="text-gray-500 mr-2">odercreated</span> {currentDateTime.toLocaleString()}</div>
-          </div>
-      </section>
+            </div>
+            <div className="flex justify-between">
+              <div>
+                <div className="flex">
+                  <p className="text-gray-500">
+                    Ordered <span className="text-gray-800">Via Website</span>
+                  </p>
+                  <MdStore className="size-4 mt-[6px] ml-2 " />
+                  <p>pickedup up in-store</p>
+                </div>
+              </div>
+              <div>
+                {" "}
+                <span className="text-gray-500 mr-2">odercreated</span>{" "}
+                {currentDateTime.toLocaleString()}
+              </div>
+            </div>
+          </section>
 
-      <div className="min-h-screen flex justify-center  px-4">
+          <div className="min-h-screen flex justify-center  px-4">
             <div
-           ref={printRef}
+              ref={printRef}
               className="w-full  max-w-4xl bg-white rounded-lg overflow-hidden border-gray-100 border-2 "
             >
               {/* Header */}
@@ -286,15 +296,94 @@ const InvoicePage = () => {
                 </div>
               </div>
             </div>
-      </div>
-      </section>
+          </div>
+        </section>
 
+        <section className="rightContainer w-[30%] border-l-1 border-gray-300">
+          <div className="invoiceDetails p-2 ">
+            <div className="bg-gray-100 p-2 rounded-2xl ">
+              <p className="text-[25px] font-semibold">InvoiceDetails</p>
+              <div className="bg-white p-2 rounded-xl">
+                <p className="font-bold">GaintStore</p>
+                <div className="flex">
+                  <div className="mt-1 mr-2">
+                    <MdLocationPin />{" "}
+                  </div>
+                  <p className="">Bharatpur-10,chitwan</p>
+                </div>
+                <div className="flex justify-between">
+                  <div>Issue Date:</div>
+                  <div>2060/06/03</div>
+                </div>
+                <div className="flex justify-between">
+                  <div>Delivery Date:</div>
+                  <div>2060/06/03</div>
+                </div>
+              </div>
 
+              <div className="mt-3 p-2 bg-white rounded-xl">
+                <div className="flex justify-between">
+                  <p>Invoice Number:</p>
+                  <p>#8927598</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Product Id:</p>
+                  <p>#8927598</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>email:</p>
+                  <p>example@gmail.com</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>call:</p>
+                  <p>9852468468</p>
+                </div>
+              </div>
 
-
-      <section className="rightContainer w-[30%] bg-red-400">
-
-      </section>
+              <div className="bg-white mt-3 rounded-xl">
+                <table class="table table-bordered rounded-xl">
+                  <thead>
+                    <tr>
+                      <th scope="col">OrderDetails</th>
+                      <th scope="col">TotalPrice</th>
+                    
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td scope="row">Taxable</td>
+                      <td>Rs.2002</td>
+                   
+                    </tr>
+                    <tr>
+                      <td scope="row">Additional Charge</td>
+                      <td>Jacob</td>
+                    
+                    </tr>
+                    <tr>
+                      <td scope="row">Discout</td>
+                    <td>Rs.293</td>
+                    </tr>
+                      <tr>
+                      <td scope="row">SubTotal</td>
+                  <td>Rs.1770</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-3  flex justify-end text-black">
+                <div onClick={handleDownloadPdf} className="flex border-1 bg-white border-gray-400 p-2 rounded-2xl cursor-pointer">
+                  <MdOutlineFileDownload className=" size-4 mt-[3px] mr-1 " />
+                  <div className="text-sm"> Export</div>
+                </div>
+                 <div onClick={handleDownloadPdf} className="flex border-1 bg-white border-gray-400 ml-2 p-2 rounded-2xl cursor-pointer">
+                  <IoIosPrint className=" size-4 mt-[3px] mr-1 " />
+                  <div className="text-sm"> print</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
