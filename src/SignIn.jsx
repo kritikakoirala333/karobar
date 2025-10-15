@@ -10,6 +10,8 @@ import {
 } from "react-icons/fa";
 import signIn from "./assets/signIn.png";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "./axiosConfig";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,18 +19,21 @@ export default function SignIn() {
   const [email, setEmail] = useState("niraj@azure.com.np");
   const [password, setPassword] = useState("password");
 
+  const navigate = useNavigate();
+
   const handleLogin = (e) => {
     e.preventDefault();
     let sessionToken = localStorage.getItem("login_token");
     console.log("Session Token:", sessionToken)
 
 
-    axios.post("http://192.168.1.11:8000/api/auth/login", {
+    axiosInstance.post("/auth/login", {
       email: email,
       password: password,
     }).then(resp => {
         console.log(resp)
         localStorage.setItem("login_token", resp.data.access_token)
+        navigate("/")
     });
     console.log(email, password);
   };
