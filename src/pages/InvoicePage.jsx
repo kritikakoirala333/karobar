@@ -357,7 +357,7 @@ const InvoicePage = () => {
                     </tr>
                     <tr>
                       <td scope="row">Additional Charge</td>
-                      <td>Jacob</td>
+                      <td>Rs.200</td>
                     
                     </tr>
                     <tr>
