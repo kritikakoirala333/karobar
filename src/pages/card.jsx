@@ -138,13 +138,17 @@ function CardPage() {
     console.log(formData)
 
 
+    // let formInfomation = {
+    //   invoice_no : 'INV001',
+    //   customer_id : selectedCustomer.
+    // }
 
-    addDoc(collection(db, 'invoices'), formData)
+    // addDoc(collection(db, 'invoices'), formData)
 
-      .then(resp => {
-        console.log('DataAdded')
-        clearForm()
-      })
+    //   .then(resp => {
+    //     console.log('DataAdded')
+    //     clearForm()
+    //   })
   }
 
 

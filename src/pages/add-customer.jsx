@@ -25,17 +25,17 @@ function CustomerForm({ setShowAddCustomerForm }) {
     alert('Customer added successfully!');
     setShowAddCustomerForm(false) // close the popup after submission\
 
-    
 
-     addDoc(collection(db, 'customers'), formData)
-  
-        .then(resp => {
-          console.log('DataAdded')
-          clearForm()
-        })
+
+    addDoc(collection(db, 'customers'), formData)
+
+      .then(resp => {
+        console.log('DataAdded')
+        clearForm()
+      })
   };
- 
-  
+
+
   return (
     // background overlay
     <div
