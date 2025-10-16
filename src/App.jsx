@@ -202,7 +202,7 @@ function MainApp() {
             <span className="fs-6">Invoices</span>
           </Link>
           <Link to={"/purchase"}>
-           <i class="bi bi-bag"></i> <span>Purchase Invoice</span>
+           <i className="bi bi-bag"></i> <span>Purchase Invoice</span>
           </Link>
            <Link to={"/card"}>
             <i className="bi bi-app"></i> <span>Sales Invoice</span>
