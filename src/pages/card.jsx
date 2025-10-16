@@ -131,10 +131,30 @@ function CardPage() {
   function saveform() {
     console.log(formData);
 
+<<<<<<< HEAD
+
+
+
+    console.log(formData)
+
+
+    // let formInfomation = {
+    //   invoice_no : 'INV001',
+    //   customer_id : selectedCustomer.
+    // }
+
+    // addDoc(collection(db, 'invoices'), formData)
+
+    //   .then(resp => {
+    //     console.log('DataAdded')
+    //     clearForm()
+    //   })
+=======
     addDoc(collection(db, "invoices"), formData).then((resp) => {
       console.log("DataAdded");
       clearForm();
     });
+>>>>>>> 4b30bd21a9344e3e67d12536a30d4ef5a9d74313
   }
 
   return (

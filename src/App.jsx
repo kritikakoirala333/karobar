@@ -19,7 +19,7 @@ import axios from "axios";
 import company from "./assets/company.jpg";
 
 import Purchase from "./pages/Purchase";
-import Inventory from "./Inventory";
+import Inventory from "./pages/Inventory";
 import Customers from "./Customers";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaBell } from "react-icons/fa";
