@@ -27,6 +27,18 @@ function CustomerForm({ setShowAddCustomerForm, handleCallbackFromCustomerCreati
     setShowAddCustomerForm(false); // close the popup after submission\
 
 
+<<<<<<< HEAD
+
+    addDoc(collection(db, 'customers'), formData)
+
+      .then(resp => {
+        console.log('DataAdded')
+        clearForm()
+      })
+  };
+
+
+=======
     axiosInstance.post("/customers", {
       name : formData.customername,
       address : formData.address,
@@ -43,6 +55,7 @@ function CustomerForm({ setShowAddCustomerForm, handleCallbackFromCustomerCreati
     // });
   };
 
+>>>>>>> 4b30bd21a9344e3e67d12536a30d4ef5a9d74313
   return (
     // background overlay
     <div
