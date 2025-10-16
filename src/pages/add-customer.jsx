@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import { db } from '../firebase'
-import { addDoc, collection } from 'firebase/firestore'
+import React, { useState } from "react";
+import { db } from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
+import axiosInstance from "../axiosConfig";
 
-function CustomerForm({ setShowAddCustomerForm }) {
+function CustomerForm({ setShowAddCustomerForm, handleCallbackFromCustomerCreation }) {
   // const [customerData, setCustomerData] = useState({
   //   customername: '',
   //   mobileno: '',
   //   address: '',
   // });
   const [formData, setFormData] = useState({
-    customername: '',
-    mobileno: '',
-    address: '',
+    customername: "",
+    mobileno: "",
+    address: "",
   });
 
   const handleChange = (e) => {
@@ -21,29 +22,38 @@ function CustomerForm({ setShowAddCustomerForm }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Customer Added:', formData);
-    alert('Customer added successfully!');
-    setShowAddCustomerForm(false) // close the popup after submission\
+    console.log("Customer Added:", formData);
+    alert("Customer added successfully!");
+    setShowAddCustomerForm(false); // close the popup after submission\
 
 
+    axiosInstance.post("/customers", {
+      name : formData.customername,
+      address : formData.address,
+      phone : formData.mobileno,
+      organization_id : 1
+    }).then(resp => {
 
-    addDoc(collection(db, 'customers'), formData)
+      handleCallbackFromCustomerCreation(resp.data)
+    })
 
-      .then(resp => {
-        console.log('DataAdded')
-        clearForm()
-      })
+    // addDoc(collection(db, "customers"), formData).then((resp) => {
+    //   console.log("DataAdded");
+    //   clearForm();
+    // });
   };
-
 
   return (
     // background overlay
     <div
       className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1050 }}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}
     >
       {/* Popup box */}
-      <div className="bg-white p-4 rounded-4 shadow-lg" style={{ width: '400px' }}>
+      <div
+        className="bg-white p-4 rounded-4 shadow-lg"
+        style={{ width: "400px" }}
+      >
         <h4 className="mb-3 text-center">Enter Customer Details</h4>
 
         <form onSubmit={handleSubmit}>
@@ -86,7 +96,11 @@ function CustomerForm({ setShowAddCustomerForm }) {
           </div>
 
           <div className="d-flex justify-content-between">
-            <button type="button" className="btn btn-secondary" onClick={() => setShowAddCustomerForm(false)}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowAddCustomerForm(false)}
+            >
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
