@@ -131,7 +131,6 @@ function CardPage() {
   function saveform() {
     console.log(formData);
 
-<<<<<<< HEAD
 
 
 
@@ -149,12 +148,6 @@ function CardPage() {
     //     console.log('DataAdded')
     //     clearForm()
     //   })
-=======
-    addDoc(collection(db, "invoices"), formData).then((resp) => {
-      console.log("DataAdded");
-      clearForm();
-    });
->>>>>>> 4b30bd21a9344e3e67d12536a30d4ef5a9d74313
   }
 
   return (
