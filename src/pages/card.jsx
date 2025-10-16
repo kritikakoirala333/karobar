@@ -171,7 +171,7 @@ function CardPage() {
                   type="text"
                   name="customername"
                   value={formData.customername}
-                  className="form-control p-2 border border-2 rounded-3"
+                  className="form-control p-2  border-2 rounded-3"
                   placeholder="Enter Customer Name"
                   onChange={(e) => {
                     handleChange(e), handleFilter(e);
@@ -205,7 +205,7 @@ function CardPage() {
                 className="mb-3"
                 style={{ display: !selectedCustomer ? "none" : "block" }}
               >
-                <div className="row m-0 p-0 bg-light rounded border p-2">
+                <div className="row m-0  bg-light rounded border p-2">
                   <div className="col-11">
                     <span className="fw-semibold">
                       Customer Name : {selectedCustomer?.customername}
@@ -229,7 +229,7 @@ function CardPage() {
                   type="number"
                   name="mobileno"
                   value={formData.mobileno}
-                  className="form-control  p-2 border border-2 rounded-3"
+                  className="form-control  p-2 border-2 rounded-3"
                   placeholder="Enter Mobile No."
                   onChange={handleChange}
                 />
@@ -239,7 +239,7 @@ function CardPage() {
                   type="text"
                   name="address"
                   value={formData.address}
-                  className="form-control  p-2 border border-2 rounded-3 "
+                  className="form-control  p-2 border-2 rounded-3 "
                   placeholder="Enter Address"
                   onChange={handleChange}
                 />
@@ -252,7 +252,7 @@ function CardPage() {
                   type="date"
                   name="date"
                   value={formData.date}
-                  className="form-control  p-2 border border-2 rounded-3 "
+                  className="form-control  p-2 border-2 rounded-3 "
                   placeholder="Enter Date"
                   onChange={handleChange}
                 />
@@ -267,7 +267,7 @@ function CardPage() {
                     type="text"
                     name="InvoiceNo"
                     value={formData.InvoiceNo}
-                    className="form-control  p-2 border border-2 rounded-3"
+                    className="form-control  p-2 border-2 rounded-3"
                     placeholder="Enter InvoiceNo."
                     onChange={handleChange}
                   />
@@ -307,7 +307,7 @@ function CardPage() {
                       type="text"
                       name="name"
                       value={field.name}
-                      className="form-control  p-1 border border-2 rounded-3 "
+                      className="form-control  p-1 border-2 rounded-3 "
                       placeholder="Enter name"
                       onChange={(e) => handleChange(e, index)}
                     />
@@ -317,7 +317,7 @@ function CardPage() {
                       type="number"
                       name="quantity"
                       value={field.quantity}
-                      className="form-control  p-1 border border-2 rounded-3 "
+                      className="form-control  p-1  border-2 rounded-3 "
                       placeholder="Enter quantity"
                       onChange={(e) => handleChange(e, index)}
                     />
@@ -327,7 +327,7 @@ function CardPage() {
                       type="text"
                       name="rate"
                       value={field.rate}
-                      className="form-control p-1 border border-2 rounded-3"
+                      className="form-control p-1  border-2 rounded-3"
                       placeholder="Enter rate"
                       onChange={(e) => handleChange(e, index)}
                     />
@@ -337,7 +337,7 @@ function CardPage() {
                       type="text"
                       name="amount"
                       value={field.quantity * field.rate}
-                      className="form-control p-1 border border-2 rounded-3"
+                      className="form-control p-1  border-2 rounded-3"
                       placeholder="Enter amount"
                       onChange={(e) => handleChange(e, index)}
                     />
@@ -379,7 +379,7 @@ function CardPage() {
               type="number"
               name="subtotal"
               // value={field.quantity * field.rate}
-              className="form-control form-control-sm border border-2 rounded-3"
+              className="form-control form-control-sm  border-2 rounded-3"
               placeholder="0.00"
               onChange={(e) => handleChange(e)}
             ></input>
@@ -390,7 +390,7 @@ function CardPage() {
               type="number"
               name="discount"
               // value={field.quantity * field.rate}
-              className="form-control  form-control-sm border border-2 rounded-3"
+              className="form-control  form-control-sm  border-2 rounded-3"
               placeholder="0"
               onChange={(e) => handleChange(e)}
             ></input>
@@ -402,7 +402,7 @@ function CardPage() {
               type="number"
               name="shipping"
               // value={field.quantity * field.rate}
-              className="form-control  border border-1 rounded-3"
+              className="form-control   border-1 rounded-3"
               placeholder="0"
               onChange={(e) => handleChange(e)}
             ></input>
@@ -413,7 +413,7 @@ function CardPage() {
             <input
               type="number"
               name="tax"
-              className="form-control form-control-sm border border-2 rounded-3 text-end w-50"
+              className="form-control form-control-sm  border-2 rounded-3 text-end w-50"
               placeholder="10%"
               onChange={(e) => handleChange(e)}
             />
