@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { db } from "./firebase";
 import { getDocs, collection } from "firebase/firestore";
 import { FiSearch } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
+import { RiFileEditFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
+import EditForm from "./pages/EditCustomer";
+import axiosInstance from "./axiosConfig";
 
 export default function Customers() {
   const [customers, setCustomers] = useState([]);
@@ -12,21 +15,34 @@ export default function Customers() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [visibleCount, setVisibleCount] = useState(10);
-
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchInvoices = async () => {
-      const resp = await getDocs(collection(db, "customers"));
-      const data = resp.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setCustomers(data);
-    };
-
-    fetchInvoices();
+    axiosInstance
+      .get("/customers")
+      .then((response) => {
+        console.log("Response data : ", response.data.data.data);
+        setCustomers(response.data.data.data); // Store the fetched data
+      })
+      .catch((error) => {
+        console.error("Error fetching customers:", error);
+      });
   }, []);
+
+  // useEffect(() => {
+  //   const fetchInvoices = async () => {
+  //     const resp = await getDocs(collection(db, "customers"));
+  //     const data = resp.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
+  //     setCustomers(data);
+  //   };
+
+  //   fetchInvoices();
+  // }, []);
 
   const colors = [
     "bg-purple-300",
@@ -39,12 +55,13 @@ export default function Customers() {
   const filteredCustomers = customers.filter((inv) => {
     const term = searchTerm.toLowerCase();
     return (
-      inv.customername?.toLowerCase().includes(term) ||
+      inv.name?.toLowerCase().includes(term) ||
       inv.address?.toLowerCase().includes(term) ||
-      inv.mobileno?.toLowerCase().includes(term) ||
-      inv.number?.toString().includes(term)
+      inv.phone?.toLowerCase().includes(term) 
     );
   });
+
+  console.log(customers);
 
   const handleDeleteClick = (id) => {
     setDeleteId(id);
@@ -60,6 +77,11 @@ export default function Customers() {
   const cancelDelete = () => {
     setShowConfirm(false);
     setDeleteId(null);
+  };
+
+  const Edit = (customerId) => {
+    setShowEditForm(true);
+    setSelectedCustomer(customers.filter((customer) => customer.id === customerId))
   };
 
   return (
@@ -141,23 +163,36 @@ export default function Customers() {
                       <div className="flex flex-col justify-between">
                         <div>
                           <h5 className="font-semibold  text-lg">
-                            {customer.customername}
+                            {customer.name}
                           </h5>
                           <p>{customer.address}</p>
                         </div>
                       </div>
                       <div className="text-right flex flex-col justify-between items-end">
-                        <p className="text-sm">{customer.mobileno}</p>
-                        <span
-                          onClick={(e) => {
-                            e.preventDefault(); // Prevent Link navigation
-                            e.stopPropagation(); // Stop event bubbling
-                            handleDeleteClick(customer.id);
-                          }}
-                          className="bg-red-400 z-100 p-2 rounded-md text-white text-xs cursor-pointer"
-                        >
-                          <FaTrashAlt />
-                        </span>
+                        <p className="text-sm">{customer.phone}</p>
+
+                        <div className="flex gap-2">
+                          <span
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent Link navigation
+                              e.stopPropagation(); // Stop event bubbling
+                              Edit(customer.id);
+                            }}
+                            className="bg-blue-400 z-100 p-2 rounded-md text-white text-sm cursor-pointer"
+                          >
+                            <RiFileEditFill />
+                          </span>
+                          <span
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent Link navigation
+                              e.stopPropagation(); // Stop event bubbling
+                              handleDeleteClick(customer.id);
+                            }}
+                            className="bg-red-400 z-100 p-2 rounded-md text-white text-xs cursor-pointer"
+                          >
+                            <FaTrashAlt />
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -273,6 +308,9 @@ export default function Customers() {
             </div>
           </div>
         </div>
+      )}
+      {showEditForm && (
+        <EditForm setShowEditForm={setShowEditForm} customer={selectedCustomer} />
       )}
     </div>
   );

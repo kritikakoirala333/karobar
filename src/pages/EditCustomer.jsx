@@ -1,19 +1,16 @@
-import React, { useState } from "react";
-import { db } from "../firebase";
-import { addDoc, collection } from "firebase/firestore";
-import axiosInstance from "../axiosConfig";
+import React, { useState } from 'react';
+import { db } from '../firebase'
+import { addDoc, collection } from 'firebase/firestore'
 
-function CustomerForm({ setShowAddCustomerForm, handleCallbackFromCustomerCreation }) {
-  // const [customerData, setCustomerData] = useState({
-  //   customername: '',
-  //   mobileno: '',
-  //   address: '',
-  // });
+function EditForm({ setShowEditForm, customer }) {
+  
   const [formData, setFormData] = useState({
-    customername: "",
-    mobileno: "",
-    address: "",
+    customername: customer[0].name,
+    mobileno: customer[0].phone,
+    address: customer[0].address,
   });
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,52 +19,31 @@ function CustomerForm({ setShowAddCustomerForm, handleCallbackFromCustomerCreati
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Customer Added:", formData);
-    alert("Customer added successfully!");
-    setShowAddCustomerForm(false); // close the popup after submission\
+    console.log('Edit Details:', formData);
+    alert('Customer data edit successfully!');
+    setShowAddCustomerForm(false) // close the popup after submission\
 
+    
 
-<<<<<<< HEAD
-
-    addDoc(collection(db, 'customers'), formData)
-
-      .then(resp => {
-        console.log('DataAdded')
-        clearForm()
-      })
+     addDoc(collection(db, 'customers'), formData)
+  
+        .then(resp => {
+          console.log('DataAdded')
+          clearForm()
+        })
   };
 
-
-=======
-    axiosInstance.post("/customers", {
-      name : formData.customername,
-      address : formData.address,
-      phone : formData.mobileno,
-      organization_id : 1
-    }).then(resp => {
-
-      handleCallbackFromCustomerCreation(resp.data)
-    })
-
-    // addDoc(collection(db, "customers"), formData).then((resp) => {
-    //   console.log("DataAdded");
-    //   clearForm();
-    // });
-  };
-
->>>>>>> 4b30bd21a9344e3e67d12536a30d4ef5a9d74313
+ 
+  
   return (
     // background overlay
     <div
       className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1050 }}
     >
       {/* Popup box */}
-      <div
-        className="bg-white p-4 rounded-4 shadow-lg"
-        style={{ width: "400px" }}
-      >
-        <h4 className="mb-3 text-center">Enter Customer Details</h4>
+      <div className="bg-white p-4 rounded-4 shadow-lg" style={{ width: '400px' }}>
+        <h4 className="mb-3 text-center">Edit Customer Details</h4>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -109,11 +85,7 @@ function CustomerForm({ setShowAddCustomerForm, handleCallbackFromCustomerCreati
           </div>
 
           <div className="d-flex justify-content-between">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setShowAddCustomerForm(false)}
-            >
+            <button type="button" className="btn btn-secondary" onClick={() => setShowEditForm(false)}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
@@ -126,4 +98,4 @@ function CustomerForm({ setShowAddCustomerForm, handleCallbackFromCustomerCreati
   );
 }
 
-export default CustomerForm;
+export default EditForm;
