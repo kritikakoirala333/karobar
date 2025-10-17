@@ -4,32 +4,36 @@ import { getDocs, collection } from "firebase/firestore";
 import { FiSearch } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "./axiosConfig";
+import { RiFileEditFill } from "react-icons/ri";
+import EditInvoiceFom from "./EditInvoiceFom";
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
-  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
+  const [viewMode, setViewMode] = useState("table"); // 'grid' or 'table'
   const [searchTerm, setSearchTerm] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [visibleCount, setVisibleCount] = useState(10);
+  const [showEditInvoiceForm, setShowEditInvoiceForm] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchInvoices = async () => {
-      const resp = await getDocs(collection(db, "invoices"));
-      const data = resp.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setInvoices(data);
-    };
-
-    fetchInvoices();
+    axiosInstance
+      .get("/sales-invoices")
+      .then((resp) => {
+        setInvoices(resp.data.data.data);
+      })
+      .catch((ex) => console.error(ex));
   }, []);
 
-  const getTotalQuantity = (fields = []) => {
-    return fields.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const getTotalQuantity = (invoice_items = []) => {
+    return invoice_items.reduce(
+      (sum, item) => sum + Number(item.quantity || 0),
+      0
+    );
   };
 
   // Define background colors for grid cards
@@ -51,10 +55,10 @@ export default function Invoices() {
   const filteredInvoices = invoices.filter((inv) => {
     const term = searchTerm.toLowerCase();
     return (
-      inv.customername?.toLowerCase().includes(term) ||
-      inv.address?.toLowerCase().includes(term) ||
-      inv.mobileno?.toLowerCase().includes(term) ||
-      inv.number?.toString().includes(term)
+      inv.customer.name?.toLowerCase().includes(term) ||
+      inv.customer.address?.toLowerCase().includes(term) ||
+      inv.customer.phone?.toLowerCase().includes(term) ||
+      inv.invoice_no?.toString().includes(term)
     );
   });
 
@@ -72,6 +76,15 @@ export default function Invoices() {
   const cancelDelete = () => {
     setShowConfirm(false);
     setDeleteId(null);
+  };
+
+  const getDate = (date) => {
+    return date.slice(0, 10);
+  };
+
+    const EditIncoice = (invoiceId) => {
+    setShowEditInvoiceForm(true);
+    setSelectedInvoice(invoices.filter((invoice) => invoice.id === invoiceId))
   };
 
   return (
@@ -113,7 +126,7 @@ export default function Invoices() {
 
         <div
           onClick={() =>
-            setViewMode((prev) => (prev === "grid" ? "table" : "grid"))
+            setViewMode((prev) => (prev === "table" ? "grid" : "table"))
           }
           className={`relative w-38 h-10 flex items-center rounded-full cursor-pointer transition-colors duration-500 ${
             viewMode === "table" ? "bg-black" : "bg-black"
@@ -122,7 +135,7 @@ export default function Invoices() {
           {/* Sliding knob */}
           <span
             className={`absolute top-1 left-1 w-17 h-8 bg-white rounded-full shadow-md transform transition-transform duration-500 ease-in-out ${
-              viewMode === "table"
+              viewMode === "grid"
                 ? "translate-x-[100%] left-3"
                 : "translate-x-0"
             }`}
@@ -131,17 +144,17 @@ export default function Invoices() {
           {/* Labels */}
           <span
             className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
-              viewMode === "grid" ? "text-black" : "text-gray-300"
-            }`}
-          >
-            Grid
-          </span>
-          <span
-            className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
-              viewMode === "table" ? "text-black" : "text-gray-300"
+              viewMode === "grid" ? "text-gray-300" : "text-black"
             }`}
           >
             Table
+          </span>
+          <span
+            className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
+              viewMode === "table" ? "text-gray-300" : "text-black"
+            }`}
+          >
+            Grid
           </span>
         </div>
       </div>
@@ -161,7 +174,7 @@ export default function Invoices() {
         viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredInvoices.map((invoice, index) => {
-              const totalQty = getTotalQuantity(invoice.fields);
+              const totalQty = getTotalQuantity(invoice.invoice_items);
               const bgColor = colors[index % colors.length];
               return (
                 <Link
@@ -176,9 +189,9 @@ export default function Invoices() {
                       <div className="flex flex-col justify-between">
                         <div>
                           <h5 className="font-semibold  text-lg">
-                            {invoice.customername}
+                            {invoice.customer.name}
                           </h5>
-                          <p>{invoice.address}</p>
+                          <p>{invoice.customer.address}</p>
                         </div>
                         <span className=" font-medium">
                           Total Quantity:{" "}
@@ -186,7 +199,7 @@ export default function Invoices() {
                         </span>
                       </div>
                       <div className="text-right flex flex-col justify-between items-end">
-                        <p className="text-sm">{invoice.mobileno}</p>
+                        <p className="text-sm">{invoice.customer.phone}</p>
                         <span
                           onClick={(e) => {
                             e.preventDefault(); // Prevent Link navigation
@@ -218,13 +231,13 @@ export default function Invoices() {
                     <th className="py-3 px-4 border-b">Status</th>
                     <th className="py-3 px-4 border-b">Total</th>
                     <th className="py-3 px-4 border-b">Quantity</th>
-                    <th className="py-3 px-4 border-b text-center">Delete</th>
+                    <th className="py-3 px-4 border-b text-center">Action</th>
                   </tr>
                 </thead>
 
                 <tbody className="text-gray-700 text-sm">
                   {filteredInvoices.slice(0, visibleCount).map((invoice, i) => {
-                    const totalQty = getTotalQuantity(invoice.fields);
+                    const totalQty = getTotalQuantity(invoice.invoice_items);
                     const status = randomStatus();
                     return (
                       <tr
@@ -233,28 +246,25 @@ export default function Invoices() {
                         className="hover:bg-gray-50 cursor-pointer transition duration-200 ease-in-out"
                       >
                         <td className="py-3 px-4 border-b font-medium text-gray-800">
-                          {invoice.number || `INV${1000 + i}`}
+                          {invoice.invoice_no || `INV${1000 + i}`}
                         </td>
 
                         <td className="py-3 px-4 border-b flex items-center gap-3 ">
-                          <img
-                            src={invoice.avatar || "https://i.pravatar.cc/30"}
-                            alt="Avatar"
-                            className="w-8 h-8 rounded-full"
-                          />
-                          <span>{invoice.customername || "-"}</span>
+                          <span className="capitalize font-bold">
+                            {invoice.customer.name || "-"}
+                          </span>
                         </td>
 
                         <td className="py-3 px-4 border-b ">
-                          {invoice.date || "27th Jul 2021"}
+                          {getDate(invoice.date) || "-"}
                         </td>
 
                         <td className="py-3 px-4 border-b ">
-                          {invoice.address || "-"}
+                          {invoice.customer.address || "-"}
                         </td>
 
                         <td className="py-3 px-4 border-b ">
-                          {invoice.mobileno || "-"}
+                          {invoice.customer.phone || "-"}
                         </td>
 
                         <td className="py-3 px-4 border-b">
@@ -274,13 +284,25 @@ export default function Invoices() {
                         </td>
 
                         <td className="py-3 px-4 border-b text-left">
-                          {invoice.total ? `${invoice.total} US$` : "0.00 US$"}
+                          {invoice.grand_total
+                            ? `${invoice.grand_total} US$`
+                            : "0.00 US$"}
                         </td>
 
                         <td className="py-3 px-4 border-b text-left">
                           {totalQty}
                         </td>
-                        <td className="py-3 px-4 border-b text-center">
+                        <td className="py-3 px-4 border-b text-center flex  items-center gap-2">
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent Link navigation
+                              EditIncoice(invoice.id);
+                            }}
+                            className="bg-blue-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
+                          >
+                            {" "}
+                            <RiFileEditFill />
+                          </span>
                           <span
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent Link navigation
@@ -310,6 +332,12 @@ export default function Invoices() {
                 Show More
               </button>
             </div>
+            {showEditInvoiceForm && (
+              <EditInvoiceFom
+                setShowEditInvoiceForm={setShowEditInvoiceForm}
+                invoice={selectedInvoice}
+              />
+            )}
           </div>
         )
       ) : (
