@@ -118,7 +118,7 @@ function MainApp() {
       {/* Header */}
       <div
         className="container-fluid bg-white"
-        style={{ height: "103px", position: "fixed", zIndex: 5000 }}
+        style={{ height: "103px", position: "fixed", zIndex: 1000 }}
       >
         <header className="flex justify-between pr-10 items-center m-0 py-2">
           <div className="col-3 d-flex align-items-center">
@@ -203,7 +203,7 @@ function MainApp() {
             <span className="fs-6">Invoices</span>
           </Link>
           <Link to={"/purchase"}>
-           <i class="bi bi-bag"></i> <span>Purchase Invoice</span>
+           <i className="bi bi-bag"></i> <span>Purchase Invoice</span>
           </Link>
            <Link to={"/card"}>
             <i className="bi bi-app"></i> <span>Sales Invoice</span>
