@@ -40,7 +40,7 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
       updatedItems[index].amount = qty * rate;
     }
 
-    setFormData({ ...formData, items: updatedItems });
+    setFormData({ ...formData, invoice_items: updatedItems });
   };
 
   // add new row
@@ -70,7 +70,9 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
   // delete item row
   const removeItem = (index) => {
     const updatedItems = formData.items.filter((_, i) => i !== index);
-    setFormData({ ...formData, items: updatedItems });
+    setFormData({ ...formData, invoice_items
+      
+      : updatedItems });
   };
 
   const handleSubmit = (e) => {
