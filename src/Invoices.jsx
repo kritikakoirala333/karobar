@@ -82,9 +82,9 @@ export default function Invoices() {
     return date.slice(0, 10);
   };
 
-    const EditIncoice = (invoiceId) => {
+  const EditIncoice = (invoiceId) => {
     setShowEditInvoiceForm(true);
-    setSelectedInvoice(invoices.filter((invoice) => invoice.id === invoiceId))
+    setSelectedInvoice(invoices.filter((invoice) => invoice.id === invoiceId));
   };
 
   return (
@@ -177,43 +177,52 @@ export default function Invoices() {
               const totalQty = getTotalQuantity(invoice.invoice_items);
               const bgColor = colors[index % colors.length];
               return (
-                <Link
-                  to={`/invoicepage/${invoice.id}`}
-                  className="text-decoration-none text-black"
+                <div
+                  key={invoice.id}
+                  className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
                 >
-                  <div
-                    key={invoice.id}
-                    className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
-                  >
-                    <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
-                      <div className="flex flex-col justify-between">
+                  <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
+                    {/* Left section wrapped in Link */}
+                    <Link
+                      to={`/invoicepage/${invoice.id}`}
+                      className="text-decoration-none text-black flex-1"
+                    >
+                      <div className="flex flex-col justify-between h-full">
                         <div>
-                          <h5 className="font-semibold  text-lg">
+                          <h5 className="font-semibold text-lg">
                             {invoice.customer.name}
                           </h5>
                           <p>{invoice.customer.address}</p>
                         </div>
-                        <span className=" font-medium">
+                        <span className="font-medium">
                           Total Quantity:{" "}
-                          <span className="text-purple-700">{totalQty}</span>
+                          <span className="text-purple-700">
+                            {getTotalQuantity(invoice.invoice_items)}
+                          </span>
                         </span>
                       </div>
-                      <div className="text-right flex flex-col justify-between items-end">
-                        <p className="text-sm">{invoice.customer.phone}</p>
+                    </Link>
+
+                    {/* Right section with actions (not inside Link) */}
+                    <div className="text-right flex flex-col justify-between items-end ml-4">
+                      <p className="text-sm">{invoice.customer.phone}</p>
+                      <div className="flex gap-2">
                         <span
-                          onClick={(e) => {
-                            e.preventDefault(); // Prevent Link navigation
-                            e.stopPropagation(); // Stop event bubbling
-                            handleDeleteClick(invoice.id);
-                          }}
-                          className="bg-red-400 z-100 p-2 rounded-md text-white text-xs cursor-pointer"
+                          onClick={() => EditIncoice(invoice.id)}
+                          className="bg-blue-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
+                        >
+                          <RiFileEditFill />
+                        </span>
+                        <span
+                          onClick={() => handleDeleteClick(invoice.id)}
+                          className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer"
                         >
                           <FaTrashAlt />
                         </span>
                       </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -332,12 +341,6 @@ export default function Invoices() {
                 Show More
               </button>
             </div>
-            {showEditInvoiceForm && (
-              <EditInvoiceFom
-                setShowEditInvoiceForm={setShowEditInvoiceForm}
-                invoice={selectedInvoice}
-              />
-            )}
           </div>
         )
       ) : (
@@ -365,6 +368,12 @@ export default function Invoices() {
             </div>
           </div>
         </div>
+      )}
+      {showEditInvoiceForm && (
+        <EditInvoiceFom
+          setShowEditInvoiceForm={setShowEditInvoiceForm}
+          invoice={selectedInvoice}
+        />
       )}
     </div>
   );
