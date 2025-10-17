@@ -230,7 +230,7 @@ export default function Invoices() {
           <div className="bg-white border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
             <div className="max-h-94 overflow-y-auto">
               <table className="min-w-full border-collapse">
-                <thead className="bg-gray-700 text-left text-sm font-semibold text-white sticky top-0 z-10">
+                <thead className="bg-black text-left text-sm font-semibold text-white sticky top-0 z-10">
                   <tr>
                     <th className="py-3 px-4 border-b">Number</th>
                     <th className="py-3 px-4 border-b ">Customer</th>
