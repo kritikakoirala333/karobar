@@ -27,6 +27,7 @@ import { FaUser } from "react-icons/fa";
 import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
+import AddProduct from "./pages/AddProduct";
 
 function App() {
   return (
@@ -272,6 +273,13 @@ function MainApp() {
               path="/customers"
               element={<Customers />}
             />
+            <Route 
+            authUser={userInfo}
+            path="/addproduct"
+            element={<AddProduct/>}
+            >
+              
+            </Route>
           </Routes>
         </div>
       </div>
