@@ -2,8 +2,8 @@ import axios from "axios";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  // baseURL: "http://192.168.1.36:8000/api", // ✅ replace with your actual base URL
-  baseURL: "https://invoicer-backend.azure.com.np/api", 
+  baseURL: "http://192.168.1.36:8000/api", // ✅ replace with your actual base URL
+  // baseURL: "https://invoicer-backend.azure.com.np/api", 
   headers: {
     "Content-Type": "application/json",
   },
