@@ -141,10 +141,10 @@ function CardPage() {
       invoice_no: 'INV001',
       customer_id: formData.selectedCustomerId,
       date: formData.date,
-      subtotal: formData.subtotal,
+      subtotal: formData.SubTotal,
       discount: formData.Discount,
-      tax: formData.tax,
-      grand_total: formData.subtotal,
+      tax: formData.Tax,
+      grand_total: formData.SubTotal,
       invoice_items: []
     }
 

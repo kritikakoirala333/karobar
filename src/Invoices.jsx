@@ -20,13 +20,17 @@ export default function Invoices() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchInvoices = () => {
     axiosInstance
       .get("/sales-invoices")
       .then((resp) => {
         setInvoices(resp.data.data.data);
       })
       .catch((ex) => console.error(ex));
+  };
+
+  useEffect(() => {
+    fetchInvoices();
   }, []);
 
   const getTotalQuantity = (invoice_items = []) => {
@@ -67,13 +71,22 @@ export default function Invoices() {
     setShowConfirm(true);
   };
 
-  const confirmDelete = () => {
-    setInvoices(invoices.filter((inv) => inv.id !== deleteId));
-    setShowConfirm(false);
-    setDeleteId(null);
+  const confirmDelete = (e, id) => {
+    e.preventDefault();
+
+    axiosInstance
+      .delete(`/sales-invoices/${id}`)
+      .then((resp) => {
+        fetchInvoices();
+        setShowConfirm(false);
+        setDeleteId(null);
+      })
+      .catch((ex) => {
+        console.error(ex);
+      });
   };
 
-  const cancelDelete = () => {
+  const cancelDelete = (id) => {
     setShowConfirm(false);
     setDeleteId(null);
   };
@@ -354,7 +367,7 @@ export default function Invoices() {
             </h5>
             <div className="flex justify-center gap-5 mt-5">
               <div
-                onClick={confirmDelete}
+                onClick={(e) => confirmDelete(e, deleteId)}
                 className="bg-red-500 text-white cursor-pointer px-5 rounded-md py-2 hover:bg-red-600 transition-all"
               >
                 OK
