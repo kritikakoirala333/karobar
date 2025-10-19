@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { MdStore } from "react-icons/md";
 import html2canvas from "html2canvas-pro"; // ✅ Import added
 import { useParams, Link } from "react-router-dom";
+import { FiShoppingCart } from "react-icons/fi";
 import { MdLocationPin } from "react-icons/md";
 import axiosInstance from "../axiosConfig";
 
@@ -18,6 +19,8 @@ const InvoicePage = () => {
   const [tax, setTax] = useState(0);
   const [total, setTotal] = useState(0);
   const printRef = useRef(null);
+
+  const {id} = useParams();
 
   const handleDownloadPdf = async () => {
     const element = printRef.current;
@@ -67,7 +70,7 @@ const InvoicePage = () => {
     }
   };
 
-  const { id } = useParams();
+  // const { id } = useParams();
 
   useEffect(() => {
     // const fetchInvoice = async () => {
@@ -106,6 +109,26 @@ const InvoicePage = () => {
       .catch((ex) => console.error(ex));
   }, []);
 
+  //  useEffect(() => {
+  //   axiosInstance
+  //     .get(`/sales-invoices/${id}`)
+  //     .then((response) => {
+  //       console.log("Response data : ", response.data.data.data);
+  //       setCustomers(response.data.data.data); // Store the fetched data
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching Invoices:", error);
+  //     });
+  // }, []);
+
+  // useEffect(()=>{
+
+
+  //             axiosInstance.get("sales/invoice/invoivepage")
+              
+
+  // },[]) 
+
   const [currentDateTime] = useState(new Date());
   let totalValueBeforeTax = 0;
 
@@ -116,28 +139,32 @@ const InvoicePage = () => {
       <div className="flex">
         {/* Header Section */}
         <section className="leftContainer w-[70%]">
-          <section className="invoiceHeader px-4">
+          <section className="invoiceHeader mt-3 px-2">
             <div className="flex items-center justify-between  ">
-              <div>
-                <p className="text-2xl font-semibold mt-1">
-                  Invoice {invoice.invoiceno}
+              <div className="cursor-pointer">
+                <p className="text-2xl font-semibold mt-1 flex">
+                <Link to="/invoices">  <div className="w-8 h-8 rounded-xl border-1 p-[3px] hover:bg-black border-gray-400 mr-2">
+                 <IoChevronBackOutline className="text-gray-400 hover:text-white"/>
+                  
+                </div></Link>
+                 | Order #89
                 </p>
               </div>
               <div>
                 <div className="flex items-center gap-2 text-xs ">
                   <div
-                    className="border border-gray-500 flex justify-center items-center cursor-pointer  gap-1 p-1 rounded"
+                    className="border border-gray-500 flex justify-center items-center cursor-pointer  gap-1 p-1 rounded hover:bg-black hover:text-white"
                     onClick={handleDownloadPdf}
                   >
                     <MdOutlineFileDownload className=" size-4 " />
                     <div className=""> Export</div>
                   </div>
-                  <div className="border border-gray-500 flex justify-center cursor-pointer items-center gap-1 p-1 rounded">
+                  <div className="border border-gray-500 flex justify-center cursor-pointer items-center gap-1 p-1 rounded hover:bg-black hover:text-white">
                     <IoIosPrint
                       onClick={handleDownloadPdf}
                       className=" size-4 cursor-pointer"
                     />
-                    <div> print</div>
+                    <div className=""> print</div>
                   </div>
                 </div>
               </div>
@@ -145,22 +172,21 @@ const InvoicePage = () => {
             <div className="flex justify-between">
               <div>
                 <div className="flex">
-                  <p className="text-gray-500">
-                    Ordered <span className="text-gray-800">Via Website</span>
+                  <p className="text-gray-500 text-sm">
+                    Ordered <span className="text-gray-800 my-2">Via Website</span>
                   </p>
-                  <MdStore className="size-4 mt-[6px] ml-2 " />
-                  <p>pickedup up in-store</p>
+                  <p className="ml-2 text-sm"> {currentDateTime.toLocaleString()}</p>
+                  <p className="text-gray-400 pt-[4px]  ml-2"><FiShoppingCart className="text-sm"/></p>
+                  <p className="text-sm">product</p>
+                  <MdStore className="size-4 mt-[4px] ml-2 text-gray-400 text-sm" />
+                  <p className="text-sm">pickedup up in-store</p>
                 </div>
               </div>
-              <div>
-                {" "}
-                <span className="text-gray-500 mr-2">odercreated</span>{" "}
-                {currentDateTime.toLocaleString()}
-              </div>
+             
             </div>
           </section>
 
-          <div className="min-h-screen flex justify-center  px-4">
+          <div className="min-h-screen flex justify-center  px-2">
             <div
               ref={printRef}
               className="w-full  max-w-4xl bg-white rounded-lg overflow-hidden border-gray-100 border-2 "
@@ -309,45 +335,31 @@ const InvoicePage = () => {
         </section>
 
         <section className="rightContainer w-[30%] border-l-1 border-gray-300">
-          <div className="invoiceDetails p-2 ">
-            <div className="bg-gray-100 p-2 rounded-2xl ">
-              <p className="text-[25px] font-semibold">InvoiceDetails</p>
-              <div className="bg-white p-2 rounded-xl">
-                <p className="font-bold">GaintStore</p>
-                <div className="flex">
-                  <div className="mt-1 mr-2">
-                    <MdLocationPin />{" "}
-                  </div>
-                  <p className="">Bharatpur-10,chitwan</p>
-                </div>
-                <div className="flex justify-between">
-                  <div>Issue Date:</div>
-                  <div>2060/06/03</div>
-                </div>
-                <div className="flex justify-between">
-                  <div>Delivery Date:</div>
-                  <div>2060/06/03</div>
-                </div>
-              </div>
-
-              <div className="mt-3 p-2 bg-white rounded-xl">
-                <div className="flex justify-between">
-                  <p>Invoice Number:</p>
-                  <p>#8927598</p>
-                </div>
-                <div className="flex justify-between">
-                  <p>Product Id:</p>
-                  <p>#8927598</p>
-                </div>
-                <div className="flex justify-between">
-                  <p>email:</p>
-                  <p>example@gmail.com</p>
-                </div>
-                <div className="flex justify-between">
-                  <p>call:</p>
-                  <p>9852468468</p>
-                </div>
-              </div>
+          <div className="border border-dashed border-blue-300 rounded-md p-4 mb-4">
+          <h2 className="font-semibold text-lg mb-2">Invoice Details</h2>
+          <h3 className="font-semibold text-base mb-2">Azure Superstore</h3>
+          <div className="flex items-start gap-2 text-gray-500 text-sm border border-dashed border-gray-300 rounded-md p-2 mb-3">
+            <MdLocationOn className="text-gray-600 mt-1" />
+            <div>
+              <p>123 anyone in the wold</p>
+              <p>loreum ipsum dollar sit amet</p>
+            </div>
+          </div>
+          <div className="text-sm text-gray-700 space-y-1">
+            <div className="flex justify-between">
+              <span>Issue Date :</span>
+              <span>Rs. 5390</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Delivery Date:</span>
+              <span>20 January 2025</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <span className="font-semibold text-gray-800 text-base">Total:</span>
+            <span className="font-bold text-xl text-gray-900">Rs. 5000</span>
+          </div>
+        </div>
 
               <div className="bg-white mt-3 rounded-xl">
                 <table class="table table-bordered rounded-xl">
@@ -394,7 +406,16 @@ const InvoicePage = () => {
                 </div>
               </div>
             </div>
+            <div className="flex justify-between">
+              <span>Coupon Discount</span>
+              <span>8%</span>
+            </div>
           </div>
+          <div className="flex justify-between items-center mt-4">
+            <span className="font-semibold text-gray-800 text-base">Total:</span>
+            <span className="font-bold text-xl text-gray-900">Rs. 5000</span>
+          </div>
+        </div>
         </section>
       </div>
     </>
