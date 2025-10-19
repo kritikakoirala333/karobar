@@ -10,9 +10,10 @@ import { MdStore } from "react-icons/md";
 import html2canvas from "html2canvas-pro"; // ✅ Import added
 import { useParams, Link } from "react-router-dom";
 import { MdLocationPin } from "react-icons/md";
+import axiosInstance from "../axiosConfig";
 
 const InvoicePage = () => {
-  const [invoice, setInvoice] = useState(null);
+  const [invoice, setInvoice] = useState({});
   const [subtotal, setSubtotal] = useState(0);
   const [tax, setTax] = useState(0);
   const [total, setTotal] = useState(0);
@@ -69,32 +70,40 @@ const InvoicePage = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchInvoice = async () => {
-      try {
-        const docRef = doc(db, "invoices", id);
-        const snapshot = await getDoc(docRef);
+    // const fetchInvoice = async () => {
+    //   try {
+    //     const docRef = doc(db, "invoices", id);
+    //     const snapshot = await getDoc(docRef);
 
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          setInvoice(data);
+    //     if (snapshot.exists()) {
+    //       const data = snapshot.data();
+    //       setInvoice(data);
 
-          const calculatedSubtotal = data.fields.reduce(
-            (acc, item) => acc + item.price * Number(item.quantity),
-            0
-          );
-          const calculatedTax = calculatedSubtotal * 0.1;
-          const calculatedTotal = calculatedSubtotal + calculatedTax;
+    //       const calculatedSubtotal = data.fields.reduce(
+    //         (acc, item) => acc + item.price * Number(item.quantity),
+    //         0
+    //       );
+    //       const calculatedTax = calculatedSubtotal * 0.1;
+    //       const calculatedTotal = calculatedSubtotal + calculatedTax;
 
-          setSubtotal(calculatedSubtotal);
-          setTax(calculatedTax);
-          setTotal(calculatedTotal);
-        }
-      } catch (error) {
-        console.error("Error fetching invoice:", error);
-      }
-    };
+    //       setSubtotal(calculatedSubtotal);
+    //       setTax(calculatedTax);
+    //       setTotal(calculatedTotal);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching invoice:", error);
+    //   }
+    // };
 
-    fetchInvoice();
+    // fetchInvoice();
+
+    axiosInstance
+      .get(`/sales-invoices/${id}`)
+      .then((resp) => {
+        console.log("heelo",resp.data.data);
+        setInvoice(resp.data.data);
+      })
+      .catch((ex) => console.error(ex));
   }, []);
 
   const [currentDateTime] = useState(new Date());
@@ -218,7 +227,7 @@ const InvoicePage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {invoice.fields.map((item, index) => {
+                    {invoice?.invoice_items?.map((item, index) => {
                       const totalAmt = item.quantity * item.rate;
                       totalValueBeforeTax += totalAmt;
                       return (
@@ -227,7 +236,7 @@ const InvoicePage = () => {
                             {index + 1}
                           </td>
                           <td className="border border-gray-400 p-2">
-                            {item.name}
+                            {item.item}
                           </td>
                           <td className="border border-gray-400 p-2 text-center">
                             {item.quantity}
@@ -346,37 +355,40 @@ const InvoicePage = () => {
                     <tr>
                       <th scope="col">OrderDetails</th>
                       <th scope="col">TotalPrice</th>
-                    
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td scope="row">Taxable</td>
                       <td>Rs.2002</td>
-                   
                     </tr>
                     <tr>
                       <td scope="row">Additional Charge</td>
                       <td>Rs.200</td>
-                    
                     </tr>
                     <tr>
                       <td scope="row">Discout</td>
-                    <td>Rs.293</td>
+                      <td>Rs.293</td>
                     </tr>
-                      <tr>
+                    <tr>
                       <td scope="row">SubTotal</td>
-                  <td>Rs.1770</td>
+                      <td>Rs.1770</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <div className="mt-3  flex justify-end text-black">
-                <div onClick={handleDownloadPdf} className="flex border-1 bg-white border-gray-400 p-2 rounded-2xl cursor-pointer">
+                <div
+                  onClick={handleDownloadPdf}
+                  className="flex border-1 bg-white border-gray-400 p-2 rounded-2xl cursor-pointer"
+                >
                   <MdOutlineFileDownload className=" size-4 mt-[3px] mr-1 " />
                   <div className="text-sm"> Export</div>
                 </div>
-                 <div onClick={handleDownloadPdf} className="flex border-1 bg-white border-gray-400 ml-2 p-2 rounded-2xl cursor-pointer">
+                <div
+                  onClick={handleDownloadPdf}
+                  className="flex border-1 bg-white border-gray-400 ml-2 p-2 rounded-2xl cursor-pointer"
+                >
                   <IoIosPrint className=" size-4 mt-[3px] mr-1 " />
                   <div className="text-sm"> print</div>
                 </div>
