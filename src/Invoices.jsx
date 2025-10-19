@@ -4,32 +4,40 @@ import { getDocs, collection } from "firebase/firestore";
 import { FiSearch } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "./axiosConfig";
+import { RiFileEditFill } from "react-icons/ri";
+import EditInvoiceFom from "./EditInvoiceFom";
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
-  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
+  const [viewMode, setViewMode] = useState("table"); // 'grid' or 'table'
   const [searchTerm, setSearchTerm] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [visibleCount, setVisibleCount] = useState(10);
+  const [showEditInvoiceForm, setShowEditInvoiceForm] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState("");
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      const resp = await getDocs(collection(db, "invoices"));
-      const data = resp.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setInvoices(data);
-    };
+  const fetchInvoices = () => {
+    axiosInstance
+      .get("/sales-invoices")
+      .then((resp) => {
+        setInvoices(resp.data.data.data);
+      })
+      .catch((ex) => console.error(ex));
+  };
 
+  useEffect(() => {
     fetchInvoices();
   }, []);
 
-  const getTotalQuantity = (fields = []) => {
-    return fields.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const getTotalQuantity = (invoice_items = []) => {
+    return invoice_items.reduce(
+      (sum, item) => sum + Number(item.quantity || 0),
+      0
+    );
   };
 
   // Define background colors for grid cards
@@ -51,10 +59,10 @@ export default function Invoices() {
   const filteredInvoices = invoices.filter((inv) => {
     const term = searchTerm.toLowerCase();
     return (
-      inv.customername?.toLowerCase().includes(term) ||
-      inv.address?.toLowerCase().includes(term) ||
-      inv.mobileno?.toLowerCase().includes(term) ||
-      inv.number?.toString().includes(term)
+      inv.customer.name?.toLowerCase().includes(term) ||
+      inv.customer.address?.toLowerCase().includes(term) ||
+      inv.customer.phone?.toLowerCase().includes(term) ||
+      inv.invoice_no?.toString().includes(term)
     );
   });
 
@@ -63,15 +71,33 @@ export default function Invoices() {
     setShowConfirm(true);
   };
 
-  const confirmDelete = () => {
-    setInvoices(invoices.filter((inv) => inv.id !== deleteId));
+  const confirmDelete = (e, id) => {
+    e.preventDefault();
+
+    axiosInstance
+      .delete(`/sales-invoices/${id}`)
+      .then((resp) => {
+        fetchInvoices();
+        setShowConfirm(false);
+        setDeleteId(null);
+      })
+      .catch((ex) => {
+        console.error(ex);
+      });
+  };
+
+  const cancelDelete = (id) => {
     setShowConfirm(false);
     setDeleteId(null);
   };
 
-  const cancelDelete = () => {
-    setShowConfirm(false);
-    setDeleteId(null);
+  const getDate = (date) => {
+    return date.slice(0, 10);
+  };
+
+  const EditIncoice = (invoiceId) => {
+    setShowEditInvoiceForm(true);
+    setSelectedInvoice(invoices.filter((invoice) => invoice.id === invoiceId));
   };
 
   return (
@@ -113,7 +139,7 @@ export default function Invoices() {
 
         <div
           onClick={() =>
-            setViewMode((prev) => (prev === "grid" ? "table" : "grid"))
+            setViewMode((prev) => (prev === "table" ? "grid" : "table"))
           }
           className={`relative w-38 h-10 flex items-center rounded-full cursor-pointer transition-colors duration-500 ${
             viewMode === "table" ? "bg-black" : "bg-black"
@@ -122,7 +148,7 @@ export default function Invoices() {
           {/* Sliding knob */}
           <span
             className={`absolute top-1 left-1 w-17 h-8 bg-white rounded-full shadow-md transform transition-transform duration-500 ease-in-out ${
-              viewMode === "table"
+              viewMode === "grid"
                 ? "translate-x-[100%] left-3"
                 : "translate-x-0"
             }`}
@@ -131,17 +157,17 @@ export default function Invoices() {
           {/* Labels */}
           <span
             className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
-              viewMode === "grid" ? "text-black" : "text-gray-300"
-            }`}
-          >
-            Grid
-          </span>
-          <span
-            className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
-              viewMode === "table" ? "text-black" : "text-gray-300"
+              viewMode === "grid" ? "text-gray-300" : "text-black"
             }`}
           >
             Table
+          </span>
+          <span
+            className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
+              viewMode === "table" ? "text-gray-300" : "text-black"
+            }`}
+          >
+            Grid
           </span>
         </div>
       </div>
@@ -161,46 +187,55 @@ export default function Invoices() {
         viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredInvoices.map((invoice, index) => {
-              const totalQty = getTotalQuantity(invoice.fields);
+              const totalQty = getTotalQuantity(invoice.invoice_items);
               const bgColor = colors[index % colors.length];
               return (
-                <Link
-                  to={`/invoicepage/${invoice.id}`}
-                  className="text-decoration-none text-black"
+                <div
+                  key={invoice.id}
+                  className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
                 >
-                  <div
-                    key={invoice.id}
-                    className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
-                  >
-                    <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
-                      <div className="flex flex-col justify-between">
+                  <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
+                    {/* Left section wrapped in Link */}
+                    <Link
+                      to={`/invoicepage/${invoice.id}`}
+                      className="text-decoration-none text-black flex-1"
+                    >
+                      <div className="flex flex-col justify-between h-full">
                         <div>
-                          <h5 className="font-semibold  text-lg">
-                            {invoice.customername}
+                          <h5 className="font-semibold text-lg">
+                            {invoice.customer.name}
                           </h5>
-                          <p>{invoice.address}</p>
+                          <p>{invoice.customer.address}</p>
                         </div>
-                        <span className=" font-medium">
+                        <span className="font-medium">
                           Total Quantity:{" "}
-                          <span className="text-purple-700">{totalQty}</span>
+                          <span className="text-purple-700">
+                            {getTotalQuantity(invoice.invoice_items)}
+                          </span>
                         </span>
                       </div>
-                      <div className="text-right flex flex-col justify-between items-end">
-                        <p className="text-sm">{invoice.mobileno}</p>
+                    </Link>
+
+                    {/* Right section with actions (not inside Link) */}
+                    <div className="text-right flex flex-col justify-between items-end ml-4">
+                      <p className="text-sm">{invoice.customer.phone}</p>
+                      <div className="flex gap-2">
                         <span
-                          onClick={(e) => {
-                            e.preventDefault(); // Prevent Link navigation
-                            e.stopPropagation(); // Stop event bubbling
-                            handleDeleteClick(invoice.id);
-                          }}
-                          className="bg-red-400 z-100 p-2 rounded-md text-white text-xs cursor-pointer"
+                          onClick={() => EditIncoice(invoice.id)}
+                          className="bg-blue-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
+                        >
+                          <RiFileEditFill />
+                        </span>
+                        <span
+                          onClick={() => handleDeleteClick(invoice.id)}
+                          className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer"
                         >
                           <FaTrashAlt />
                         </span>
                       </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -208,7 +243,7 @@ export default function Invoices() {
           <div className="bg-white border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
             <div className="max-h-94 overflow-y-auto">
               <table className="min-w-full border-collapse">
-                <thead className="bg-gray-700 text-left text-sm font-semibold text-white sticky top-0 z-10">
+                <thead className="bg-black text-left text-sm font-semibold text-white sticky top-0 z-10">
                   <tr>
                     <th className="py-3 px-4 border-b">Number</th>
                     <th className="py-3 px-4 border-b ">Customer</th>
@@ -218,13 +253,13 @@ export default function Invoices() {
                     <th className="py-3 px-4 border-b">Status</th>
                     <th className="py-3 px-4 border-b">Total</th>
                     <th className="py-3 px-4 border-b">Quantity</th>
-                    <th className="py-3 px-4 border-b text-center">Delete</th>
+                    <th className="py-3 px-4 border-b text-center">Action</th>
                   </tr>
                 </thead>
 
                 <tbody className="text-gray-700 text-sm">
                   {filteredInvoices.slice(0, visibleCount).map((invoice, i) => {
-                    const totalQty = getTotalQuantity(invoice.fields);
+                    const totalQty = getTotalQuantity(invoice.invoice_items);
                     const status = randomStatus();
                     return (
                       <tr
@@ -233,28 +268,25 @@ export default function Invoices() {
                         className="hover:bg-gray-50 cursor-pointer transition duration-200 ease-in-out"
                       >
                         <td className="py-3 px-4 border-b font-medium text-gray-800">
-                          {invoice.number || `INV${1000 + i}`}
+                          {invoice.invoice_no || `INV${1000 + i}`}
                         </td>
 
                         <td className="py-3 px-4 border-b flex items-center gap-3 ">
-                          <img
-                            src={invoice.avatar || "https://i.pravatar.cc/30"}
-                            alt="Avatar"
-                            className="w-8 h-8 rounded-full"
-                          />
-                          <span>{invoice.customername || "-"}</span>
+                          <span className="capitalize font-bold">
+                            {invoice.customer.name || "-"}
+                          </span>
                         </td>
 
                         <td className="py-3 px-4 border-b ">
-                          {invoice.date || "27th Jul 2021"}
+                          {getDate(invoice.date) || "-"}
                         </td>
 
                         <td className="py-3 px-4 border-b ">
-                          {invoice.address || "-"}
+                          {invoice.customer.address || "-"}
                         </td>
 
                         <td className="py-3 px-4 border-b ">
-                          {invoice.mobileno || "-"}
+                          {invoice.customer.phone || "-"}
                         </td>
 
                         <td className="py-3 px-4 border-b">
@@ -274,13 +306,25 @@ export default function Invoices() {
                         </td>
 
                         <td className="py-3 px-4 border-b text-left">
-                          {invoice.total ? `${invoice.total} US$` : "0.00 US$"}
+                          {invoice.grand_total
+                            ? `${invoice.grand_total} US$`
+                            : "0.00 US$"}
                         </td>
 
                         <td className="py-3 px-4 border-b text-left">
                           {totalQty}
                         </td>
-                        <td className="py-3 px-4 border-b text-center">
+                        <td className="py-3 px-4 border-b text-center flex  items-center gap-2">
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent Link navigation
+                              EditIncoice(invoice.id);
+                            }}
+                            className="bg-blue-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
+                          >
+                            {" "}
+                            <RiFileEditFill />
+                          </span>
                           <span
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent Link navigation
@@ -323,7 +367,7 @@ export default function Invoices() {
             </h5>
             <div className="flex justify-center gap-5 mt-5">
               <div
-                onClick={confirmDelete}
+                onClick={(e) => confirmDelete(e, deleteId)}
                 className="bg-red-500 text-white cursor-pointer px-5 rounded-md py-2 hover:bg-red-600 transition-all"
               >
                 OK
@@ -337,6 +381,12 @@ export default function Invoices() {
             </div>
           </div>
         </div>
+      )}
+      {showEditInvoiceForm && (
+        <EditInvoiceFom
+          setShowEditInvoiceForm={setShowEditInvoiceForm}
+          invoice={selectedInvoice}
+        />
       )}
     </div>
   );

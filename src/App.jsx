@@ -27,6 +27,7 @@ import { FaUser } from "react-icons/fa";
 import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
+import AddProduct from "./pages/AddProduct";
 
 function App() {
   return (
@@ -117,7 +118,7 @@ function MainApp() {
       {/* Header */}
       <div
         className="container-fluid bg-white"
-        style={{ height: "103px", position: "fixed", zIndex: 5000 }}
+        style={{ height: "103px", position: "fixed", zIndex: 1000 }}
       >
         <header className="flex justify-between pr-10 items-center m-0 py-2">
           <div className="col-3 d-flex align-items-center">
@@ -272,6 +273,13 @@ function MainApp() {
               path="/customers"
               element={<Customers />}
             />
+            <Route 
+            authUser={userInfo}
+            path="/addproduct"
+            element={<AddProduct/>}
+            >
+              
+            </Route>
           </Routes>
         </div>
       </div>

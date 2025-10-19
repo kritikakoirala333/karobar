@@ -5,6 +5,8 @@ import { IoFilterSharp } from "react-icons/io5";
 import { FiUpload } from "react-icons/fi";
 import { FaFileDownload } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
+import { Link } from "react-router-dom";
+
 
 
 
@@ -91,10 +93,10 @@ function Inventory() {
         <FaFileDownload className="w-4 h-4" />
         <span>Export</span>
       </button>
-      <button className="flex items-center gap-2 px-3 py-2 rounded-3 text-white bg-violet-600 hover:bg-violet-700 transition">
+      <Link to={"/addproduct"} ><button className="flex items-center gap-2 px-3 py-2 rounded-3 text-white bg-violet-600 hover:bg-violet-700 transition">
         <GoPlus className="w-4 h-4" />
         <span>Add Product</span>
-      </button>
+      </button></Link>
 
       </div>
 

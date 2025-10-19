@@ -5,6 +5,7 @@ import { useState } from "react";
 import CustomerCard from "../ui/customer-card";
 import CustomerForm from "./add-customer";
 import axiosInstance from "../axiosConfig";
+import Swal from "sweetalert2";
 
 function CardPage() {
   const [selectedCustomer, setSelectedCustomer] = useState();
@@ -121,32 +122,68 @@ function CardPage() {
   };
 
   const clearForm = () => {
-    const cleared = Object.keys(formData).reduce((acc, key) => {
-      acc[key] = "";
-      return acc;
-    }, {});
-    setFormData(cleared);
+    setFormData((prev) => ({
+      ...prev,
+      customername: '',
+      mobileno: '',
+      address: '',
+      fields: prev.fields.map(() => ({
+        name: '',
+        quantity: 0
+      }))
+    }));
   };
 
+
   function saveform() {
-    console.log(formData);
+
+    let formInfomation = {
+      invoice_no: 'INV001',
+      customer_id: formData.selectedCustomerId,
+      date: formData.date,
+      subtotal: formData.SubTotal,
+      discount: formData.Discount,
+      tax: formData.Tax,
+      grand_total: formData.SubTotal,
+      invoice_items: []
+    }
+
+    formData.fields.map((field, index) => {
+      formInfomation['invoice_items'][index] = {
+        item: field.name,
+        quantity: field.quantity,
+        rate: field.rate,
+        total: field.quantity * field.rate
+        // unit: ''
+      }
+    })
 
 
+    axiosInstance.post('/sales-invoices', formInfomation)
+      .then(resp => {
+        console.log(resp)
+        Swal.fire({
+          title: "Success!",
+          text: "Sales invoice is created",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        clearForm()
+
+      }).catch(ex => {
+        console.error(ex)
+      })
 
 
-    console.log(formData)
-
-
-    // let formInfomation = {
-    //   invoice_no : 'INV001',
-    //   customer_id : selectedCustomer.
-    // }
+    console.log(formInfomation)
 
     // addDoc(collection(db, 'invoices'), formData)
 
     //   .then(resp => {
     //     console.log('DataAdded')
-    //     clearForm()
+    // clearForm()
     //   })
   }
 
