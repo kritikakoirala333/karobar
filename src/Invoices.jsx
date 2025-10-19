@@ -386,6 +386,7 @@ export default function Invoices() {
         <EditInvoiceFom
           setShowEditInvoiceForm={setShowEditInvoiceForm}
           invoice={selectedInvoice}
+          fetchInvoices={fetchInvoices}
         />
       )}
     </div>
