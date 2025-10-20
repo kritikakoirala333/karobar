@@ -28,7 +28,6 @@ import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
-
 function App() {
   return (
     <BrowserRouter>
@@ -46,6 +45,8 @@ function MainApp() {
   const [authCheck, setAuthCheck] = useState(true);
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
+
+  console.log(path);
 
   const isSignInPage = path === "/signin";
 
@@ -72,10 +73,10 @@ function MainApp() {
           navigator("/signin");
         }
         setAuthCheck(false);
-      }).catch(ex => {
+      })
+      .catch((ex) => {
         navigator("/signin");
         setAuthCheck(false);
-
       });
   };
 
@@ -188,46 +189,76 @@ function MainApp() {
       {/* Sidebar + Main */}
       <div className="row m-0 p-0 box">
         {/* Sidebar */}
-        <div className="col-2 card vh-100 sidebar-links-wrapper">
+        <div className="col-2 gap-1 card vh-100">
           <div style={{ height: "110px" }}></div>
-          <Link to={"/"}>
-            <i className="bi bi-house text-lg"></i>{" "}
+          <Link
+            to={"/"}
+            className={`${
+              path === "/" ? "bg-black text-white" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-house text-lg mr-2"></i>{" "}
             <span className="fs-6">Dashboard</span>
           </Link>
-          <Link>
-            <i className="bi bi-columns-gap text-lg"></i>{" "}
+          <Link
+            className={`${
+              path === "/layout" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-columns-gap text-lg mr-2"></i>{" "}
             <span className="fs-6">Layouts</span>
           </Link>
-          <Link to={"/invoices"}>
-            <i className="bi bi-file text-lg"></i>{" "}
+          <Link
+            to={"/invoices"}
+            className={`${
+              path === "/invoices" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-file text-lg mr-2"></i>{" "}
             <span className="fs-6">Invoices</span>
           </Link>
-          <Link to={"/purchase"}>
-           <i className="bi bi-bag"></i> <span>Purchase Invoice</span>
+          <Link
+            to={"/purchase"}
+            className={`${
+              path === "/purchase" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-bag text-lg mr-2"></i>{" "}
+            <span className="fs-6">Purchase Invoice</span>
           </Link>
-           <Link to={"/card"}>
-            <i className="bi bi-app"></i> <span>Sales Invoice</span>
+          <Link
+            to={"/card"}
+            className={`${
+              path === "/card" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-app text-lg mr-2"></i>{" "}
+            <span className="fs-6">Sales Invoice</span>
           </Link>
-
-          <Link>
-            <i className="bi bi-map"></i> <span>Map</span>
-            <i className="bi bi-app text-lg"></i>{" "}
-            <span className="fs-6">Purchase</span>
-          </Link>
-          <Link to={"/customers"}>
-            <i className="bi bi-app text-lg"></i>{" "}
+          <Link
+            to={"/customers"}
+            className={`${
+              path === "/customers" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-app text-lg mr-2"></i>{" "}
             <span className="fs-6">Customers</span>
           </Link>
-          <Link to={"/inventory"}>
-            <i className="bi bi-map text-lg"></i>{" "}
+          <Link
+            to={"/inventory"}
+            className={`${
+              path === "/inventory" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-map text-lg mr-2"></i>{" "}
             <span className="fs-6">Inventory</span>
           </Link>
-          <Link>
-            <i className="bi bi-house text-lg"></i>{" "}
+          <Link className="hover:bg-gray-300 text-decoration-none rounded-md text-black px-3 py-[10px]">
+            <i className="bi bi-house text-lg mr-2"></i>{" "}
             <span className="fs-6">Departments</span>
           </Link>
-          <Link>
-            <i className="bi bi-hourglass text-lg"></i>{" "}
+          <Link className="hover:bg-gray-300 text-decoration-none rounded-md text-black px-3 py-[10px]">
+            <i className="bi bi-hourglass text-lg mr-2"></i>{" "}
             <span className="fs-6">History</span>
           </Link>
         </div>
@@ -273,13 +304,11 @@ function MainApp() {
               path="/customers"
               element={<Customers />}
             />
-            <Route 
-            authUser={userInfo}
-            path="/addproduct"
-            element={<AddProduct/>}
-            >
-              
-            </Route>
+            <Route
+              authUser={userInfo}
+              path="/addproduct"
+              element={<AddProduct />}
+            ></Route>
           </Routes>
         </div>
       </div>
