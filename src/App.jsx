@@ -28,6 +28,7 @@ import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
+import Suppliers from "./Suppliers";
 function App() {
   return (
     <BrowserRouter>
@@ -245,6 +246,15 @@ function MainApp() {
             <span className="fs-6">Customers</span>
           </Link>
           <Link
+            to={"/suppliers"}
+            className={`${
+              path === "/suppliers" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-app text-lg mr-2"></i>{" "}
+            <span className="fs-6">Suppliers</span>
+          </Link>
+          <Link
             to={"/inventory"}
             className={`${
               path === "/inventory" ? "bg-black text-white rounded-md" : ""
@@ -252,10 +262,6 @@ function MainApp() {
           >
             <i className="bi bi-map text-lg mr-2"></i>{" "}
             <span className="fs-6">Inventory</span>
-          </Link>
-          <Link className="hover:bg-gray-300 text-decoration-none rounded-md text-black px-3 py-[10px]">
-            <i className="bi bi-house text-lg mr-2"></i>{" "}
-            <span className="fs-6">Departments</span>
           </Link>
           <Link className="hover:bg-gray-300 text-decoration-none rounded-md text-black px-3 py-[10px]">
             <i className="bi bi-hourglass text-lg mr-2"></i>{" "}
@@ -303,6 +309,11 @@ function MainApp() {
               authUser={userInfo}
               path="/customers"
               element={<Customers />}
+            />
+             <Route
+              authUser={userInfo}
+              path="/suppliers"
+              element={<Suppliers />}
             />
             <Route
               authUser={userInfo}
