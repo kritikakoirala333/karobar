@@ -120,36 +120,173 @@ function MainApp() {
     <>
       {/* Header */}
       <div
-        className="container-fluid bg-white"
-        style={{ height: "103px", position: "fixed", zIndex: 1000 }}
+        className="bg-white container-xxl"
+        style={{ height: "103px", position: "fixed", zIndex: 1000, width : "100%" }}
       >
-        <header className="flex justify-between pr-10 items-center m-0 py-2">
-          <div className="col-3 d-flex align-items-center">
-            <div className="text-3xl font-semibold">Invoicer</div>
-          </div>
-          <div className="col-6">
-            <input type="text" placeholder="Search" className="form-control" />
-          </div>
-          <div className="flex gap-7 items-center">
-            <div>
-              <div
-                onClick={toggleTheme}
-                className={`bg-gray-300 w-[48px] h-[23px] rounded-xl transition-colors duration-300 cursor-pointer relative ${
-                  darkMode ? "bg-black" : "left-1"
-                }`}
-              >
-                <div
-                  className={`bg-white w-[16px] rounded-full h-[17px] absolute top-[3px] transition-all duration-300 ${
-                    darkMode ? "right-1" : "left-1"
-                  }`}
-                >
-                  {""}
+        <header className="d-flex justify-content-between align-items-center px-0 m-0" style={{ height: "55px" }}>
+          {/* Logo Section */}
+          <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2">
+              <div style={{
+                backgroundColor: "#1a1a1a",
+                width: "40px",
+                height: "40px",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <i className="bi bi-receipt-cutoff text-white" style={{ fontSize: "20px" }}></i>
+              </div>
+              <div>
+                <div style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: "1" }}>
+                  Invoicer
                 </div>
+                <div style={{ fontSize: "11px", color: "#6b7280", letterSpacing: "0.3px" }}>Business Management</div>
               </div>
             </div>
-            <IoSettingsOutline className="text-2xl" />
-            <FaBell className="text-2xl text-gray-500" />
-            <img src={company} alt="" className="w-8 h-8 rounded-full" />
+          </div>
+
+          {/* Search Section */}
+          <div style={{ flex: "0 1 480px" }}>
+            <div className="position-relative">
+              <i className="bi bi-search position-absolute" style={{
+                left: "14px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "#9ca3af",
+                fontSize: "15px"
+              }}></i>
+              <input
+                type="text"
+                placeholder="Search invoices, customers, products..."
+                className="form-control"
+                style={{
+                  paddingLeft: "42px",
+                  paddingRight: "42px",
+                  height: "42px",
+                  borderRadius: "8px",
+                  border: "1px solid #e5e7eb",
+                  fontSize: "14px",
+                  backgroundColor: "#f9fafb",
+                  transition: "all 0.2s"
+                }}
+                onFocus={(e) => {
+                  e.target.style.backgroundColor = "#ffffff";
+                  e.target.style.borderColor = "#1a1a1a";
+                }}
+                onBlur={(e) => {
+                  e.target.style.backgroundColor = "#f9fafb";
+                  e.target.style.borderColor = "#e5e7eb";
+                }}
+              />
+              <div className="position-absolute d-flex align-items-center gap-1" style={{
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                fontSize: "11px",
+                color: "#9ca3af",
+                backgroundColor: "#e5e7eb",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                fontWeight: "500"
+              }}>
+                <span>⌘</span>
+                <span>K</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Actions */}
+          <div className="d-flex align-items-center gap-4">
+            {/* Theme Toggle */}
+            <div
+              onClick={toggleTheme}
+              className="position-relative d-flex align-items-center"
+              style={{
+                backgroundColor: darkMode ? "#1a1a1a" : "#e5e7eb",
+                width: "52px",
+                height: "26px",
+                borderRadius: "13px",
+                cursor: "pointer",
+                transition: "background-color 0.3s",
+                border: darkMode ? "1px solid #4b5563" : "1px solid transparent"
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "white",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                  transition: "transform 0.3s",
+                  transform: darkMode ? "translateX(28px)" : "translateX(3px)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                {darkMode ?
+                  <IoMoon style={{ fontSize: "11px", color: "#1a1a1a" }} /> :
+                  <IoSunny style={{ fontSize: "11px", color: "#f59e0b" }} />
+                }
+              </div>
+            </div>
+
+            {/* Vertical Divider */}
+            <div style={{ width: "1px", height: "28px", backgroundColor: "#e5e7eb" }}></div>
+
+            {/* Settings Icon */}
+            <Link to="/settings" className="text-decoration-none">
+              <div className="position-relative" style={{ cursor: "pointer", padding: "6px" }}>
+                <IoSettingsOutline style={{ fontSize: "22px", color: "#4b5563" }} />
+              </div>
+            </Link>
+
+            {/* Notifications */}
+            <div className="position-relative" style={{ cursor: "pointer", padding: "6px" }}>
+              <FaBell style={{ fontSize: "20px", color: "#4b5563" }} />
+              <span style={{
+                position: "absolute",
+                top: "2px",
+                right: "2px",
+                backgroundColor: "#1a1a1a",
+                color: "white",
+                borderRadius: "50%",
+                width: "18px",
+                height: "18px",
+                fontSize: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "700",
+                border: "2px solid white"
+              }}>3</span>
+            </div>
+
+            {/* User Profile */}
+            <div className="d-flex align-items-center gap-2 ps-3" style={{ cursor: "pointer", borderLeft: "1px solid #e5e7eb" }}>
+              <img
+                src={company}
+                alt="User"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: "2px solid #e5e7eb",
+                  objectFit: "cover"
+                }}
+              />
+              <div className="d-none d-lg-block">
+                <div style={{ fontSize: "13px", fontWeight: "600", color: "#1a1a1a", lineHeight: "1.2" }}>
+                  {userInfo?.name || "Admin User"}
+                </div>
+                <div style={{ fontSize: "11px", color: "#6b7280", lineHeight: "1.2" }}>Administrator</div>
+              </div>
+              <i className="bi bi-chevron-down" style={{ fontSize: "11px", color: "#9ca3af", marginLeft: "4px" }}></i>
+            </div>
           </div>
         </header>
 
