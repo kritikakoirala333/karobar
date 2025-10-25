@@ -2,12 +2,14 @@ import React from 'react'
 import  { useEffect, useState } from 'react'
 import { db } from './firebase'
 import { collection, getDocs } from 'firebase/firestore'
+import { appBase } from './store/appBase';
 
 
 
 
 function Sales() {
   const [salesData, setSales] = useState([]);
+  const [theme, setTheme] = appBase();
 
   function getSalesInfo() {
     // getDocs(collection(db, 'sales')).then(resp => {
@@ -18,7 +20,7 @@ function Sales() {
     //   setSales(tempData);
     // });
 
-    add
+    // add
   }
   useEffect(getSalesInfo, [])
 

@@ -28,6 +28,8 @@ import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
+import { appBase } from "./store/appBase";
+import { salesInvoiceState } from "./store/salesInvoiceState";
 
 function App() {
   return (
@@ -38,6 +40,11 @@ function App() {
 }
 
 function MainApp() {
+
+  const {theme, setTheme} = appBase();
+  // FETCHING DATAS FOR INITIAL LOAD
+  const {fetchSalesInvoices } = salesInvoiceState();
+
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [invoicesOpen, setInvoicesOpen] = useState(false);
@@ -84,6 +91,9 @@ function MainApp() {
 
   useEffect(() => {
     checkLoginInfo();
+    // CALLING THOSE STATES 
+    fetchSalesInvoices();
+
 
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
