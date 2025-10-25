@@ -332,77 +332,52 @@ function MainApp() {
           {/* Dashboard */}
           <Link
             to="/"
-            className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
-            style={{
-              backgroundColor: path === "/" ? "#f8f9fa" : "transparent",
-              color: path === "/" ? "#000" : "#000",
-              fontSize: "14px",
-              borderLeft: path === "/" ? "3px solid #0d6efd" : "3px solid transparent"
-            }}
+            className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2  ${path === "/" ? "active" : ""}`}
           >
-            <i className="bi bi-house" style={{ fontSize: "14px" }}></i>
-            <span className={path === "/" ? "fw-semibold" : ""}>Dashboard</span>
+            <i className="bi bi-house sidebar-icon"></i>
+            <span>Dashboard</span>
           </Link>
 
           {/* Sales Section */}
           <div className="mb-2 mt-3">
             <div className="px-3 py-1">
-              <span className="" style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "600" }}>Sales</span>
+              <span className="sidebar-section-header">Sales</span>
             </div>
             <div>
               {/* Invoices with submenu */}
               <div>
                 <div
-                  className="d-flex align-items-center justify-content-between px-3 py-2 cursor-pointer"
+                  className="sidebar-toggle d-flex align-items-center justify-content-between px-3 py-2"
                   onClick={() => setInvoicesOpen(!invoicesOpen)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <div className="d-flex align-items-center gap-2 " style={{ fontSize: "14px" }}>
-                    <i className="bi bi-file-earmark-text" style={{ fontSize: "14px" }}></i>
-                    <span>Invoices</span>
+                  <div className="d-flex align-items-center gap-2 fw-semibold">
+                    <i className="bi bi-file-earmark-text sidebar-icon"></i>
+                    <span style={{ fontSize: "14px" }}>Invoices</span>
                   </div>
-                  <i className={`bi bi-chevron-${invoicesOpen ? 'down' : 'right'} `} style={{ fontSize: "11px" }}></i>
+                  <i className={`bi bi-chevron-${invoicesOpen ? 'down' : 'right'} sidebar-chevron`}></i>
                 </div>
                 {invoicesOpen && (
                   <div className="ps-4">
                     <Link
                       to="/invoices"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/invoices" ? "#000" : "#000",
-                        backgroundColor: path === "/invoices" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/invoices" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/invoices" ? "active" : ""}`}
                     >
-                      <i className="bi bi-list-ul" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/invoices" ? "fw-semibold" : ""}>All Invoices</span>
+                      <i className="bi bi-list-ul sidebar-icon-sm"></i>
+                      <span>All Invoices</span>
                     </Link>
                     <Link
                       to="/card"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/card" ? "#000" : "#000",
-                        backgroundColor: path === "/card" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/card" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/card" ? "active" : ""}`}
                     >
-                      <i className="bi bi-plus-circle" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/card" ? "fw-semibold" : ""}>Create Invoice</span>
+                      <i className="bi bi-plus-circle sidebar-icon-sm"></i>
+                      <span>Create Invoice</span>
                     </Link>
                     <Link
                       to="/invoices/reports"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/invoices/reports" ? "#000" : "#000",
-                        backgroundColor: path === "/invoices/reports" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/invoices/reports" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/invoices/reports" ? "active" : ""}`}
                     >
-                      <i className="bi bi-graph-up" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/invoices/reports" ? "fw-semibold" : ""}>Reports</span>
+                      <i className="bi bi-graph-up sidebar-icon-sm"></i>
+                      <span>Reports</span>
                     </Link>
                   </div>
                 )}
@@ -411,43 +386,30 @@ function MainApp() {
               {/* Customers with submenu */}
               <div>
                 <div
-                  className="d-flex align-items-center justify-content-between px-3 py-2 cursor-pointer"
+                  className="sidebar-toggle d-flex align-items-center justify-content-between px-3 py-2"
                   onClick={() => setCustomersOpen(!customersOpen)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <div className="d-flex align-items-center gap-2 " style={{ fontSize: "14px" }}>
-                    <i className="bi bi-people" style={{ fontSize: "14px" }}></i>
-                    <span>Customers</span>
+                  <div className="d-flex align-items-center gap-2 fw-semibold">
+                    <i className="bi bi-people sidebar-icon"></i>
+                    <span style={{ fontSize: "14px" }}>Customers</span>
                   </div>
-                  <i className={`bi bi-chevron-${customersOpen ? 'down' : 'right'} `} style={{ fontSize: "11px" }}></i>
+                  <i className={`bi bi-chevron-${customersOpen ? 'down' : 'right'} sidebar-chevron`}></i>
                 </div>
                 {customersOpen && (
                   <div className="ps-4">
                     <Link
                       to="/customers"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/customers" ? "#000" : "#000",
-                        backgroundColor: path === "/customers" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/customers" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/customers" ? "active" : ""}`}
                     >
-                      <i className="bi bi-list-ul" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/customers" ? "fw-semibold" : ""}>All Customers</span>
+                      <i className="bi bi-list-ul sidebar-icon-sm"></i>
+                      <span>All Customers</span>
                     </Link>
                     <Link
                       to="/customers/create"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/customers/create" ? "#000" : "#000",
-                        backgroundColor: path === "/customers/create" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/customers/create" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/customers/create" ? "active" : ""}`}
                     >
-                      <i className="bi bi-plus-circle" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/customers/create" ? "fw-semibold" : ""}>Add Customer</span>
+                      <i className="bi bi-plus-circle sidebar-icon-sm"></i>
+                      <span>Add Customer</span>
                     </Link>
                   </div>
                 )}
@@ -456,16 +418,10 @@ function MainApp() {
               {/* Payment */}
               <Link
                 to="/payment"
-                className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
-                style={{
-                  fontSize: "14px",
-                  color: path === "/payment" ? "#000" : "#000",
-                  backgroundColor: path === "/payment" ? "#f8f9fa" : "transparent",
-                  borderLeft: path === "/payment" ? "3px solid #0d6efd" : "3px solid transparent"
-                }}
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/payment" ? "active" : ""}`}
               >
-                <i className="bi bi-credit-card" style={{ fontSize: "14px" }}></i>
-                <span className={path === "/payment" ? "fw-semibold" : ""}>Payments</span>
+                <i className="bi bi-credit-card sidebar-icon"></i>
+                <span>Payments</span>
               </Link>
             </div>
           </div>
@@ -473,62 +429,43 @@ function MainApp() {
           {/* Inventory Section */}
           <div className="mb-2">
             <div className="px-3 py-1">
-              <span className="" style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "600" }}>Inventory</span>
+              <span className="sidebar-section-header">Inventory</span>
             </div>
             <div>
               {/* Inventory with submenu */}
               <div>
                 <div
-                  className="d-flex align-items-center justify-content-between px-3 py-2 cursor-pointer"
+                  className="sidebar-toggle d-flex align-items-center justify-content-between px-3 py-2"
                   onClick={() => setInventoryOpen(!inventoryOpen)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <div className="d-flex align-items-center gap-2 " style={{ fontSize: "14px" }}>
-                    <i className="bi bi-box-seam" style={{ fontSize: "14px" }}></i>
-                    <span>Products</span>
+                  <div className="d-flex align-items-center gap-2 fw-semibold">
+                    <i className="bi bi-box-seam sidebar-icon"></i>
+                    <span style={{ fontSize: "14px" }}>Products</span>
                   </div>
-                  <i className={`bi bi-chevron-${inventoryOpen ? 'down' : 'right'} `} style={{ fontSize: "11px" }}></i>
+                  <i className={`bi bi-chevron-${inventoryOpen ? 'down' : 'right'} sidebar-chevron`}></i>
                 </div>
                 {inventoryOpen && (
                   <div className="ps-4">
                     <Link
                       to="/inventory"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/inventory" ? "#000" : "#000",
-                        backgroundColor: path === "/inventory" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/inventory" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/inventory" ? "active" : ""}`}
                     >
-                      <i className="bi bi-list-ul" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/inventory" ? "fw-semibold" : ""}>All Products</span>
+                      <i className="bi bi-list-ul sidebar-icon-sm"></i>
+                      <span>All Products</span>
                     </Link>
                     <Link
                       to="/addproduct"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/addproduct" ? "#000" : "#000",
-                        backgroundColor: path === "/addproduct" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/addproduct" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/addproduct" ? "active" : ""}`}
                     >
-                      <i className="bi bi-plus-circle" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/addproduct" ? "fw-semibold" : ""}>Add Product</span>
+                      <i className="bi bi-plus-circle sidebar-icon-sm"></i>
+                      <span>Add Product</span>
                     </Link>
                     <Link
                       to="/inventory/reports"
-                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
-                      style={{
-                        fontSize: "13px",
-                        color: path === "/inventory/reports" ? "#000" : "#000",
-                        backgroundColor: path === "/inventory/reports" ? "#f8f9fa" : "transparent",
-                        borderLeft: path === "/inventory/reports" ? "3px solid #0d6efd" : "3px solid transparent"
-                      }}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/inventory/reports" ? "active" : ""}`}
                     >
-                      <i className="bi bi-graph-up" style={{ fontSize: "12px" }}></i>
-                      <span className={path === "/inventory/reports" ? "fw-semibold" : ""}>Stock Reports</span>
+                      <i className="bi bi-graph-up sidebar-icon-sm"></i>
+                      <span>Stock Reports</span>
                     </Link>
                   </div>
                 )}
@@ -537,16 +474,10 @@ function MainApp() {
               {/* Purchase */}
               <Link
                 to="/purchase"
-                className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
-                style={{
-                  fontSize: "14px",
-                  color: path === "/purchase" ? "#000" : "#000",
-                  backgroundColor: path === "/purchase" ? "#f8f9fa" : "transparent",
-                  borderLeft: path === "/purchase" ? "3px solid #0d6efd" : "3px solid transparent"
-                }}
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/purchase" ? "active" : ""}`}
               >
-                <i className="bi bi-bag" style={{ fontSize: "14px" }}></i>
-                <span className={path === "/purchase" ? "fw-semibold" : ""}>Purchases</span>
+                <i className="bi bi-bag sidebar-icon"></i>
+                <span>Purchases</span>
               </Link>
             </div>
           </div>
@@ -555,29 +486,17 @@ function MainApp() {
           <div className="mb-2 mt-4 border-top pt-3">
             <Link
               to="/settings"
-              className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
-              style={{
-                fontSize: "14px",
-                color: path === "/settings" ? "#000" : "#000",
-                backgroundColor: path === "/settings" ? "#f8f9fa" : "transparent",
-                borderLeft: path === "/settings" ? "3px solid #0d6efd" : "3px solid transparent"
-              }}
+              className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/settings" ? "active" : ""}`}
             >
-              <i className="bi bi-gear" style={{ fontSize: "14px" }}></i>
-              <span className={path === "/settings" ? "fw-semibold" : ""}>Settings</span>
+              <i className="bi bi-gear sidebar-icon"></i>
+              <span>Settings</span>
             </Link>
             <Link
               to="/profile"
-              className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
-              style={{
-                fontSize: "14px",
-                color: path === "/profile" ? "#000" : "#000",
-                backgroundColor: path === "/profile" ? "#f8f9fa" : "transparent",
-                borderLeft: path === "/profile" ? "3px solid #0d6efd" : "3px solid transparent"
-              }}
+              className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/profile" ? "active" : ""}`}
             >
-              <i className="bi bi-person-circle" style={{ fontSize: "14px" }}></i>
-              <span className={path === "/profile" ? "fw-semibold" : ""}>Profile</span>
+              <i className="bi bi-person-circle sidebar-icon"></i>
+              <span>Profile</span>
             </Link>
           </div>
         </div>
@@ -643,9 +562,9 @@ function MainApp() {
       >
         {/* backdrop (frosted glass) */}
         <div
-          className={`absolute inset-0 backdrop-blur-md transition-opacity duration-200 ${
+          className={`absolute inset-0 backdrop-blur-none transition-opacity duration-200 ${
             showPaymentSlide
-              ? "bg-black/30 opacity-100"
+              ? "bg-black/60 opacity-100"
               : "bg-transparent opacity-0"
           }`}
           onClick={() => setShowPaymentSlide(false)} // click outside to close
