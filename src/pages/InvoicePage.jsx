@@ -1,16 +1,15 @@
 import { useEffect, useState, useRef } from "react";
-import { MdOutlineFileDownload } from "react-icons/md";
+import { MdOutlineFileDownload, MdStore, MdLocationOn } from "react-icons/md";
 import { IoIosPrint } from "react-icons/io";
+import { IoChevronBackOutline } from "react-icons/io5";
 import { db } from "../firebase";
 import { getDoc, doc } from "firebase/firestore";
 import company from "../assets/company.jpg";
 import { jsPDF } from "jspdf";
 import Swal from "sweetalert2";
-import { MdStore } from "react-icons/md";
-import html2canvas from "html2canvas-pro"; // ✅ Import added
+import html2canvas from "html2canvas-pro";
 import { useParams, Link } from "react-router-dom";
 import { FiShoppingCart } from "react-icons/fi";
-import { MdLocationPin } from "react-icons/md";
 import axiosInstance from "../axiosConfig";
 
 const InvoicePage = () => {
@@ -336,86 +335,76 @@ const InvoicePage = () => {
 
         <section className="rightContainer w-[30%] border-l-1 border-gray-300">
           <div className="border border-dashed border-blue-300 rounded-md p-4 mb-4">
-          <h2 className="font-semibold text-lg mb-2">Invoice Details</h2>
-          <h3 className="font-semibold text-base mb-2">Azure Superstore</h3>
-          <div className="flex items-start gap-2 text-gray-500 text-sm border border-dashed border-gray-300 rounded-md p-2 mb-3">
-            <MdLocationOn className="text-gray-600 mt-1" />
-            <div>
-              <p>123 anyone in the wold</p>
-              <p>loreum ipsum dollar sit amet</p>
+            <h2 className="font-semibold text-lg mb-2">Invoice Details</h2>
+            <h3 className="font-semibold text-base mb-2">Azure Superstore</h3>
+            <div className="flex items-start gap-2 text-gray-500 text-sm border border-dashed border-gray-300 rounded-md p-2 mb-3">
+              <MdLocationOn className="text-gray-600 mt-1" />
+              <div>
+                <p>123 anyone in the wold</p>
+                <p>loreum ipsum dollar sit amet</p>
+              </div>
+            </div>
+            <div className="text-sm text-gray-700 space-y-1">
+              <div className="flex justify-between">
+                <span>Issue Date :</span>
+                <span>Rs. 5390</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Delivery Date:</span>
+                <span>20 January 2025</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <span className="font-semibold text-gray-800 text-base">Total:</span>
+              <span className="font-bold text-xl text-gray-900">Rs. 5000</span>
             </div>
           </div>
-          <div className="text-sm text-gray-700 space-y-1">
-            <div className="flex justify-between">
-              <span>Issue Date :</span>
-              <span>Rs. 5390</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Delivery Date:</span>
-              <span>20 January 2025</span>
-            </div>
-          </div>
-          <div className="flex justify-between items-center mt-4">
-            <span className="font-semibold text-gray-800 text-base">Total:</span>
-            <span className="font-bold text-xl text-gray-900">Rs. 5000</span>
-          </div>
-        </div>
 
-              <div className="bg-white mt-3 rounded-xl">
-                <table class="table table-bordered rounded-xl">
-                  <thead>
-                    <tr>
-                      <th scope="col">OrderDetails</th>
-                      <th scope="col">TotalPrice</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td scope="row">Taxable</td>
-                      <td>Rs.2002</td>
-                    </tr>
-                    <tr>
-                      <td scope="row">Additional Charge</td>
-                      <td>Rs.200</td>
-                    </tr>
-                    <tr>
-                      <td scope="row">Discout</td>
-                      <td>Rs.293</td>
-                    </tr>
-                    <tr>
-                      <td scope="row">SubTotal</td>
-                      <td>Rs.1770</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="mt-3  flex justify-end text-black">
-                <div
-                  onClick={handleDownloadPdf}
-                  className="flex border-1 bg-white border-gray-400 p-2 rounded-2xl cursor-pointer"
-                >
-                  <MdOutlineFileDownload className=" size-4 mt-[3px] mr-1 " />
-                  <div className="text-sm"> Export</div>
-                </div>
-                <div
-                  onClick={handleDownloadPdf}
-                  className="flex border-1 bg-white border-gray-400 ml-2 p-2 rounded-2xl cursor-pointer"
-                >
-                  <IoIosPrint className=" size-4 mt-[3px] mr-1 " />
-                  <div className="text-sm"> print</div>
-                </div>
-              </div>
+          <div className="bg-white mt-3 rounded-xl">
+            <table className="table table-bordered rounded-xl">
+              <thead>
+                <tr>
+                  <th scope="col">OrderDetails</th>
+                  <th scope="col">TotalPrice</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td scope="row">Taxable</td>
+                  <td>Rs.2002</td>
+                </tr>
+                <tr>
+                  <td scope="row">Additional Charge</td>
+                  <td>Rs.200</td>
+                </tr>
+                <tr>
+                  <td scope="row">Discount</td>
+                  <td>Rs.293</td>
+                </tr>
+                <tr>
+                  <td scope="row">SubTotal</td>
+                  <td>Rs.1770</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-3 flex justify-end text-black">
+            <div
+              onClick={handleDownloadPdf}
+              className="flex border-1 bg-white border-gray-400 p-2 rounded-2xl cursor-pointer"
+            >
+              <MdOutlineFileDownload className=" size-4 mt-[3px] mr-1 " />
+              <div className="text-sm"> Export</div>
             </div>
-            <div className="flex justify-between">
-              <span>Coupon Discount</span>
-              <span>8%</span>
+            <div
+              onClick={handleDownloadPdf}
+              className="flex border-1 bg-white border-gray-400 ml-2 p-2 rounded-2xl cursor-pointer"
+            >
+              <IoIosPrint className=" size-4 mt-[3px] mr-1 " />
+              <div className="text-sm"> print</div>
             </div>
           </div>
-          <div className="flex justify-between items-center mt-4">
-            <span className="font-semibold text-gray-800 text-base">Total:</span>
-            <span className="font-bold text-xl text-gray-900">Rs. 5000</span>
-          </div>
-        </div>
         </section>
       </div>
     </>

@@ -40,6 +40,9 @@ function App() {
 function MainApp() {
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [invoicesOpen, setInvoicesOpen] = useState(false);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [customersOpen, setCustomersOpen] = useState(false);
 
   const [userInfo, setUserInfo] = useState();
   const navigator = useNavigate();
@@ -188,53 +191,263 @@ function MainApp() {
       {/* Sidebar + Main */}
       <div className="row m-0 p-0 box">
         {/* Sidebar */}
-        <div className="col-2 card vh-100 sidebar-links-wrapper">
-          <div style={{ height: "110px" }}></div>
-          <Link to={"/"}>
-            <i className="bi bi-house text-lg"></i>{" "}
-            <span className="fs-6">Dashboard</span>
-          </Link>
-          <Link>
-            <i className="bi bi-columns-gap text-lg"></i>{" "}
-            <span className="fs-6">Layouts</span>
-          </Link>
-          <Link to={"/invoices"}>
-            <i className="bi bi-file text-lg"></i>{" "}
-            <span className="fs-6">Invoices</span>
-          </Link>
-          <Link to={"/purchase"}>
-           <i className="bi bi-bag"></i> <span>Purchase Invoice</span>
-          </Link>
-           <Link to={"/card"}>
-            <i className="bi bi-app"></i> <span>Sales Invoice</span>
+        <div className="col-2 vh-100 bg-white border-end" style={{ paddingTop: "110px", overflowY: "auto" }}>
+          {/* Dashboard */}
+          <Link
+            to="/"
+            className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
+            style={{
+              backgroundColor: path === "/" ? "#f8f9fa" : "transparent",
+              color: path === "/" ? "#000" : "#000",
+              fontSize: "14px",
+              borderLeft: path === "/" ? "3px solid #0d6efd" : "3px solid transparent"
+            }}
+          >
+            <i className="bi bi-house" style={{ fontSize: "14px" }}></i>
+            <span className={path === "/" ? "fw-semibold" : ""}>Dashboard</span>
           </Link>
 
-          <Link>
-            <i className="bi bi-map"></i> <span>Map</span>
-            <i className="bi bi-app text-lg"></i>{" "}
-            <span className="fs-6">Purchase</span>
-          </Link>
-          <Link to={"/customers"}>
-            <i className="bi bi-app text-lg"></i>{" "}
-            <span className="fs-6">Customers</span>
-          </Link>
-          <Link to={"/inventory"}>
-            <i className="bi bi-map text-lg"></i>{" "}
-            <span className="fs-6">Inventory</span>
-          </Link>
-          <Link>
-            <i className="bi bi-house text-lg"></i>{" "}
-            <span className="fs-6">Departments</span>
-          </Link>
-          <Link>
-            <i className="bi bi-hourglass text-lg"></i>{" "}
-            <span className="fs-6">History</span>
-          </Link>
+          {/* Sales Section */}
+          <div className="mb-2 mt-3">
+            <div className="px-3 py-1">
+              <span className="" style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "600" }}>Sales</span>
+            </div>
+            <div>
+              {/* Invoices with submenu */}
+              <div>
+                <div
+                  className="d-flex align-items-center justify-content-between px-3 py-2 cursor-pointer"
+                  onClick={() => setInvoicesOpen(!invoicesOpen)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="d-flex align-items-center gap-2 " style={{ fontSize: "14px" }}>
+                    <i className="bi bi-file-earmark-text" style={{ fontSize: "14px" }}></i>
+                    <span>Invoices</span>
+                  </div>
+                  <i className={`bi bi-chevron-${invoicesOpen ? 'down' : 'right'} `} style={{ fontSize: "11px" }}></i>
+                </div>
+                {invoicesOpen && (
+                  <div className="ps-4">
+                    <Link
+                      to="/invoices"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/invoices" ? "#000" : "#000",
+                        backgroundColor: path === "/invoices" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/invoices" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-list-ul" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/invoices" ? "fw-semibold" : ""}>All Invoices</span>
+                    </Link>
+                    <Link
+                      to="/card"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/card" ? "#000" : "#000",
+                        backgroundColor: path === "/card" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/card" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-plus-circle" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/card" ? "fw-semibold" : ""}>Create Invoice</span>
+                    </Link>
+                    <Link
+                      to="/invoices/reports"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/invoices/reports" ? "#000" : "#000",
+                        backgroundColor: path === "/invoices/reports" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/invoices/reports" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-graph-up" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/invoices/reports" ? "fw-semibold" : ""}>Reports</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Customers with submenu */}
+              <div>
+                <div
+                  className="d-flex align-items-center justify-content-between px-3 py-2 cursor-pointer"
+                  onClick={() => setCustomersOpen(!customersOpen)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="d-flex align-items-center gap-2 " style={{ fontSize: "14px" }}>
+                    <i className="bi bi-people" style={{ fontSize: "14px" }}></i>
+                    <span>Customers</span>
+                  </div>
+                  <i className={`bi bi-chevron-${customersOpen ? 'down' : 'right'} `} style={{ fontSize: "11px" }}></i>
+                </div>
+                {customersOpen && (
+                  <div className="ps-4">
+                    <Link
+                      to="/customers"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/customers" ? "#000" : "#000",
+                        backgroundColor: path === "/customers" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/customers" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-list-ul" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/customers" ? "fw-semibold" : ""}>All Customers</span>
+                    </Link>
+                    <Link
+                      to="/customers/create"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/customers/create" ? "#000" : "#000",
+                        backgroundColor: path === "/customers/create" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/customers/create" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-plus-circle" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/customers/create" ? "fw-semibold" : ""}>Add Customer</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Payment */}
+              <Link
+                to="/payment"
+                className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
+                style={{
+                  fontSize: "14px",
+                  color: path === "/payment" ? "#000" : "#000",
+                  backgroundColor: path === "/payment" ? "#f8f9fa" : "transparent",
+                  borderLeft: path === "/payment" ? "3px solid #0d6efd" : "3px solid transparent"
+                }}
+              >
+                <i className="bi bi-credit-card" style={{ fontSize: "14px" }}></i>
+                <span className={path === "/payment" ? "fw-semibold" : ""}>Payments</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Inventory Section */}
+          <div className="mb-2">
+            <div className="px-3 py-1">
+              <span className="" style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "600" }}>Inventory</span>
+            </div>
+            <div>
+              {/* Inventory with submenu */}
+              <div>
+                <div
+                  className="d-flex align-items-center justify-content-between px-3 py-2 cursor-pointer"
+                  onClick={() => setInventoryOpen(!inventoryOpen)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="d-flex align-items-center gap-2 " style={{ fontSize: "14px" }}>
+                    <i className="bi bi-box-seam" style={{ fontSize: "14px" }}></i>
+                    <span>Products</span>
+                  </div>
+                  <i className={`bi bi-chevron-${inventoryOpen ? 'down' : 'right'} `} style={{ fontSize: "11px" }}></i>
+                </div>
+                {inventoryOpen && (
+                  <div className="ps-4">
+                    <Link
+                      to="/inventory"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/inventory" ? "#000" : "#000",
+                        backgroundColor: path === "/inventory" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/inventory" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-list-ul" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/inventory" ? "fw-semibold" : ""}>All Products</span>
+                    </Link>
+                    <Link
+                      to="/addproduct"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/addproduct" ? "#000" : "#000",
+                        backgroundColor: path === "/addproduct" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/addproduct" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-plus-circle" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/addproduct" ? "fw-semibold" : ""}>Add Product</span>
+                    </Link>
+                    <Link
+                      to="/inventory/reports"
+                      className="d-flex align-items-center gap-2 px-3 py-1 text-decoration-none position-relative"
+                      style={{
+                        fontSize: "13px",
+                        color: path === "/inventory/reports" ? "#000" : "#000",
+                        backgroundColor: path === "/inventory/reports" ? "#f8f9fa" : "transparent",
+                        borderLeft: path === "/inventory/reports" ? "3px solid #0d6efd" : "3px solid transparent"
+                      }}
+                    >
+                      <i className="bi bi-graph-up" style={{ fontSize: "12px" }}></i>
+                      <span className={path === "/inventory/reports" ? "fw-semibold" : ""}>Stock Reports</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Purchase */}
+              <Link
+                to="/purchase"
+                className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
+                style={{
+                  fontSize: "14px",
+                  color: path === "/purchase" ? "#000" : "#000",
+                  backgroundColor: path === "/purchase" ? "#f8f9fa" : "transparent",
+                  borderLeft: path === "/purchase" ? "3px solid #0d6efd" : "3px solid transparent"
+                }}
+              >
+                <i className="bi bi-bag" style={{ fontSize: "14px" }}></i>
+                <span className={path === "/purchase" ? "fw-semibold" : ""}>Purchases</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Settings & Profile Section */}
+          <div className="mb-2 mt-4 border-top pt-3">
+            <Link
+              to="/settings"
+              className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
+              style={{
+                fontSize: "14px",
+                color: path === "/settings" ? "#000" : "#000",
+                backgroundColor: path === "/settings" ? "#f8f9fa" : "transparent",
+                borderLeft: path === "/settings" ? "3px solid #0d6efd" : "3px solid transparent"
+              }}
+            >
+              <i className="bi bi-gear" style={{ fontSize: "14px" }}></i>
+              <span className={path === "/settings" ? "fw-semibold" : ""}>Settings</span>
+            </Link>
+            <Link
+              to="/profile"
+              className="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none position-relative"
+              style={{
+                fontSize: "14px",
+                color: path === "/profile" ? "#000" : "#000",
+                backgroundColor: path === "/profile" ? "#f8f9fa" : "transparent",
+                borderLeft: path === "/profile" ? "3px solid #0d6efd" : "3px solid transparent"
+              }}
+            >
+              <i className="bi bi-person-circle" style={{ fontSize: "14px" }}></i>
+              <span className={path === "/profile" ? "fw-semibold" : ""}>Profile</span>
+            </Link>
+          </div>
         </div>
 
         {/* Main Content */}
         <div className="col-10 vh-100 bg-white" style={{ overflowY: "scroll" }}>
-          <div style={{ height: "100px" }}></div>
+          <div style={{ height: "110px" }}></div>
           <Routes>
             <Route authUser={userInfo} path="/" element={<Home />}></Route>
             <Route
