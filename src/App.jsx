@@ -28,6 +28,10 @@ import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
+import Suppliers from "./Suppliers";
+
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import { IoClose } from "react-icons/io5";
 
 function App() {
   return (
@@ -40,14 +44,29 @@ function App() {
 function MainApp() {
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const [userInfo, setUserInfo] = useState();
-  const navigator = useNavigate();
   const [authCheck, setAuthCheck] = useState(true);
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
 
+  const navigator = useNavigate();
+
   const isSignInPage = path === "/signin";
+
+  const paths = [
+    { path: "/", searchPath: "dashboard" },
+    { path: "/invoices", searchPath: "invoices" },
+    { path: "/purchase", searchPath: "purchase invoice" },
+    { path: "/card", searchPath: "sales invoice" },
+    { path: "/customers", searchPath: "customers" },
+    { path: "/suppliers", searchPath: "suppliers" },
+    { path: "/inventory", searchPath: "inventory" },
+    { path: "/addproduct", searchPath: "add product" },
+  ];
 
   const checkLoginInfo = () => {
     console.log("Checking for Login Session");
@@ -66,16 +85,15 @@ function MainApp() {
       )
       .then((resp) => {
         if (resp.data.name) {
-          console.log(resp);
           setUserInfo(resp.data);
         } else {
           navigator("/signin");
         }
         setAuthCheck(false);
-      }).catch(ex => {
+      })
+      .catch((ex) => {
         navigator("/signin");
         setAuthCheck(false);
-
       });
   };
 
@@ -113,6 +131,49 @@ function MainApp() {
     }
   };
 
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchVal(value);
+    if (value.trim() === "") {
+      setSuggestions([]);
+    } else {
+      const filtered = paths.filter((p) =>
+        p.searchPath.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setActiveIndex(0);
+    }
+  };
+
+  const handleSuggestionClick = (item) => {
+    setSearchVal(item.searchPath);
+    setSuggestions([]);
+    console.log(item.path);
+    navigator(item.path);
+  };
+
+  const handleKeyDown = (e) => {
+    if (suggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev + 1) % suggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) =>
+        prev === 0 ? suggestions.length - 1 : prev - 1
+      );
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const selected = suggestions[activeIndex];
+      if (selected) {
+        setSearchVal(selected.searchPath);
+        setSuggestions([]);
+        navigator(selected.path);
+      }
+    }
+  };
+
   return (
     <>
       {/* Header */}
@@ -124,9 +185,48 @@ function MainApp() {
           <div className="col-3 d-flex align-items-center">
             <div className="text-3xl font-semibold">Invoicer</div>
           </div>
-          <div className="col-6">
-            <input type="text" placeholder="Search" className="form-control" />
+          <div className="col-6 relative">
+            {/* INPUT WRAPPER */}
+            <div className="relative">
+              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-lg " />
+              <input
+                type="text"
+                placeholder="Search"
+                className="pl-10 border-1 rounded-sm border-gray-500  pr-13 py-2 w-full"
+                value={searchVal}
+                onChange={handleSearch}
+                onKeyDown={handleKeyDown}
+              />
+              <div
+                className="absolute right-4 top-3 text-xl cursor-pointer"
+                onClick={() => {setSearchVal(""); setSuggestions([])}}
+              >
+                <IoClose />
+              </div>
+            </div>
+
+            {/* DROPDOWN SUGGESTION BOX */}
+            {suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                {suggestions.map((item, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleSuggestionClick(item)}
+                    className={`px-3 flex items-center gap-2 py-2 cursor-pointer ${
+                      index === activeIndex
+                        ? "bg-gray-200 text-black"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {/* <HiMagnifyingGlass className="text-gray-500" /> */}
+                    <span>/</span>
+                    <span className="">{item.searchPath}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
           <div className="flex gap-7 items-center">
             <div>
               <div
@@ -188,46 +288,81 @@ function MainApp() {
       {/* Sidebar + Main */}
       <div className="row m-0 p-0 box">
         {/* Sidebar */}
-        <div className="col-2 card vh-100 sidebar-links-wrapper">
+        <div className="col-2 gap-1 card vh-100">
           <div style={{ height: "110px" }}></div>
-          <Link to={"/"}>
-            <i className="bi bi-house text-lg"></i>{" "}
+          <Link
+            to={"/"}
+            className={`${
+              path === "/" ? "bg-black text-white" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-house text-lg mr-2"></i>{" "}
             <span className="fs-6">Dashboard</span>
           </Link>
-          <Link>
-            <i className="bi bi-columns-gap text-lg"></i>{" "}
+          <Link
+            className={`${
+              path === "/layout" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-columns-gap text-lg mr-2"></i>{" "}
             <span className="fs-6">Layouts</span>
           </Link>
-          <Link to={"/invoices"}>
-            <i className="bi bi-file text-lg"></i>{" "}
+          <Link
+            to={"/invoices"}
+            className={`${
+              path === "/invoices" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-file text-lg mr-2"></i>{" "}
             <span className="fs-6">Invoices</span>
           </Link>
-          <Link to={"/purchase"}>
-           <i className="bi bi-bag"></i> <span>Purchase Invoice</span>
+          <Link
+            to={"/purchase"}
+            className={`${
+              path === "/purchase" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-bag text-lg mr-2"></i>{" "}
+            <span className="fs-6">Purchase Invoice</span>
           </Link>
-           <Link to={"/card"}>
-            <i className="bi bi-app"></i> <span>Sales Invoice</span>
+          <Link
+            to={"/card"}
+            className={`${
+              path === "/card" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-app text-lg mr-2"></i>{" "}
+            <span className="fs-6">Sales Invoice</span>
           </Link>
-
-          <Link>
-            <i className="bi bi-map"></i> <span>Map</span>
-            <i className="bi bi-app text-lg"></i>{" "}
-            <span className="fs-6">Purchase</span>
-          </Link>
-          <Link to={"/customers"}>
-            <i className="bi bi-app text-lg"></i>{" "}
+          <Link
+            to={"/customers"}
+            className={`${
+              path === "/customers" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-app text-lg mr-2"></i>{" "}
             <span className="fs-6">Customers</span>
           </Link>
-          <Link to={"/inventory"}>
-            <i className="bi bi-map text-lg"></i>{" "}
+          <Link
+            to={"/suppliers"}
+            className={`${
+              path === "/suppliers" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-app text-lg mr-2"></i>{" "}
+            <span className="fs-6">Suppliers</span>
+          </Link>
+          <Link
+            to={"/inventory"}
+            className={`${
+              path === "/inventory" ? "bg-black text-white rounded-md" : ""
+            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
+          >
+            <i className="bi bi-map text-lg mr-2"></i>{" "}
             <span className="fs-6">Inventory</span>
           </Link>
-          <Link>
-            <i className="bi bi-house text-lg"></i>{" "}
-            <span className="fs-6">Departments</span>
-          </Link>
-          <Link>
-            <i className="bi bi-hourglass text-lg"></i>{" "}
+          <Link className="hover:bg-gray-300 text-decoration-none rounded-md text-black px-3 py-[10px]">
+            <i className="bi bi-hourglass text-lg mr-2"></i>{" "}
             <span className="fs-6">History</span>
           </Link>
         </div>
@@ -273,13 +408,16 @@ function MainApp() {
               path="/customers"
               element={<Customers />}
             />
-            <Route 
-            authUser={userInfo}
-            path="/addproduct"
-            element={<AddProduct/>}
-            >
-              
-            </Route>
+            <Route
+              authUser={userInfo}
+              path="/suppliers"
+              element={<Suppliers />}
+            />
+            <Route
+              authUser={userInfo}
+              path="/addproduct"
+              element={<AddProduct />}
+            ></Route>
           </Routes>
         </div>
       </div>

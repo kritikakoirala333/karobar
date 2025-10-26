@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axiosInstance from "./axiosConfig";
 import Swal from "sweetalert2";
 
-function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
+function EditInvoiceFom({ setShowEditInvoiceForm, invoice, fetchInvoices }) {
   const [formData, setFormData] = useState({
     id: invoice?.[0]?.id || "",
     invoice_no: invoice?.[0]?.invoice_no || "",
@@ -47,8 +47,8 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
   const addMoreItem = () => {
     setFormData({
       ...formData,
-      items: [
-        ...formData.items,
+      invoice_items: [
+        ...formData.invoice_items,
         { item: "", quantity: "", rate: "", amount: 0 },
       ],
     });
@@ -60,7 +60,7 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
       customername: "",
       mobileno: "",
       address: "",
-      fields: prev.fields.map(() => ({
+      invoice_items: prev.invoice_items.map(() => ({
         name: "",
         quantity: 0,
       })),
@@ -69,7 +69,7 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
 
   // delete item row
   const removeItem = (index) => {
-    const updatedItems = formData.items.filter((_, i) => i !== index);
+    const updatedItems = formData.invoice_items.filter((_, i) => i !== index);
     setFormData({ ...formData, invoice_items
       
       : updatedItems });
@@ -111,6 +111,8 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
           timerProgressBar: true,
         });
         clearForm();
+        setShowEditInvoiceForm(false);
+        fetchInvoices();
       })
       .catch((ex) => {
         console.error(ex);
@@ -118,11 +120,6 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
 
     console.log(formInfomation);
   };
-
-  const subtotal = formData.invoice_items.reduce(
-    (sum, item) => sum + Number(item.amount),
-    0
-  );
 
   return (
     // background overlay
@@ -236,7 +233,7 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
                         required
                       />
                     </td>
-                    <td>{item.amount.toFixed(2)}</td>
+                    <td>{item.amount}</td>
                     <td>
                       <button
                         type="button"
