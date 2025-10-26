@@ -30,6 +30,7 @@ import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
 import { appBase } from "./store/appBase";
 import { salesInvoiceState } from "./store/salesInvoiceState";
+import { themeBase } from "./store/themeBase";
 
 function App() {
   return (
@@ -41,7 +42,9 @@ function App() {
 
 function MainApp() {
 
-  const {theme, setTheme} = appBase();
+  // const {theme, setTheme} = appBase();
+  const {theme} = themeBase();
+
   // FETCHING DATAS FOR INITIAL LOAD
   const {fetchSalesInvoices } = salesInvoiceState();
 
@@ -150,7 +153,7 @@ function MainApp() {
               </div>
               <div>
                 <div style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: "1" }}>
-                  Invoicer
+                  Invoicer {theme}
                 </div>
                 <div style={{ fontSize: "11px", color: "#6b7280", letterSpacing: "0.3px" }}>Business Management</div>
               </div>
