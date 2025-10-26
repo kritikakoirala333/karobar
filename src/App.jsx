@@ -3,6 +3,9 @@ import Sales from "./sales";
 import Home from "./Home";
 import CardPage from "./pages/card";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import { IoClose } from "react-icons/io5";
+
 import {
   BrowserRouter,
   Routes,
@@ -31,6 +34,7 @@ import AddProduct from "./pages/AddProduct";
 import { appBase } from "./store/appBase";
 import { salesInvoiceState } from "./store/salesInvoiceState";
 import { themeBase } from "./store/themeBase";
+import Setting from "./pages/Setting";
 
 function App() {
   return (
@@ -41,12 +45,11 @@ function App() {
 }
 
 function MainApp() {
-
   // const {theme, setTheme} = appBase();
-  const {theme} = themeBase();
+  const { theme } = themeBase();
 
   // FETCHING DATAS FOR INITIAL LOAD
-  const {fetchSalesInvoices } = salesInvoiceState();
+  const { fetchSalesInvoices } = salesInvoiceState();
 
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -55,6 +58,22 @@ function MainApp() {
   const [customersOpen, setCustomersOpen] = useState(false);
 
   const [userInfo, setUserInfo] = useState();
+
+  const [searchVal, setSearchVal] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const paths = [
+    { path: "/", searchPath: "dashboard" },
+    { path: "/invoices", searchPath: "invoices" },
+    { path: "/purchase", searchPath: "purchase invoice" },
+    { path: "/card", searchPath: "sales invoice" },
+    { path: "/customers", searchPath: "customers" },
+    { path: "/suppliers", searchPath: "suppliers" },
+    { path: "/inventory", searchPath: "inventory" },
+    { path: "/addproduct", searchPath: "add product" },
+  ];
+
   const navigator = useNavigate();
   const [authCheck, setAuthCheck] = useState(true);
   const location = useLocation(); // ✅ Now inside BrowserRouter
@@ -85,18 +104,17 @@ function MainApp() {
           navigator("/signin");
         }
         setAuthCheck(false);
-      }).catch(ex => {
+      })
+      .catch((ex) => {
         navigator("/signin");
         setAuthCheck(false);
-
       });
   };
 
   useEffect(() => {
     checkLoginInfo();
-    // CALLING THOSE STATES 
+    // CALLING THOSE STATES
     fetchSalesInvoices();
-
 
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
@@ -129,33 +147,106 @@ function MainApp() {
     }
   };
 
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchVal(value);
+    if (value.trim() === "") {
+      setSuggestions([]);
+    } else {
+      const filtered = paths.filter((p) =>
+        p.searchPath.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setActiveIndex(0);
+    }
+  };
+
+  const handleSuggestionClick = (item) => {
+    setSearchVal(item.searchPath);
+    setSuggestions([]);
+    console.log(item.path);
+    navigator(item.path);
+  };
+
+  const handleKeyDown = (e) => {
+    if (suggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev + 1) % suggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) =>
+        prev === 0 ? suggestions.length - 1 : prev - 1
+      );
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const selected = suggestions[activeIndex];
+      if (selected) {
+        w;
+        setSearchVal(selected.searchPath);
+        setSuggestions([]);
+        navigator(selected.path);
+      }
+    }
+  };
+
   return (
     <>
       {/* Header */}
       <div
         className="bg-white container-xxl"
-        style={{ height: "103px", position: "fixed", zIndex: 1000, width : "100%" }}
+        style={{
+          height: "103px",
+          position: "fixed",
+          zIndex: 1000,
+          width: "100%",
+        }}
       >
-        <header className="d-flex justify-content-between align-items-center px-0 m-0" style={{ height: "55px" }}>
+        <header
+          className="d-flex justify-content-between align-items-center px-0 m-0"
+          style={{ height: "55px" }}
+        >
           {/* Logo Section */}
           <div className="d-flex align-items-center gap-3">
             <div className="d-flex align-items-center gap-2">
-              <div style={{
-                backgroundColor: "#1a1a1a",
-                width: "40px",
-                height: "40px",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                <i className="bi bi-receipt-cutoff text-white" style={{ fontSize: "20px" }}></i>
+              <div
+                style={{
+                  backgroundColor: "#1a1a1a",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <i
+                  className="bi bi-receipt-cutoff text-white"
+                  style={{ fontSize: "20px" }}
+                ></i>
               </div>
               <div>
-                <div style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: "1" }}>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#1a1a1a",
+                    letterSpacing: "-0.5px",
+                    lineHeight: "1",
+                  }}
+                >
                   Invoicer {theme}
                 </div>
-                <div style={{ fontSize: "11px", color: "#6b7280", letterSpacing: "0.3px" }}>Business Management</div>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    color: "#6b7280",
+                    letterSpacing: "0.3px",
+                  }}
+                >
+                  Business Management
+                </div>
               </div>
             </div>
           </div>
@@ -163,14 +254,112 @@ function MainApp() {
           {/* Search Section */}
           <div style={{ flex: "0 1 480px" }}>
             <div className="position-relative">
-              <i className="bi bi-search position-absolute" style={{
-                left: "14px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "#9ca3af",
-                fontSize: "15px"
-              }}></i>
-              <input
+              <i
+                className="bi bi-search position-absolute"
+                style={{
+                  left: "14px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#9ca3af",
+                  fontSize: "15px",
+                }}
+              ></i>
+              <div className="relative">
+                {/* INPUT WRAPPER */}
+                <div className="relative">
+                  <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-lg " />
+                  <input
+                    type="text"
+                    placeholder="Search invoices, customers, products..."
+                    className="form-control"
+                    style={{
+                      paddingLeft: "42px",
+                      paddingRight: "42px",
+                      height: "42px",
+                      borderRadius: "8px",
+                      border: "1px solid #e5e7eb",
+                      fontSize: "14px",
+                      width: "100%",
+                      backgroundColor: "#f9fafb",
+                      transition: "all 0.2s",
+                    }}
+                    value={searchVal}
+                    onChange={handleSearch}
+                    onKeyDown={handleKeyDown}
+                    onFocus={(e) => {
+                      e.target.style.backgroundColor = "#ffffff";
+                      e.target.style.borderColor = "#1a1a1a";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.backgroundColor = "#f9fafb";
+                      e.target.style.borderColor = "#e5e7eb";
+                    }}
+                  />
+                  {/* <input
+                    type="text"
+                    placeholder="Search"
+                    className="pl-10 border-1 rounded-sm border-gray-500  pr-13 py-2 w-full"
+                    value={searchVal}
+                    onChange={handleSearch}
+                    onKeyDown={handleKeyDown}
+                  /> */}
+                  <div
+                    className="absolute right-4 top-3 text-xl cursor-pointer"
+                    onClick={() => {
+                      setSearchVal("");
+                      setSuggestions([]);
+                    }}
+                  >
+                    <IoClose />
+                  </div>
+                </div>
+
+                {/* DROPDOWN SUGGESTION BOX */}
+                {suggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                    {suggestions.map((item, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleSuggestionClick(item)}
+                        className={`px-3 flex items-center gap-2 py-2 cursor-pointer ${
+                          index === activeIndex
+                            ? "bg-gray-200 text-black"
+                            : "hover:bg-gray-100"
+                        }`}
+                      >
+                        {/* <HiMagnifyingGlass className="text-gray-500" /> */}
+                        {/* <span>/</span>
+                        <span className="">{item.searchPath}</span> */}
+                        <div className="d-flex justify-content-start align-items-center gap-2 ">
+                          <div
+                            className="cursor-pointer"
+                            style={{
+                              width: "45px",
+                              height: "45px",
+                              background: "rgba(0,0,0,0.1)",
+                              borderRadius: "10px",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <i className="bi bi-slash"></i>
+                          </div>
+                          <div
+                           
+                            className="d-flex flex-column m-0 p-0 cursor-pointer"
+                          >
+                            <h6 className="mb-0 capitalize  ">{item.searchPath}</h6>
+                            <small className="text-muted">Here is the path for - {item.searchPath}</small>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* <input
                 type="text"
                 placeholder="Search invoices, customers, products..."
                 className="form-control"
@@ -182,7 +371,7 @@ function MainApp() {
                   border: "1px solid #e5e7eb",
                   fontSize: "14px",
                   backgroundColor: "#f9fafb",
-                  transition: "all 0.2s"
+                  transition: "all 0.2s",
                 }}
                 onFocus={(e) => {
                   e.target.style.backgroundColor = "#ffffff";
@@ -192,18 +381,21 @@ function MainApp() {
                   e.target.style.backgroundColor = "#f9fafb";
                   e.target.style.borderColor = "#e5e7eb";
                 }}
-              />
-              <div className="position-absolute d-flex align-items-center gap-1" style={{
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                fontSize: "11px",
-                color: "#9ca3af",
-                backgroundColor: "#e5e7eb",
-                padding: "2px 6px",
-                borderRadius: "4px",
-                fontWeight: "500"
-              }}>
+              /> */}
+              <div
+                className="position-absolute d-flex align-items-center gap-1"
+                style={{
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: "11px",
+                  color: "#9ca3af",
+                  backgroundColor: "#e5e7eb",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontWeight: "500",
+                }}
+              >
                 <span>⌘</span>
                 <span>K</span>
               </div>
@@ -223,7 +415,9 @@ function MainApp() {
                 borderRadius: "13px",
                 cursor: "pointer",
                 transition: "background-color 0.3s",
-                border: darkMode ? "1px solid #4b5563" : "1px solid transparent"
+                border: darkMode
+                  ? "1px solid #4b5563"
+                  : "1px solid transparent",
               }}
             >
               <div
@@ -238,49 +432,71 @@ function MainApp() {
                   transform: darkMode ? "translateX(28px)" : "translateX(3px)",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center"
+                  justifyContent: "center",
                 }}
               >
-                {darkMode ?
-                  <IoMoon style={{ fontSize: "11px", color: "#1a1a1a" }} /> :
+                {darkMode ? (
+                  <IoMoon style={{ fontSize: "11px", color: "#1a1a1a" }} />
+                ) : (
                   <IoSunny style={{ fontSize: "11px", color: "#f59e0b" }} />
-                }
+                )}
               </div>
             </div>
 
             {/* Vertical Divider */}
-            <div style={{ width: "1px", height: "28px", backgroundColor: "#e5e7eb" }}></div>
+            <div
+              style={{
+                width: "1px",
+                height: "28px",
+                backgroundColor: "#e5e7eb",
+              }}
+            ></div>
 
             {/* Settings Icon */}
             <Link to="/settings" className="text-decoration-none">
-              <div className="position-relative" style={{ cursor: "pointer", padding: "6px" }}>
-                <IoSettingsOutline style={{ fontSize: "22px", color: "#4b5563" }} />
+              <div
+                className="position-relative"
+                style={{ cursor: "pointer", padding: "6px" }}
+              >
+                <IoSettingsOutline
+                  style={{ fontSize: "22px", color: "#4b5563" }}
+                />
               </div>
             </Link>
 
             {/* Notifications */}
-            <div className="position-relative" style={{ cursor: "pointer", padding: "6px" }}>
+            <div
+              className="position-relative"
+              style={{ cursor: "pointer", padding: "6px" }}
+            >
               <FaBell style={{ fontSize: "20px", color: "#4b5563" }} />
-              <span style={{
-                position: "absolute",
-                top: "2px",
-                right: "2px",
-                backgroundColor: "#1a1a1a",
-                color: "white",
-                borderRadius: "50%",
-                width: "18px",
-                height: "18px",
-                fontSize: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "700",
-                border: "2px solid white"
-              }}>3</span>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "2px",
+                  right: "2px",
+                  backgroundColor: "#1a1a1a",
+                  color: "white",
+                  borderRadius: "50%",
+                  width: "18px",
+                  height: "18px",
+                  fontSize: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "700",
+                  border: "2px solid white",
+                }}
+              >
+                3
+              </span>
             </div>
 
             {/* User Profile */}
-            <div className="d-flex align-items-center gap-2 ps-3" style={{ cursor: "pointer", borderLeft: "1px solid #e5e7eb" }}>
+            <div
+              className="d-flex align-items-center gap-2 ps-3"
+              style={{ cursor: "pointer", borderLeft: "1px solid #e5e7eb" }}
+            >
               <img
                 src={company}
                 alt="User"
@@ -289,16 +505,38 @@ function MainApp() {
                   height: "36px",
                   borderRadius: "50%",
                   border: "2px solid #e5e7eb",
-                  objectFit: "cover"
+                  objectFit: "cover",
                 }}
               />
               <div className="d-none d-lg-block">
-                <div style={{ fontSize: "13px", fontWeight: "600", color: "#1a1a1a", lineHeight: "1.2" }}>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    color: "#1a1a1a",
+                    lineHeight: "1.2",
+                  }}
+                >
                   {userInfo?.name || "Admin User"}
                 </div>
-                <div style={{ fontSize: "11px", color: "#6b7280", lineHeight: "1.2" }}>Administrator</div>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    color: "#6b7280",
+                    lineHeight: "1.2",
+                  }}
+                >
+                  Administrator
+                </div>
               </div>
-              <i className="bi bi-chevron-down" style={{ fontSize: "11px", color: "#9ca3af", marginLeft: "4px" }}></i>
+              <i
+                className="bi bi-chevron-down"
+                style={{
+                  fontSize: "11px",
+                  color: "#9ca3af",
+                  marginLeft: "4px",
+                }}
+              ></i>
             </div>
           </div>
         </header>
@@ -341,11 +579,16 @@ function MainApp() {
       {/* Sidebar + Main */}
       <div className="row m-0 p-0 box">
         {/* Sidebar */}
-        <div className="col-2 vh-100 bg-white border-end" style={{ paddingTop: "110px", overflowY: "auto" }}>
+        <div
+          className="col-2 vh-100 bg-white border-end"
+          style={{ paddingTop: "110px", overflowY: "auto" }}
+        >
           {/* Dashboard */}
           <Link
             to="/"
-            className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2  ${path === "/" ? "active" : ""}`}
+            className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2  ${
+              path === "/" ? "active" : ""
+            }`}
           >
             <i className="bi bi-house sidebar-icon"></i>
             <span>Dashboard</span>
@@ -367,27 +610,37 @@ function MainApp() {
                     <i className="bi bi-file-earmark-text sidebar-icon"></i>
                     <span style={{ fontSize: "14px" }}>Invoices</span>
                   </div>
-                  <i className={`bi bi-chevron-${invoicesOpen ? 'down' : 'right'} sidebar-chevron`}></i>
+                  <i
+                    className={`bi bi-chevron-${
+                      invoicesOpen ? "down" : "right"
+                    } sidebar-chevron`}
+                  ></i>
                 </div>
                 {invoicesOpen && (
                   <div className="ps-4">
                     <Link
                       to="/invoices"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/invoices" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/invoices" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-list-ul sidebar-icon-sm"></i>
                       <span>All Invoices</span>
                     </Link>
                     <Link
                       to="/card"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/card" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/card" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-plus-circle sidebar-icon-sm"></i>
                       <span>Create Invoice</span>
                     </Link>
                     <Link
                       to="/invoices/reports"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/invoices/reports" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/invoices/reports" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-graph-up sidebar-icon-sm"></i>
                       <span>Reports</span>
@@ -406,20 +659,28 @@ function MainApp() {
                     <i className="bi bi-people sidebar-icon"></i>
                     <span style={{ fontSize: "14px" }}>Customers</span>
                   </div>
-                  <i className={`bi bi-chevron-${customersOpen ? 'down' : 'right'} sidebar-chevron`}></i>
+                  <i
+                    className={`bi bi-chevron-${
+                      customersOpen ? "down" : "right"
+                    } sidebar-chevron`}
+                  ></i>
                 </div>
                 {customersOpen && (
                   <div className="ps-4">
                     <Link
                       to="/customers"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/customers" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/customers" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-list-ul sidebar-icon-sm"></i>
                       <span>All Customers</span>
                     </Link>
                     <Link
                       to="/customers/create"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/customers/create" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/customers/create" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-plus-circle sidebar-icon-sm"></i>
                       <span>Add Customer</span>
@@ -431,7 +692,9 @@ function MainApp() {
               {/* Payment */}
               <Link
                 to="/payment"
-                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/payment" ? "active" : ""}`}
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/payment" ? "active" : ""
+                }`}
               >
                 <i className="bi bi-credit-card sidebar-icon"></i>
                 <span>Payments</span>
@@ -455,27 +718,37 @@ function MainApp() {
                     <i className="bi bi-box-seam sidebar-icon"></i>
                     <span style={{ fontSize: "14px" }}>Products</span>
                   </div>
-                  <i className={`bi bi-chevron-${inventoryOpen ? 'down' : 'right'} sidebar-chevron`}></i>
+                  <i
+                    className={`bi bi-chevron-${
+                      inventoryOpen ? "down" : "right"
+                    } sidebar-chevron`}
+                  ></i>
                 </div>
                 {inventoryOpen && (
                   <div className="ps-4">
                     <Link
                       to="/inventory"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/inventory" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/inventory" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-list-ul sidebar-icon-sm"></i>
                       <span>All Products</span>
                     </Link>
                     <Link
                       to="/addproduct"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/addproduct" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/addproduct" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-plus-circle sidebar-icon-sm"></i>
                       <span>Add Product</span>
                     </Link>
                     <Link
                       to="/inventory/reports"
-                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${path === "/inventory/reports" ? "active" : ""}`}
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/inventory/reports" ? "active" : ""
+                      }`}
                     >
                       <i className="bi bi-graph-up sidebar-icon-sm"></i>
                       <span>Stock Reports</span>
@@ -487,7 +760,9 @@ function MainApp() {
               {/* Purchase */}
               <Link
                 to="/purchase"
-                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/purchase" ? "active" : ""}`}
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/purchase" ? "active" : ""
+                }`}
               >
                 <i className="bi bi-bag sidebar-icon"></i>
                 <span>Purchases</span>
@@ -499,14 +774,18 @@ function MainApp() {
           <div className="mb-2 mt-4 border-top pt-3">
             <Link
               to="/settings"
-              className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/settings" ? "active" : ""}`}
+              className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                path === "/settings" ? "active" : ""
+              }`}
             >
               <i className="bi bi-gear sidebar-icon"></i>
               <span>Settings</span>
             </Link>
             <Link
               to="/profile"
-              className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${path === "/profile" ? "active" : ""}`}
+              className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                path === "/profile" ? "active" : ""
+              }`}
             >
               <i className="bi bi-person-circle sidebar-icon"></i>
               <span>Profile</span>
@@ -555,13 +834,16 @@ function MainApp() {
               path="/customers"
               element={<Customers />}
             />
-            <Route 
-            authUser={userInfo}
-            path="/addproduct"
-            element={<AddProduct/>}
-            >
-              
-            </Route>
+            <Route
+              authUser={userInfo}
+              path="/addproduct"
+              element={<AddProduct />}
+            ></Route>
+            <Route
+              authUser={userInfo}
+              path="/settings"
+              element={<Setting />}
+            ></Route>
           </Routes>
         </div>
       </div>
