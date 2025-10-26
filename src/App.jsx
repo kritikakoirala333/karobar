@@ -28,11 +28,9 @@ import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
-import SignUp from "./Auth/Signup";
-import Suppliers from "./Suppliers";
-
-import { HiMagnifyingGlass } from "react-icons/hi2";
-import { IoClose } from "react-icons/io5";
+import { FaCog } from "react-icons/fa";
+import Setting from "./pages/Setting";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -232,14 +230,12 @@ function MainApp() {
             <div>
               <div
                 onClick={toggleTheme}
-                className={`bg-gray-300 w-[48px] h-[23px] rounded-xl transition-colors duration-300 cursor-pointer relative ${
-                  darkMode ? "bg-black" : "left-1"
-                }`}
+                className={`bg-gray-300 w-[48px] h-[23px] rounded-xl transition-colors duration-300 cursor-pointer relative ${darkMode ? "bg-black" : "left-1"
+                  }`}
               >
                 <div
-                  className={`bg-white w-[16px] rounded-full h-[17px] absolute top-[3px] transition-all duration-300 ${
-                    darkMode ? "right-1" : "left-1"
-                  }`}
+                  className={`bg-white w-[16px] rounded-full h-[17px] absolute top-[3px] transition-all duration-300 ${darkMode ? "right-1" : "left-1"
+                    }`}
                 >
                   {""}
                 </div>
@@ -287,86 +283,79 @@ function MainApp() {
       </div>
 
       {/* Sidebar + Main */}
-      <div className="row m-0 p-0 box">
+      <div className="row m-0 p-0 box ">
         {/* Sidebar */}
-        <div className="col-2 gap-1 card vh-100">
+        <div className="col-2 card vh-100 sidebar-links-wrapper relative">
           <div style={{ height: "110px" }}></div>
-          <Link
-            to={"/"}
-            className={`${
-              path === "/" ? "bg-black text-white" : ""
-            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
+          <div>
+            <Link to={"/"}>
+              <i className="bi bi-house text-lg"></i>{" "}
+              <span className="fs-6">Dashboard</span>
+            </Link>
+            <Link>
+              <i className="bi bi-columns-gap text-lg"></i>{" "}
+              <span className="fs-6">Layouts</span>
+            </Link>
+            <Link to={"/invoices"}>
+              <i className="bi bi-file text-lg"></i>{" "}
+              <span className="fs-6">Invoices</span>
+            </Link>
+            <Link to={"/purchase"}>
+              <i className="bi bi-bag"></i> <span className="fs-6">Purchase Invoice</span>
+            </Link>
+            <Link to={"/card"}>
+              <i className="bi bi-app"></i> <span className="fs-6">Sales Invoice</span>
+            </Link>
+
+            <Link>
+              {/* <i className="bi bi-map"></i> <span>Map</span> */}
+              <i className="bi bi-app text-lg"></i>{" "}
+              <span className="fs-6">Purchase</span>
+            </Link>
+            <Link to={"/customers"}>
+              <i className="bi bi-app text-lg"></i>{" "}
+              <span className="fs-6">Customers</span>
+            </Link>
+            <Link to={"/inventory"}>
+              <i className="bi bi-map text-lg"></i>{" "}
+              <span className="fs-6">Inventory</span>
+            </Link>
+            <Link>
+              <i className="bi bi-house text-lg"></i>{" "}
+              <span className="fs-6">Departments</span>
+            </Link>
+            <Link>
+              <i className="bi bi-hourglass text-lg"></i>{" "}
+              <span className="fs-6">History</span>
+            </Link>
+
+
+          </div>
+          <div
+            className="card  p-3 shadow"
+            style={{
+              width: "90%",
+              position: "absolute",
+              bottom: "10px",
+              left: "5%",
+              zIndex: 1000,
+            }}
           >
-            <i className="bi bi-house text-lg mr-2"></i>{" "}
-            <span className="fs-6">Dashboard</span>
-          </Link>
-          <Link
-            className={`${
-              path === "/layout" ? "bg-black text-white rounded-md" : ""
-            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
-          >
-            <i className="bi bi-columns-gap text-lg mr-2"></i>{" "}
-            <span className="fs-6">Layouts</span>
-          </Link>
-          <Link
-            to={"/invoices"}
-            className={`${
-              path === "/invoices" ? "bg-black text-white rounded-md" : ""
-            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
-          >
-            <i className="bi bi-file text-lg mr-2"></i>{" "}
-            <span className="fs-6">Invoices</span>
-          </Link>
-          <Link
-            to={"/purchase"}
-            className={`${
-              path === "/purchase" ? "bg-black text-white rounded-md" : ""
-            } hover:bg-gray-300 text-decoration-none text-black  rounded-md px-3 py-[10px]`}
-          >
-            <i className="bi bi-bag text-lg mr-2"></i>{" "}
-            <span className="fs-6">Purchase Invoice</span>
-          </Link>
-          <Link
-            to={"/card"}
-            className={`${
-              path === "/card" ? "bg-black text-white rounded-md" : ""
-            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
-          >
-            <i className="bi bi-app text-lg mr-2"></i>{" "}
-            <span className="fs-6">Sales Invoice</span>
-          </Link>
-          <Link
-            to={"/customers"}
-            className={`${
-              path === "/customers" ? "bg-black text-white rounded-md" : ""
-            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
-          >
-            <i className="bi bi-app text-lg mr-2"></i>{" "}
-            <span className="fs-6">Customers</span>
-          </Link>
-          <Link
-            to={"/suppliers"}
-            className={`${
-              path === "/suppliers" ? "bg-black text-white rounded-md" : ""
-            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
-          >
-            <i className="bi bi-app text-lg mr-2"></i>{" "}
-            <span className="fs-6">Suppliers</span>
-          </Link>
-          <Link
-            to={"/inventory"}
-            className={`${
-              path === "/inventory" ? "bg-black text-white rounded-md" : ""
-            } hover:bg-gray-300 text-decoration-none text-black rounded-md px-3 py-[10px]`}
-          >
-            <i className="bi bi-map text-lg mr-2"></i>{" "}
-            <span className="fs-6">Inventory</span>
-          </Link>
-          <Link className="hover:bg-gray-300 text-decoration-none rounded-md text-black px-3 py-[10px]">
-            <i className="bi bi-hourglass text-lg mr-2"></i>{" "}
-            <span className="fs-6">History</span>
-          </Link>
+
+            <ul className="list-group list-group-flush">
+              <Link to={'profile'}><li className=" d-flex align-items-center gap-2  ">
+                <FaUser />
+                <span className="">Profile</span>
+              </li></Link>
+              <Link to={'setting'}><li className=" d-flex align-items-center gap-2">
+                <FaCog />
+                <span>Settings</span>
+              </li></Link>
+            </ul>
+          </div>
+
         </div>
+
 
         {/* Main Content */}
         <div className="col-10 vh-100 bg-white" style={{ overflowY: "scroll" }}>
@@ -412,32 +401,37 @@ function MainApp() {
             />
             <Route
               authUser={userInfo}
-              path="/suppliers"
-              element={<Suppliers />}
+              path="/addproduct"
+              element={<AddProduct />}
             />
             <Route
               authUser={userInfo}
-              path="/addproduct"
-              element={<AddProduct />}
-            ></Route>
+              path="/setting"
+              element={<Setting />}
+             />
+              <Route
+              authUser={userInfo}
+              path="/profile"
+              element={<Profile/>}
+              >
+
+            </Route>
           </Routes>
         </div>
       </div>
       <div
         /* Overlay container: always mounted so transitions can run */
-        className={`fixed inset-0 z-[9999] flex justify-end transition-all duration-200 ${
-          showPaymentSlide
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-[9999] flex justify-end transition-all duration-200 ${showPaymentSlide
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
+          }`}
       >
         {/* backdrop (frosted glass) */}
         <div
-          className={`absolute inset-0 backdrop-blur-md transition-opacity duration-200 ${
-            showPaymentSlide
-              ? "bg-black/30 opacity-100"
-              : "bg-transparent opacity-0"
-          }`}
+          className={`absolute inset-0 backdrop-blur-md transition-opacity duration-200 ${showPaymentSlide
+            ? "bg-black/30 opacity-100"
+            : "bg-transparent opacity-0"
+            }`}
           onClick={() => setShowPaymentSlide(false)} // click outside to close
         />
 
