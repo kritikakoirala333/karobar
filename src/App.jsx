@@ -40,16 +40,29 @@ function App() {
 function MainApp() {
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const [userInfo, setUserInfo] = useState();
-  const navigator = useNavigate();
   const [authCheck, setAuthCheck] = useState(true);
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
 
-  console.log(path);
+  const navigator = useNavigate();
 
   const isSignInPage = path === "/signin";
+
+  const paths = [
+    { path: "/", searchPath: "dashboard" },
+    { path: "/invoices", searchPath: "invoices" },
+    { path: "/purchase", searchPath: "purchase invoice" },
+    { path: "/card", searchPath: "search invoice" },
+    { path: "/customers", searchPath: "customers" },
+    { path: "/suppliers", searchPath: "suppliers" },
+    { path: "/inventory", searchPath: "inventory" },
+    { path: "/addproduct", searchPath: "add product" },
+  ];
 
   const checkLoginInfo = () => {
     console.log("Checking for Login Session");
@@ -68,7 +81,6 @@ function MainApp() {
       )
       .then((resp) => {
         if (resp.data.name) {
-          console.log(resp);
           setUserInfo(resp.data);
         } else {
           navigator("/signin");
@@ -115,6 +127,49 @@ function MainApp() {
     }
   };
 
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchVal(value);
+    if (value.trim() === "") {
+      setSuggestions([]);
+    } else {
+      const filtered = paths.filter((p) =>
+        p.searchPath.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setActiveIndex(0);
+    }
+  };
+
+  const handleSuggestionClick = (item) => {
+    setSearchVal(item.searchPath);
+    setSuggestions([]);
+    console.log(item.path);
+    navigator(item.path);
+  };
+
+  const handleKeyDown = (e) => {
+    if (suggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev + 1) % suggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) =>
+        prev === 0 ? suggestions.length - 1 : prev - 1
+      );
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const selected = suggestions[activeIndex];
+      if (selected) {
+        setSearchVal(selected.searchPath);
+        setSuggestions([]);
+        navigator(selected.path);
+      }
+    }
+  };
+
   return (
     <>
       {/* Header */}
@@ -126,8 +181,34 @@ function MainApp() {
           <div className="col-3 d-flex align-items-center">
             <div className="text-3xl font-semibold">Invoicer</div>
           </div>
-          <div className="col-6">
-            <input type="text" placeholder="Search" className="form-control" />
+          <div className="col-6 relative">
+            <input
+              type="text"
+              placeholder="Search"
+              className="form-control"
+              value={searchVal}
+              onChange={handleSearch}
+              onKeyDown={handleKeyDown}
+            />
+
+            {/* DROPDOWN SUGGESTION BOX */}
+            {suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                {suggestions.map((item, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleSuggestionClick(item)}
+                    className={`px-3 py-2 cursor-pointer ${
+                      index === activeIndex
+                        ? "bg-gray-200 text-black" // highlight active
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {item.searchPath}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex gap-7 items-center">
             <div>
@@ -310,7 +391,7 @@ function MainApp() {
               path="/customers"
               element={<Customers />}
             />
-             <Route
+            <Route
               authUser={userInfo}
               path="/suppliers"
               element={<Suppliers />}

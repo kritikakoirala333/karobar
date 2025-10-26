@@ -29,18 +29,6 @@ export default function Suppliers() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   const fetchInvoices = async () => {
-  //     const resp = await getDocs(collection(db, "customers"));
-  //     const data = resp.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     }));
-  //     setCustomers(data);
-  //   };
-
-  //   fetchInvoices();
-  // }, []);
 
   const colors = [
     "bg-purple-300",
