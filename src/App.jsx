@@ -29,6 +29,8 @@ import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
 import { FaCog } from "react-icons/fa";
+import Setting from "./pages/Setting";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -245,11 +247,11 @@ function MainApp() {
           >
 
             <ul className="list-group list-group-flush">
-              <Link to ={'/'}><li className=" d-flex align-items-center gap-2  ">
+              <Link to={'profile'}><li className=" d-flex align-items-center gap-2  ">
                 <FaUser />
                 <span className="">Profile</span>
               </li></Link>
-              <Link to ={'/'}><li className=" d-flex align-items-center gap-2">
+              <Link to={'setting'}><li className=" d-flex align-items-center gap-2">
                 <FaCog />
                 <span>Settings</span>
               </li></Link>
@@ -304,7 +306,17 @@ function MainApp() {
               authUser={userInfo}
               path="/addproduct"
               element={<AddProduct />}
-            >
+            />
+            <Route
+              authUser={userInfo}
+              path="/setting"
+              element={<Setting />}
+             />
+              <Route
+              authUser={userInfo}
+              path="/profile"
+              element={<Profile/>}
+              >
 
             </Route>
           </Routes>
