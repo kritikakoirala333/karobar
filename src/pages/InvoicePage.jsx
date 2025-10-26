@@ -80,8 +80,8 @@ const InvoicePage = () => {
   return (
     <div className="flex">
       {/* Left Section */}
-      <section className="leftContainer w-[65%]">
-        <section className="invoiceHeader mt-3 px-2">
+      <section className="leftContainer w-[68%]">
+        <section className="invoiceHeader  px-2">
          <div className="flex items-center justify-between w-full py-2">
   
   <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ const InvoicePage = () => {
       </div>
     </Link>
 
-    <p className="text-2xl font-semibold text-gray-800">
+    <p className="text-2xl font-semibold pt-[14px] text-gray-800">
       | Order #{invoice.id || 89}
     </p>
   </div>
@@ -253,8 +253,8 @@ const InvoicePage = () => {
       </section>
 
       {/* Right Section */}
-    <section className="rightContainer w-[35%] border-l border-gray-300 p-4">
-  <div className="border border-dashed border-blue-300 rounded-md p-4 space-y-4">
+    <section className="rightContainer w-[35%] border-l border-gray-300 px-2 py-2">
+  <div className="border border-dashed border-blue-300 rounded-md p-2 space-y-4">
     {/* Header */}
     <div>
       <p className="font-semibold text-lg mb-1">Invoice Details</p>
