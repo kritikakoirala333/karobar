@@ -57,7 +57,7 @@ function MainApp() {
     { path: "/", searchPath: "dashboard" },
     { path: "/invoices", searchPath: "invoices" },
     { path: "/purchase", searchPath: "purchase invoice" },
-    { path: "/card", searchPath: "search invoice" },
+    { path: "/card", searchPath: "sales invoice" },
     { path: "/customers", searchPath: "customers" },
     { path: "/suppliers", searchPath: "suppliers" },
     { path: "/inventory", searchPath: "inventory" },
