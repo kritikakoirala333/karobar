@@ -28,6 +28,7 @@ import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
+import SignUp from "./Auth/Signup";
 import Suppliers from "./Suppliers";
 
 import { HiMagnifyingGlass } from "react-icons/hi2";
@@ -97,39 +98,39 @@ function MainApp() {
       });
   };
 
-  useEffect(() => {
-    checkLoginInfo();
+  // useEffect(() => {
+  //   checkLoginInfo();
 
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  //   const savedTheme = localStorage.getItem("theme");
+  //   if (savedTheme === "dark") {
+  //     setDarkMode(true);
+  //     document.documentElement.classList.add("dark");
+  //   } else {
+  //     setDarkMode(false);
+  //     document.documentElement.classList.remove("dark");
+  //   }
+  // }, []);
 
-  if (authCheck)
-    return (
-      <>
-        <h2>Wait I am Checking</h2>
-      </>
-    );
+  // if (authCheck)
+  //   return (
+  //     <>
+  //       <h2>Wait I am Checking</h2>
+  //     </>
+  //   );
 
   if (isSignInPage) {
-    return <SignIn />;
+    return <SignUp />;
   }
 
-  const toggleTheme = () => {
-    if (darkMode) {
-      localStorage.setItem("theme", "light");
-      setDarkMode(false);
-    } else {
-      localStorage.setItem("theme", "dark");
-      setDarkMode(true);
-    }
-  };
+  // const toggleTheme = () => {
+  //   if (darkMode) {
+  //     localStorage.setItem("theme", "light");
+  //     setDarkMode(false);
+  //   } else {
+  //     localStorage.setItem("theme", "dark");
+  //     setDarkMode(true);
+  //   }
+  // };
 
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -393,6 +394,7 @@ function MainApp() {
               element={<Invoices />}
             />
             <Route authUser={userInfo} path="/signin" element={<SignIn />} />
+            <Route  path="/signup" element={<SignUp />} />
             <Route
               authUser={userInfo}
               path="/purchase"
