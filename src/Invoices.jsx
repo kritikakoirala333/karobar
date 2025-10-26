@@ -10,6 +10,8 @@ import EditInvoiceFom from "./EditInvoiceFom";
 import { BsFileEarmarkBarGraphFill } from "react-icons/bs";
 import { MdArrowDropDown } from "react-icons/md";
 import { ImStopwatch } from "react-icons/im";
+import { FaCalendarAlt } from "react-icons/fa";
+import { RiSortAlphabetDesc } from "react-icons/ri";
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
@@ -215,7 +217,7 @@ export default function Invoices() {
             }}
             className="bg-black status-filter text-white flex items-center gap-2 px-3 py-[5px] rounded-sm cursor-pointer relative"
           >
-            <BsFileEarmarkBarGraphFill />
+            <RiSortAlphabetDesc />
             Sort By
             <MdArrowDropDown />
             {showSortByFilter && (
@@ -329,7 +331,7 @@ export default function Invoices() {
             )}
           </div>
           <div className="bg-black text-white flex items-center gap-2 px-3 py-[5px] rounded-sm cursor-pointer">
-            <BsFileEarmarkBarGraphFill />
+            <FaCalendarAlt />
             Calendar
             <MdArrowDropDown />
           </div>
@@ -364,11 +366,11 @@ export default function Invoices() {
                     <div>
                       <div className="flex justify-between">
                         <div className="flex gap-3">
-                          <div className="text-white bg-black h-12 w-12 flex justify-center items-center font-bold rounded-md">
-                            P
+                          <div className="text-white bg-black h-12 w-12 capitalize flex justify-center items-center font-bold rounded-md">
+                            {invoice.customer.name.slice(0, 1)}
                           </div>
                           <div>
-                            <p className="font-bold text-xl mb-0">
+                            <p className="font-bold text-xl capitalize mb-0">
                               {invoice.customer.name}
                             </p>
                             <p className="text-sm mb-0">
@@ -388,7 +390,8 @@ export default function Invoices() {
                                 : "bg-yellow-100 text-yellow-700"
                             }`}
                           >
-                            <ImStopwatch />{status}
+                            <ImStopwatch />
+                            {status}
                           </div>
                         </div>
                       </div>
@@ -412,22 +415,24 @@ export default function Invoices() {
                                 Price
                               </th>
                             </tr>
-                            {invoice?.invoice_items?.slice(0,2).map((item, index) => {
-                              const totalAmt = item.quantity * item.rate;
-                              return (
-                                <tr key={index}>
-                                  <td className="py-2 w-1/3 text-left">
-                                    {item.item}
-                                  </td>
-                                  <td className="py-2 w-1/3 text-center">
-                                    {item.quantity}
-                                  </td>
-                                  <td className="py-2 w-1/3 text-right">
-                                    {item.rate}
-                                  </td>
-                                </tr>
-                              );
-                            })}
+                            {invoice?.invoice_items
+                              ?.slice(0, 2)
+                              .map((item, index) => {
+                                const totalAmt = item.quantity * item.rate;
+                                return (
+                                  <tr key={index}>
+                                    <td className="py-2 capitalize w-1/3 text-left">
+                                      {item.item}
+                                    </td>
+                                    <td className="py-2 w-1/3 text-center">
+                                      {item.quantity}
+                                    </td>
+                                    <td className="py-2 w-1/3 text-right">
+                                      {item.rate}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                           </thead>
                         </table>
                       </div>
@@ -441,11 +446,11 @@ export default function Invoices() {
                             to={`/invoicepage/${invoice.id}`}
                             className="text-decoration-none text-black"
                           >
-                            <div className="border-2 border-black rounded-sm px-6 py-1">
+                            <div className="border-2 border-black hover:bg-gray-100 rounded-sm px-6 py-1">
                               See Details
                             </div>
                           </Link>
-                          <div className="bg-black px-6 py-1 text-white rounded-sm">
+                          <div className="bg-gray-900 px-6 py-1 hover:bg-gray-700 text-white rounded-sm">
                             Pay Bills
                           </div>
                         </div>

@@ -29,6 +29,10 @@ import { IoMoon } from "react-icons/io5";
 import axiosInstance from "./axiosConfig";
 import AddProduct from "./pages/AddProduct";
 import Suppliers from "./Suppliers";
+
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import { IoClose } from "react-icons/io5";
+
 function App() {
   return (
     <BrowserRouter>
@@ -182,14 +186,24 @@ function MainApp() {
             <div className="text-3xl font-semibold">Invoicer</div>
           </div>
           <div className="col-6 relative">
-            <input
-              type="text"
-              placeholder="Search"
-              className="form-control"
-              value={searchVal}
-              onChange={handleSearch}
-              onKeyDown={handleKeyDown}
-            />
+            {/* INPUT WRAPPER */}
+            <div className="relative">
+              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-lg " />
+              <input
+                type="text"
+                placeholder="Search"
+                className="pl-10 border-1 rounded-sm border-gray-500  pr-13 py-2 w-full"
+                value={searchVal}
+                onChange={handleSearch}
+                onKeyDown={handleKeyDown}
+              />
+              <div
+                className="absolute right-4 top-3 text-xl cursor-pointer"
+                onClick={() => {setSearchVal(""); setSuggestions([])}}
+              >
+                <IoClose />
+              </div>
+            </div>
 
             {/* DROPDOWN SUGGESTION BOX */}
             {suggestions.length > 0 && (
@@ -198,18 +212,21 @@ function MainApp() {
                   <div
                     key={index}
                     onClick={() => handleSuggestionClick(item)}
-                    className={`px-3 py-2 cursor-pointer ${
+                    className={`px-3 flex items-center gap-2 py-2 cursor-pointer ${
                       index === activeIndex
-                        ? "bg-gray-200 text-black" // highlight active
+                        ? "bg-gray-200 text-black"
                         : "hover:bg-gray-100"
                     }`}
                   >
-                    {item.searchPath}
+                    {/* <HiMagnifyingGlass className="text-gray-500" /> */}
+                    <span>/</span>
+                    <span className="">{item.searchPath}</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
+
           <div className="flex gap-7 items-center">
             <div>
               <div
