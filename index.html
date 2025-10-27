@@ -37,6 +37,10 @@
     --text-grey: #e4e4e4;
   }
 
+  #root {
+    max-width: 1300px;
+  }
+
   body {
     background: #f8f9fa;
     font-family: "Outfit", sans-serif !important;
@@ -180,10 +184,14 @@
     outline: none !important;
     box-shadow: none !important;
   }
+
+  .container-xxl {
+    max-width: 1400px !important;
+  }
 </style>
 
 <body>
-  <div id="root"></div>
+  <div id="root" class="container-xxl"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

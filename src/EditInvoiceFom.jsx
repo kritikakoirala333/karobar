@@ -1,13 +1,21 @@
 import React, { useState } from "react";
+import axiosInstance from "./axiosConfig";
+import Swal from "sweetalert2";
 
-function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
+function EditInvoiceFom({ setShowEditInvoiceForm, invoice, fetchInvoices }) {
   const [formData, setFormData] = useState({
-    invoice_no: invoice[0].invoice_no,
-    customer_name: invoice[0].customer.name,
-    phone: invoice[0].customer.phone,
-    address: invoice[0].customer.address,
-    date: invoice[0].date.slice(0, 10),
-    items: invoice[0].invoice_items.map((i) => ({
+    id: invoice?.[0]?.id || "",
+    invoice_no: invoice?.[0]?.invoice_no || "",
+    customer_id: invoice?.[0]?.customer_id || "",
+    customer_name: invoice?.[0]?.customer?.name || "",
+    phone: invoice?.[0]?.customer?.phone || "",
+    address: invoice?.[0]?.customer?.address || "",
+    date: invoice?.[0]?.date?.slice(0, 10) || "",
+    subtotal: invoice?.[0]?.subTotal || 0,
+    discount: invoice?.[0]?.discount || 0,
+    tax: invoice?.[0]?.tax || 0,
+    grand_total: invoice?.[0]?.grand_total || 0,
+    invoice_items: (invoice?.[0]?.invoice_items || []).map((i) => ({
       item: i.item || "",
       quantity: i.quantity || "",
       rate: i.rate || "",
@@ -22,7 +30,7 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
 
   const handleItemChange = (index, e) => {
     const { name, value } = e.target;
-    const updatedItems = [...formData.items];
+    const updatedItems = [...formData.invoice_items];
     updatedItems[index][name] = value;
 
     // auto calculate amount = quantity * rate
@@ -32,42 +40,86 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
       updatedItems[index].amount = qty * rate;
     }
 
-    setFormData({ ...formData, items: updatedItems });
+    setFormData({ ...formData, invoice_items: updatedItems });
   };
 
   // add new row
   const addMoreItem = () => {
     setFormData({
       ...formData,
-      items: [
-        ...formData.items,
+      invoice_items: [
+        ...formData.invoice_items,
         { item: "", quantity: "", rate: "", amount: 0 },
       ],
     });
   };
 
+  const clearForm = () => {
+    setFormData((prev) => ({
+      ...prev,
+      customername: "",
+      mobileno: "",
+      address: "",
+      invoice_items: prev.invoice_items.map(() => ({
+        name: "",
+        quantity: 0,
+      })),
+    }));
+  };
+
   // delete item row
   const removeItem = (index) => {
-    const updatedItems = formData.items.filter((_, i) => i !== index);
-    setFormData({ ...formData, items: updatedItems });
+    const updatedItems = formData.invoice_items.filter((_, i) => i !== index);
+    setFormData({ ...formData, invoice_items
+      
+      : updatedItems });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Edit Details:", formData);
-    alert("Customer data edit successfully!");
-    setShowAddCustomerForm(false); // close the popup after submission\
+    let formInfomation = {
+      invoice_no: "INV001",
+      customer_id: formData.customer_id,
+      date: formData.date,
+      subtotal: formData.subtotal,
+      discount: formData.discount,
+      tax: formData.tax,
+      grand_total: formData.grand_total,
+      invoice_items: [],
+    };
 
-    addDoc(collection(db, "customers"), formData).then((resp) => {
-      console.log("DataAdded");
-      clearForm();
+    formData.invoice_items.map((field, index) => {
+      formInfomation["invoice_items"][index] = {
+        item: field.item,
+        quantity: field.quantity,
+        rate: field.rate,
+        total: field.amount,
+        // unit: ''
+      };
     });
-  };
 
-  const subtotal = formData.items.reduce(
-    (sum, item) => sum + Number(item.amount),
-    0
-  );
+    axiosInstance
+      .put(`/sales-invoices/${formData.id}`, formInfomation)
+      .then((resp) => {
+        console.log(resp);
+        Swal.fire({
+          title: "Success!",
+          text: "Sales invoice is created",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        clearForm();
+        setShowEditInvoiceForm(false);
+        fetchInvoices();
+      })
+      .catch((ex) => {
+        console.error(ex);
+      });
+
+    console.log(formInfomation);
+  };
 
   return (
     // background overlay
@@ -145,7 +197,7 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
                 </tr>
               </thead>
               <tbody>
-                {formData.items.map((item, index) => (
+                {formData.invoice_items.map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>
@@ -181,7 +233,7 @@ function EditInvoiceFom({ setShowEditInvoiceForm, invoice }) {
                         required
                       />
                     </td>
-                    <td>{item.amount.toFixed(2)}</td>
+                    <td>{item.amount}</td>
                     <td>
                       <button
                         type="button"

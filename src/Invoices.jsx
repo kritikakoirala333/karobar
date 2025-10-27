@@ -7,6 +7,11 @@ import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosConfig";
 import { RiFileEditFill } from "react-icons/ri";
 import EditInvoiceFom from "./EditInvoiceFom";
+import { BsFileEarmarkBarGraphFill } from "react-icons/bs";
+import { MdArrowDropDown } from "react-icons/md";
+import { ImStopwatch } from "react-icons/im";
+import { FaCalendarAlt } from "react-icons/fa";
+import { RiSortAlphabetDesc } from "react-icons/ri";
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
@@ -18,15 +23,25 @@ export default function Invoices() {
   const [showEditInvoiceForm, setShowEditInvoiceForm] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState("");
 
+  const [showStatusFilter, setShowStatusFilter] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
+
+  const [showSortByFilter, setShowSortByFilter] = useState(false);
+  const [selectedSortBy, setSelectedSortBy] = useState("");
+
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchInvoices = () => {
     axiosInstance
       .get("/sales-invoices")
       .then((resp) => {
         setInvoices(resp.data.data.data);
       })
       .catch((ex) => console.error(ex));
+  };
+
+  useEffect(() => {
+    fetchInvoices();
   }, []);
 
   const getTotalQuantity = (invoice_items = []) => {
@@ -52,28 +67,52 @@ export default function Invoices() {
   const randomStatus = () =>
     statuses[Math.floor(Math.random() * statuses.length)];
 
-  const filteredInvoices = invoices.filter((inv) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      inv.customer.name?.toLowerCase().includes(term) ||
-      inv.customer.address?.toLowerCase().includes(term) ||
-      inv.customer.phone?.toLowerCase().includes(term) ||
-      inv.invoice_no?.toString().includes(term)
-    );
-  });
+  const filteredInvoices = invoices
+    .filter((inv) => {
+      const term = searchTerm.toLowerCase();
+      return (
+        inv.customer.name?.toLowerCase().includes(term) ||
+        inv.customer.address?.toLowerCase().includes(term) ||
+        inv.customer.phone?.toLowerCase().includes(term) ||
+        inv.invoice_no?.toString().includes(term)
+      );
+    })
+    .sort((a, b) => {
+      if (selectedSortBy === "Customer Name") {
+        return a.customer.name.localeCompare(b.customer.name);
+      } else if (selectedSortBy === "Address") {
+        return a.customer.address.localeCompare(b.customer.address);
+      } else if (selectedSortBy === "Total Amount") {
+        return (a.grand_total || 0) - (b.grand_total || 0);
+      } else if (selectedSortBy === "Quantity") {
+        const totalA = getTotalQuantity(a.invoice_items);
+        const totalB = getTotalQuantity(b.invoice_items);
+        return totalA - totalB;
+      }
+      return 0;
+    });
 
   const handleDeleteClick = (id) => {
     setDeleteId(id);
     setShowConfirm(true);
   };
 
-  const confirmDelete = () => {
-    setInvoices(invoices.filter((inv) => inv.id !== deleteId));
-    setShowConfirm(false);
-    setDeleteId(null);
+  const confirmDelete = (e, id) => {
+    e.preventDefault();
+
+    axiosInstance
+      .delete(`/sales-invoices/${id}`)
+      .then((resp) => {
+        fetchInvoices();
+        setShowConfirm(false);
+        setDeleteId(null);
+      })
+      .catch((ex) => {
+        console.error(ex);
+      });
   };
 
-  const cancelDelete = () => {
+  const cancelDelete = (id) => {
     setShowConfirm(false);
     setDeleteId(null);
   };
@@ -87,8 +126,19 @@ export default function Invoices() {
     setSelectedInvoice(invoices.filter((invoice) => invoice.id === invoiceId));
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".status-filter")) {
+        setShowStatusFilter(false);
+        setShowSortByFilter(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
-    <div className="px-10 pt-6">
+    <div className="px-2 pt-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className=" font-semibold">Invoices</h3>
         {/* 🔍 Search Bar */}
@@ -158,53 +208,257 @@ export default function Invoices() {
           </span>
         </div>
       </div>
-      <div className="flex mb-4 justify-end gap-8">
-        <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-          This year
+      <div className="flex mb-3 justify-between items-center">
+        <div className="flex gap-3">
+          <div
+            onClick={() => {
+              setShowSortByFilter(!showSortByFilter);
+              setShowStatusFilter(false);
+            }}
+            className="bg-black status-filter text-white flex items-center gap-2 px-3 py-[5px] rounded-sm cursor-pointer relative"
+          >
+            <RiSortAlphabetDesc />
+            Sort By
+            <MdArrowDropDown />
+            {showSortByFilter && (
+              <div className="absolute top-[110%] text-black left-0 w-70 bg-white rounded-xl shadow-lg border p-3 z-50">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-gray-800 text-sm">
+                    Sort By
+                  </h4>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSortBy("");
+                    }}
+                    className="text-blue-500 text-xs font-medium"
+                  >
+                    Clear
+                  </button>
+                </div>
+
+                {/* Include / Exclude Tabs */}
+                <div className="flex mb-3 border rounded-md overflow-hidden text-sm font-medium">
+                  <button className="w-1/2 bg-gray-200 py-1 text-black">
+                    Include
+                  </button>
+                  <button className="w-1/2 py-1 hover:bg-gray-100">
+                    Exclude
+                  </button>
+                </div>
+                {["Customer Name", "Address", "Total Amount", "Quantity"].map(
+                  (sortBy) => (
+                    <div
+                      key={sortBy}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSortBy(sortBy);
+                      }}
+                      className={`px-3 py-2 rounded-md cursor-pointer text-sm mb-1 flex justify-between items-center ${
+                        selectedSortBy === sortBy
+                          ? "bg-black text-white font-medium"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {sortBy}
+                      {selectedSortBy === sortBy && (
+                        <span className="text-white font-bold text-lg">✓</span>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+          <div
+            className="bg-black status-filter text-white flex items-center gap-2 px-3 py-[5px] rounded-sm cursor-pointer relative"
+            onClick={() => {
+              setShowStatusFilter(!showStatusFilter);
+              setShowSortByFilter(false);
+            }}
+          >
+            <BsFileEarmarkBarGraphFill />
+            Status
+            <MdArrowDropDown />
+            {showStatusFilter && (
+              <div className="absolute top-[110%] text-black left-0 w-70 bg-white rounded-xl shadow-lg border p-3 z-50">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-gray-800 text-sm">
+                    Status
+                  </h4>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedStatus("");
+                    }}
+                    className="text-blue-500 text-xs font-medium"
+                  >
+                    Clear
+                  </button>
+                </div>
+
+                {/* Include / Exclude Tabs */}
+                <div className="flex mb-3 border rounded-md overflow-hidden text-sm font-medium">
+                  <button className="w-1/2 bg-gray-200 py-1 text-black">
+                    Include
+                  </button>
+                  <button className="w-1/2 py-1 hover:bg-gray-100">
+                    Exclude
+                  </button>
+                </div>
+
+                {/* Status Options */}
+                {["Pending", "Processing", "Paid", "Error"].map((status) => (
+                  <div
+                    key={status}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedStatus(status);
+                    }}
+                    className={`px-3 py-2 rounded-md cursor-pointer text-sm mb-1 flex justify-between items-center ${
+                      selectedStatus === status
+                        ? "bg-black text-white font-medium"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {status}
+                    {selectedStatus === status && (
+                      <span className="text-white font-bold text-lg">✓</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="bg-black text-white flex items-center gap-2 px-3 py-[5px] rounded-sm cursor-pointer">
+            <FaCalendarAlt />
+            Calendar
+            <MdArrowDropDown />
+          </div>
         </div>
-        <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-          This month
-        </div>
-        <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-          This day
+        <div className="flex justify-end gap-3">
+          <div className="bg-black text-white px-3 py-[5px] rounded-sm cursor-pointer">
+            This year
+          </div>
+          <div className="bg-black text-white px-3 py-[5px] rounded-sm cursor-pointer">
+            This month
+          </div>
+          <div className="bg-black text-white px-3 py-[5px] rounded-sm cursor-pointer">
+            This day
+          </div>
         </div>
       </div>
 
       {invoices.length > 0 ? (
         viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 pt-3 pb-5">
             {filteredInvoices.map((invoice, index) => {
               const totalQty = getTotalQuantity(invoice.invoice_items);
-              const bgColor = colors[index % colors.length];
+              const status = randomStatus();
               return (
                 <div
                   key={invoice.id}
-                  className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
+                  className={`shadow-[0px_0px_5px_grey] cursor-pointer rounded-xl`}
                 >
-                  <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
+                  <div className="bg-white rounded-xl py-3 px-4 flex justify-between">
                     {/* Left section wrapped in Link */}
-                    <Link
-                      to={`/invoicepage/${invoice.id}`}
-                      className="text-decoration-none text-black flex-1"
-                    >
-                      <div className="flex flex-col justify-between h-full">
-                        <div>
-                          <h5 className="font-semibold text-lg">
-                            {invoice.customer.name}
-                          </h5>
-                          <p>{invoice.customer.address}</p>
+
+                    <div>
+                      <div className="flex justify-between">
+                        <div className="flex gap-3">
+                          <div className="text-white bg-black h-12 w-12 capitalize flex justify-center items-center font-bold rounded-md">
+                            {invoice.customer.name.slice(0, 1)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-xl capitalize mb-0">
+                              {invoice.customer.name}
+                            </p>
+                            <p className="text-sm mb-0">
+                              Invoice: {invoice.invoice_no}
+                            </p>
+                          </div>
                         </div>
-                        <span className="font-medium">
-                          Total Quantity:{" "}
-                          <span className="text-purple-700">
-                            {getTotalQuantity(invoice.invoice_items)}
-                          </span>
-                        </span>
+                        <div>
+                          <div
+                            className={`px-3 py-1 text-xs font-medium flex gap-1 items-center rounded-full ${
+                              status === "Paid"
+                                ? "bg-green-100 text-green-700"
+                                : status === "Draft"
+                                ? "bg-gray-200 text-gray-700"
+                                : status === "Overdue"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            <ImStopwatch />
+                            {status}
+                          </div>
+                        </div>
                       </div>
-                    </Link>
+                      <div className=" py-3 border-b-2 border-gray-100 flex justify-between">
+                        <div className="text-gray-500 text-sm">
+                          Wed, July 12, 2023
+                        </div>
+                        <div className="text-gray-500 text-sm">06:45 PM</div>
+                      </div>
+                      <div>
+                        <table className="table-fixed w-full border-collapse">
+                          <thead>
+                            <tr>
+                              <th className="pt-3 pb-2 w-1/3 text-left">
+                                Items
+                              </th>
+                              <th className="pt-3 pb-2 w-1/3 text-center">
+                                Qty
+                              </th>
+                              <th className="pt-3 pb-2 flex justify-end">
+                                Price
+                              </th>
+                            </tr>
+                            {invoice?.invoice_items
+                              ?.slice(0, 2)
+                              .map((item, index) => {
+                                const totalAmt = item.quantity * item.rate;
+                                return (
+                                  <tr key={index}>
+                                    <td className="py-2 capitalize w-1/3 text-left">
+                                      {item.item}
+                                    </td>
+                                    <td className="py-2 w-1/3 text-center">
+                                      {item.quantity}
+                                    </td>
+                                    <td className="py-2 w-1/3 text-right">
+                                      {item.rate}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                          </thead>
+                        </table>
+                      </div>
+                      <div className="border-t-2 mt-2 pt-3 pb-2 border-gray-100">
+                        <div className="flex justify-between font-semibold text-lg">
+                          <p>Total</p>
+                          <p>$87.75</p>
+                        </div>
+                        <div className="flex justify-between">
+                          <Link
+                            to={`/invoicepage/${invoice.id}`}
+                            className="text-decoration-none text-black"
+                          >
+                            <div className="border-2 border-black hover:bg-gray-100 rounded-sm px-6 py-1">
+                              See Details
+                            </div>
+                          </Link>
+                          <div className="bg-gray-900 px-6 py-1 hover:bg-gray-700 text-white rounded-sm">
+                            Pay Bills
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Right section with actions (not inside Link) */}
-                    <div className="text-right flex flex-col justify-between items-end ml-4">
+                    {/* <div className="text-right flex flex-col justify-between items-end ml-4">
                       <p className="text-sm">{invoice.customer.phone}</p>
                       <div className="flex gap-2">
                         <span
@@ -220,14 +474,14 @@ export default function Invoices() {
                           <FaTrashAlt />
                         </span>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="bg-white border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
+          <div className="bg-white border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out mb-5 mt-4">
             <div className="max-h-94 overflow-y-auto">
               <table className="min-w-full border-collapse">
                 <thead className="bg-black text-left text-sm font-semibold text-white sticky top-0 z-10">
@@ -354,7 +608,7 @@ export default function Invoices() {
             </h5>
             <div className="flex justify-center gap-5 mt-5">
               <div
-                onClick={confirmDelete}
+                onClick={(e) => confirmDelete(e, deleteId)}
                 className="bg-red-500 text-white cursor-pointer px-5 rounded-md py-2 hover:bg-red-600 transition-all"
               >
                 OK
@@ -373,6 +627,7 @@ export default function Invoices() {
         <EditInvoiceFom
           setShowEditInvoiceForm={setShowEditInvoiceForm}
           invoice={selectedInvoice}
+          fetchInvoices={fetchInvoices}
         />
       )}
     </div>
