@@ -13,7 +13,8 @@ export default function Setting() {
     { key: "general", label: "General" },
     { key: "security", label: "Security" },
     { key: "business", label: "Your Business" },
-   
+    {key:"user", label:"User"},
+
     { key: "notifications", label: "Notifications" },
   ];
   const [settings, setSettings] = useState({
@@ -192,10 +193,75 @@ export default function Setting() {
           {activeTab === "security" && (
             <p className="text-muted">Security settings content here...</p>
           )}
-          {activeTab === "business" && (
-            <p className="text-muted">Team management content here...</p>
+           {activeTab === "user" && (
+            <p className="text-muted">Security settings content here...</p>
           )}
-          
+
+          {activeTab === "business" && (
+            <>
+              <div className="flex">
+                <div style={{width: "80%"}}>
+                  <div className="mt-3">
+                    <h5 className="ps-4">Your Business</h5>
+                  </div>
+                  <div className="mt-3 ml-5" style={{ maxWidth: "600px", }}>
+                    <div className="d-flex justify-content-between align-items-center mb-4  ">
+                      <div className="mt-2 ">
+                        <h6 className="fw-semibold mb-1 ">Invoice No. starts with</h6>
+
+                      </div>
+                      <input type="text" className="form-control w-50  " placeholder="" value="INVXXX" />
+
+                    </div>
+
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <div>
+                        <h6 className="fw-semibold mb-1">Payment Receipt starts with</h6>
+
+                      </div>
+                      <input type="text" className="form-control w-50 " placeholder="" value="RECXXX" />
+                    </div>
+
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <div>
+                        <h6 className="fw-semibold mb-1">Currency</h6>
+                      </div>
+                      <select className="form-select w-50">
+                        <option value="">Select currency</option>
+                        <option value="USD">USD – US Dollar</option>
+                        <option value="EUR">EUR – Euro</option>
+                        <option value="GBP">GBP – British Pound</option>
+                        <option value="NPR">NPR – Nepalese Rupee</option>
+                        <option value="INR">INR – Indian Rupee</option>
+                      </select>
+                    </div>
+
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 className="fw-semibold mb-1">Language</h6>
+                      </div>
+                      <select className="form-select w-50">
+                        <option value="">Select language</option>
+                        <option value="en">English</option>
+                        <option value="np">Nepali</option>
+                        <option value="fr">French</option>
+                        <option value="es">Spanish</option>
+                        <option value="de">German</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="card p-4 shadow-sm"
+                  style={{ width: "60%", backgroundColor: "#f8f9fa" }}
+                >
+                  <h6 className="mb-3 text-secondary">Product Preview</h6>
+                  <p className="text-muted">Your product info preview will appear here.</p>
+                </div>
+              </div>
+            </>
+          )}
+
 
           {activeTab === "notifications" && (
 
@@ -254,7 +320,7 @@ export default function Setting() {
                     </div>
                   ))}
                 </div>
-                 <div
+                <div
                   className="card p-4 shadow-sm ml-100"
                   style={{ width: "600px", backgroundColor: "#f8f9fa" }}
                 >
