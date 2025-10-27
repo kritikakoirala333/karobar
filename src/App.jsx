@@ -329,19 +329,19 @@ function MainApp() {
           : "opacity-0 pointer-events-none"
           }`}
       >
-        {/* backdrop (frosted glass) */}
+        {/* backdrop (frosted glass) */} 
         <div
           className={`absolute inset-0 backdrop-blur-md transition-opacity duration-200 ${showPaymentSlide
             ? "bg-black/30 opacity-100"
             : "bg-transparent opacity-0"
             }`}
-          onClick={() => setShowPaymentSlide(false)} // click outside to close
+          onClick={() => setShowPaymentSlide(false)} // click outside to close 
         />
 
         {/* Payment panel (slide-in) */}
         <Payment
           show={showPaymentSlide}
-          setShowPaymentSlide={setShowPaymentSlide}
+          setShowPaymentSlide={setShowPaymentSlide}  
         />
       </div>
     </>

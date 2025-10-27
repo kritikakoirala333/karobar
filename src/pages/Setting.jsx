@@ -6,14 +6,27 @@ import { IoCloudUploadOutline } from "react-icons/io5"; // icon for upload
 import Nav from 'react-bootstrap/Nav';
 import { useState } from "react";
 
+
 export default function Setting() {
   const [activeTab, setActiveTab] = useState("general");
   const tabs = [
     { key: "general", label: "General" },
     { key: "security", label: "Security" },
-    { key: "team", label: "Members & Team" },
+    { key: "business", label: "Your Business" },
+   
     { key: "notifications", label: "Notifications" },
   ];
+  const [settings, setSettings] = useState({
+    creativeEffects: true,
+    productUpdates: true,
+    discoverUpdates: true,
+    researchSurveys: true,
+  });
+
+  const toggleSetting = (key) => {
+    setSettings({ ...settings, [key]: !settings[key] });
+  };
+
 
   return (
     <>
@@ -179,14 +192,82 @@ export default function Setting() {
           {activeTab === "security" && (
             <p className="text-muted">Security settings content here...</p>
           )}
-          {activeTab === "team" && (
+          {activeTab === "business" && (
             <p className="text-muted">Team management content here...</p>
           )}
+          
+
           {activeTab === "notifications" && (
-            <p className="text-muted">Notification preferences content here...</p>
+
+            <>
+              <div className="flex">
+                <div >
+
+                  <div className="mt-3">
+                    <h5 className="ps-4">Notification</h5>
+                  </div>
+
+
+                  {/* Setting Item */}
+                  {[
+                    {
+                      key: "Update Me On Invoice Updates",
+                      title: "Update Me On Invoice Updates",
+                      desc: "You will get notified on invoice create and update",
+                    },
+                    {
+                      key: "When Payment Received",
+                      title: "When Payment Received",
+                      desc: "You will get notified when payment is received ",
+                    },
+                    {
+                      key: "Customer Create",
+                      title: "Customer Create",
+                      desc: "You will get notified when customer is created",
+                    },
+                    {
+                      key: "Record Deleted",
+                      title: "Record Deleted",
+                      desc: "You will get notified when customer is created",
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.key}
+                      className="d-flex align-items-center justify-content-between  py-3"
+                    >
+                      {/* Toggle on left */}
+                      <div className="form-check form-switch me-3 ml-5">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={settings[item.key]}
+                          onChange={() => toggleSetting(item.key)}
+                          style={{ width: "2.5rem", height: "1.3rem", cursor: "pointer" }}
+                        />
+                      </div>
+
+                      {/* Text content */}
+                      <div className="flex-grow-1">
+                        <p className="fw-semibold mb-0">{item.title}</p>
+                        <small className="text-muted">{item.desc}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                 <div
+                  className="card p-4 shadow-sm ml-100"
+                  style={{ width: "600px", backgroundColor: "#f8f9fa" }}
+                >
+                  <h6 className="mb-3 text-secondary">Product Preview</h6>
+                  <p className="text-muted">Your product info preview will appear here.</p>
+                </div>
+              </div>
+
+
+            </>
           )}
         </div>
-      </div>
+      </div >
 
 
 
