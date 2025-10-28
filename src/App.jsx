@@ -35,6 +35,7 @@ import { appBase } from "./store/appBase";
 import { salesInvoiceState } from "./store/salesInvoiceState";
 import { themeBase } from "./store/themeBase";
 import Setting from "./pages/Setting";
+import CustomerLedger from "./pages/CustomerLedger";
 
 function App() {
   return (
@@ -195,7 +196,7 @@ function MainApp() {
     <>
       {/* Header */}
       <div
-        className="bg-white container-xxl"
+        className="bg-white container-xxl "
         style={{
           height: "103px",
           position: "fixed",
@@ -236,7 +237,7 @@ function MainApp() {
                     lineHeight: "1",
                   }}
                 >
-                  Invoicer {theme}
+                  Alphid - <span style={{fontWeight:"light"}}>EMS</span>
                 </div>
                 <div
                   style={{
@@ -345,14 +346,14 @@ function MainApp() {
                           >
                             <i className="bi bi-slash"></i>
                           </div>
-                          <div
-                           
-                            className="d-flex flex-column m-0 p-0 cursor-pointer"
-                          >
-                            <h6 className="mb-0 capitalize  ">{item.searchPath}</h6>
-                            <small className="text-muted">Here is the path for - {item.searchPath}</small>
+                          <div className="d-flex flex-column m-0 p-0 cursor-pointer">
+                            <h6 className="mb-0 capitalize  ">
+                              {item.searchPath}
+                            </h6>
+                            <small className="text-muted">
+                              Here is the path for - {item.searchPath}
+                            </small>
                           </div>
-                          
                         </div>
                       </div>
                     ))}
@@ -559,10 +560,10 @@ function MainApp() {
             <button className="btn btn-primary btn-sm">Settings</button>
           </header>
           <div className="flex gap-6">
-            <Link to="" className="text-decoration-none">
+            <Link to="/card" className="text-decoration-none">
               <div className="border-2 text-black  px-3 py-1 rounded-md text-semibold cursor-pointer">
                 {" "}
-                <span className="pr-2 ">+</span> Create Customer
+                <span className="pr-2 ">+</span> Create Invoice
               </div>
             </Link>
             <div
@@ -844,6 +845,8 @@ function MainApp() {
               path="/settings"
               element={<Setting />}
             ></Route>
+
+            <Route authUser={userInfo} path="/customer-ledger/:id" element={<CustomerLedger />} />
           </Routes>
         </div>
       </div>

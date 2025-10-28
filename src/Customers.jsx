@@ -1,314 +1,409 @@
-import React, { use, useEffect, useState } from "react";
-import { db } from "./firebase";
-import { getDocs, collection } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RiFileEditFill } from "react-icons/ri";
+import { IoChevronBackOutline } from "react-icons/io5";
+import { BsGrid3X3Gap, BsTable } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import EditForm from "./pages/EditCustomer";
 import axiosInstance from "./axiosConfig";
+import Swal from "sweetalert2";
 
 export default function Customers() {
   const [customers, setCustomers] = useState([]);
-  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
+  const [viewMode, setViewMode] = useState("table");
   const [searchTerm, setSearchTerm] = useState("");
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(10);
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState({});
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  useEffect(() => {
+    // Set first customer as default selected
+    if (customers.length > 0 && !selectedCustomer) {
+      setSelectedCustomer(customers[0]);
+    }
+  }, [customers]);
+
+  const fetchCustomers = () => {
     axiosInstance
       .get("/customers")
       .then((response) => {
-        console.log("Response data : ", response.data.data.data);
-        setCustomers(response.data.data.data); // Store the fetched data
+        setCustomers(response.data.data.data);
       })
       .catch((error) => {
         console.error("Error fetching customers:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to fetch customers",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
       });
-  }, []);
+  };
 
-  // useEffect(() => {
-  //   const fetchInvoices = async () => {
-  //     const resp = await getDocs(collection(db, "customers"));
-  //     const data = resp.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     }));
-  //     setCustomers(data);
-  //   };
-
-  //   fetchInvoices();
-  // }, []);
-
-  const colors = [
-    "bg-purple-300",
-    "bg-blue-300",
-    "bg-pink-300",
-    "bg-green-300",
-    "bg-orange-300",
-  ];
-
-  const filteredCustomers = customers.filter((inv) => {
+  const filteredCustomers = customers.filter((customer) => {
     const term = searchTerm.toLowerCase();
     return (
-      inv.name?.toLowerCase().includes(term) ||
-      inv.address?.toLowerCase().includes(term) ||
-      inv.phone?.toLowerCase().includes(term) 
+      customer.name?.toLowerCase().includes(term) ||
+      customer.address?.toLowerCase().includes(term) ||
+      customer.phone?.toLowerCase().includes(term) ||
+      customer.email?.toLowerCase().includes(term)
     );
   });
 
-  console.log(customers);
-
-  const handleDeleteClick = (id) => {
-    setDeleteId(id);
-    setShowConfirm(true);
+  const handleDeleteClick = (customer) => {
+    Swal.fire({
+      title: "Delete Customer?",
+      text: `Are you sure you want to delete ${customer.name}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#000",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Customer has been deleted.",
+          icon: "success",
+          timer: 2000,
+          timerProgressBar: true
+        });
+        setCustomers(customers.filter((c) => c.id !== customer.id));
+      }
+    });
   };
 
-  const confirmDelete = () => {
-    setCustomers(invoices.filter((inv) => inv.id !== deleteId));
-    setShowConfirm(false);
-    setDeleteId(null);
-  };
-
-  const cancelDelete = () => {
-    setShowConfirm(false);
-    setDeleteId(null);
-  };
-
-  const Edit = (customerId) => {
+  const handleEdit = (customer) => {
+    setSelectedCustomer(customer);
     setShowEditForm(true);
-    setSelectedCustomer(customers.filter((customer) => customer.id === customerId))
+  };
+
+  const handleRowClick = (customer) => {
+    // Navigate to customer detail page
+    // navigate(`/customers/${customer.id}`);
+    setSelectedCustomer(customer);
   };
 
   return (
-    <div className="px-10 pt-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className=" font-semibold">Customers</h3>
-        {/* 🔍 Search Bar */}
-
-        <div
-          onClick={() =>
-            setViewMode((prev) => (prev === "grid" ? "table" : "grid"))
-          }
-          className={`relative w-38 h-10 flex items-center rounded-full cursor-pointer transition-colors duration-500 ${
-            viewMode === "table" ? "bg-black" : "bg-black"
-          }`}
-        >
-          {/* Sliding knob */}
-          <span
-            className={`absolute top-1 left-1 w-17 h-8 bg-white rounded-full shadow-md transform transition-transform duration-500 ease-in-out ${
-              viewMode === "table"
-                ? "translate-x-[100%] left-3"
-                : "translate-x-0"
-            }`}
-          ></span>
-
-          {/* Labels */}
-          <span
-            className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
-              viewMode === "grid" ? "text-black" : "text-gray-300"
-            }`}
-          >
-            Grid
-          </span>
-          <span
-            className={`z-10 w-1/2 text-center text-sm font-medium transition-colors duration-300 ${
-              viewMode === "table" ? "text-black" : "text-gray-300"
-            }`}
-          >
-            Table
+    <div>
+      {/* Header Section */}
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <button className="btn btn-outline-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style={{ width: "32px", height: "32px" }}>
+            <IoChevronBackOutline style={{ fontSize: "16px" }} />
+          </button>
+          <h5 className="mb-0 fw-bold">Customers</h5>
+          <span className="badge rounded-circle bg-dark d-flex align-items-center justify-content-center" style={{ width: "24px", height: "24px", fontSize: "11px" }}>
+            {customers.length}
           </span>
         </div>
-      </div>
-      <div className="flex mb-8 justify-between ">
-        <div className="relative w-full md:w-[320px]">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm" />
-          <input
-            type="text"
-            placeholder="Search customers..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-[6px] text-sm border-1 border-gray-400 rounded-md focus:outline-none focus:border-black  transition-all"
-          />
-        </div>
-        <div className="flex gap-8">
-          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-            This year
+        <div className="d-flex gap-2 align-items-center">
+          <div className="position-relative">
+            <FiSearch className="position-absolute" style={{ left: "10px", top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: "14px" }} />
+            <input
+              type="text"
+              placeholder="Search customers..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-control form-control-sm ps-4"
+              style={{ width: "240px", fontSize: "13px", height: "32px" }}
+            />
           </div>
-          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-            This month
+          <div className="btn-group">
+            <button
+              className={`btn btn-sm d-flex align-items-center gap-1 ${viewMode === "table" ? "btn-dark" : "btn-outline-dark"}`}
+              onClick={() => setViewMode("table")}
+              style={{ fontSize: "13px", padding: "4px 12px" }}
+            >
+              <BsTable style={{ fontSize: "14px" }} />
+              Table
+            </button>
+            <button
+              className={`btn btn-sm d-flex align-items-center gap-1 ${viewMode === "grid" ? "btn-dark" : "btn-outline-dark"}`}
+              onClick={() => setViewMode("grid")}
+              style={{ fontSize: "13px", padding: "4px 12px" }}
+            >
+              <BsGrid3X3Gap style={{ fontSize: "14px" }} />
+              Grid
+            </button>
           </div>
-          <div className="bg-black text-white px-3 py-[6px] rounded-sm cursor-pointer">
-            This day
-          </div>
+          <Link to="/add-customer" className="btn btn-dark btn-sm" style={{ fontSize: "13px", padding: "4px 14px" }}>
+            + Add
+          </Link>
         </div>
       </div>
 
-      {customers.length > 0 ? (
-        viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {filteredCustomers.map((customer, index) => {
-              const bgColor = colors[index % colors.length];
-              return (
-                <Link className="text-decoration-none text-black">
-                  <div
-                    key={customer.id}
-                    className={`shadow-[0px_0px_5px_grey] cursor-pointer h-35 rounded-xl pl-[5px] ${bgColor}`}
-                  >
-                    <div className="bg-white rounded-xl h-full py-3 px-4 flex justify-between">
-                      <div className="flex flex-col justify-between">
-                        <div>
-                          <h5 className="font-semibold  text-lg">
-                            {customer.name}
-                          </h5>
-                          <p>{customer.address}</p>
+      {/* Main Content with Sidebar */}
+      <div className="row g-3">
+        {/* Left: Table/Grid View */}
+        <div className="col-lg-8">
+          {customers.length > 0 ? (
+            viewMode === "table" ? (
+              /* Table View */
+              <div className="card rounded-0 shadow-none" style={{ border: "1px solid #e0e0e0" }}>
+                <div style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
+                  <table className="table table-hover mb-0" style={{ fontSize: "13px" }}>
+                    <thead style={{ backgroundColor: "#fafafa", borderBottom: "2px solid #e0e0e0", position: "sticky", top: 0, zIndex: 10 }}>
+                      <tr>
+                        <th className="fw-bold py-2 ps-3" style={{ width: "3%" }}>#</th>
+                        <th className="fw-bold py-2" style={{ width: "22%" }}>Customer</th>
+                        <th className="fw-bold py-2" style={{ width: "16%" }}>Contact</th>
+                        <th className="fw-bold py-2" style={{ width: "18%" }}>Location</th>
+                        <th className="fw-bold py-2" style={{ width: "10%" }}>Added</th>
+                        <th className="fw-bold py-2 text-end" style={{ width: "10%" }}>Balance</th>
+                        <th className="fw-bold py-2" style={{ width: "8%" }}>Status</th>
+                        <th className="fw-bold py-2 text-center pe-3" style={{ width: "8%" }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredCustomers.map((customer, index) => (
+                        <tr
+                          key={customer.id}
+                          style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}
+                          onClick={() => handleRowClick(customer)}
+                          className={selectedCustomer?.id === customer.id ? "table-active" : ""}
+                        >
+                          <td className="text-muted ps-3 py-2">{index + 1}</td>
+                          <td className="py-2">
+                            <div>
+                              <div className="fw-semibold text-dark">{customer.name}</div>
+                              <small className="text-muted" style={{ fontSize: "11px" }}>ID: #{customer.id}</small>
+                            </div>
+                          </td>
+                          <td className="py-2" style={{ fontSize: "12px", whiteSpace:'nowrap', overflow:'clip', textOverflow:'ellipsis' }}>
+                            <div className="mb-1">
+                              <i className="bi bi-telephone-fill me-1" style={{ fontSize: "10px" }}></i>
+                              {customer.phone || "N/A"}
+                            </div>
+                            {customer.email && (
+                              <div className="text-muted" style={{ fontSize: "11px" }}>
+                                <i className="bi bi-envelope-fill me-1" style={{ fontSize: "10px" }}></i>
+                                {customer.email}
+                              </div>
+                            )}
+                          </td>
+                          <td className="py-2 text-muted" style={{ fontSize: "12px" }}>
+                            <i className="bi bi-geo-alt-fill me-1" style={{ fontSize: "10px" }}></i>
+                            {customer.address || "N/A"}
+                          </td>
+                          <td className="py-2 text-muted" style={{ fontSize: "12px" }}>
+                            {customer.created_at ? new Date(customer.created_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : "N/A"}
+                          </td>
+                          <td className="py-2 text-end fw-bold" style={{ fontSize: "12px" }}>
+                            Rs. 0.00
+                          </td>
+                          <td className="py-2">
+                            <span className="badge bg-dark rounded-pill" style={{ fontSize: "10px", padding: "3px 8px" }}>
+                              Active
+                            </span>
+                          </td>
+                          <td className="py-2 text-center pe-3">
+                            <div className="d-flex gap-1 justify-content-center">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(customer);
+                                }}
+                                className="btn btn-sm btn-outline-dark p-0 d-flex align-items-center justify-content-center"
+                                style={{ width: "24px", height: "24px" }}
+                                title="Edit"
+                              >
+                                <RiFileEditFill style={{ fontSize: "11px" }} />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteClick(customer);
+                                }}
+                                className="btn btn-sm btn-outline-dark p-0 d-flex align-items-center justify-content-center"
+                                style={{ width: "24px", height: "24px" }}
+                                title="Delete"
+                              >
+                                <FaTrashAlt style={{ fontSize: "10px" }} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="py-2 px-3 border-top" style={{ backgroundColor: "#fafafa", fontSize: "12px" }}>
+                  <span className="text-muted">
+                    Showing {filteredCustomers.length} of {customers.length} customers
+                  </span>
+                </div>
+              </div>
+            ) : (
+              /* Grid View */
+              <div className="row g-2" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
+                {filteredCustomers.map((customer, index) => (
+                  <div key={customer.id} className="col-md-4">
+                    <div
+                      className={`card rounded-0 h-100 shadow-sm ${selectedCustomer?.id === customer.id ? 'border-dark' : ''}`}
+                      style={{ border: "1px solid #e0e0e0", cursor: "pointer" }}
+                      onClick={() => handleRowClick(customer)}
+                    >
+                      <div className="card-body p-2">
+                        <div className="mb-2">
+                          <h6 className="mb-0 fw-bold" style={{ fontSize: "13px" }}>{customer.name}</h6>
+                          <small className="text-muted" style={{ fontSize: "10px" }}>ID: #{customer.id}</small>
                         </div>
-                      </div>
-                      <div className="text-right flex flex-col justify-between items-end">
-                        <p className="text-sm">{customer.phone}</p>
 
-                        <div className="flex gap-2">
-                          <span
+                        <div className="mb-2 pb-2 border-bottom" style={{ fontSize: "11px" }}>
+                          <div className="mb-1">
+                            <i className="bi bi-telephone-fill me-1 text-muted" style={{ fontSize: "10px" }}></i>
+                            {customer.phone || "N/A"}
+                          </div>
+                          <div className="text-muted">
+                            <i className="bi bi-geo-alt-fill me-1" style={{ fontSize: "10px" }}></i>
+                            {customer.address || "N/A"}
+                          </div>
+                        </div>
+
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <div>
+                            <small className="text-muted d-block" style={{ fontSize: "10px" }}>Balance</small>
+                            <span className="fw-bold" style={{ fontSize: "12px" }}>Rs. 0.00</span>
+                          </div>
+                          <span className="badge bg-dark rounded-pill" style={{ fontSize: "9px", padding: "3px 8px" }}>
+                            Active
+                          </span>
+                        </div>
+
+                        <div className="d-flex gap-1">
+                          <button
                             onClick={(e) => {
-                              e.preventDefault(); // Prevent Link navigation
-                              e.stopPropagation(); // Stop event bubbling
-                              Edit(customer.id);
+                              e.stopPropagation();
+                              handleEdit(customer);
                             }}
-                            className="bg-blue-400 z-100 p-2 rounded-md text-white text-sm cursor-pointer"
+                            className="btn btn-sm btn-outline-dark flex-fill"
+                            style={{ fontSize: "11px", padding: "3px" }}
                           >
                             <RiFileEditFill />
-                          </span>
-                          <span
+                          </button>
+                          <button
                             onClick={(e) => {
-                              e.preventDefault(); // Prevent Link navigation
-                              e.stopPropagation(); // Stop event bubbling
-                              handleDeleteClick(customer.id);
+                              e.stopPropagation();
+                              handleDeleteClick(customer);
                             }}
-                            className="bg-red-400 z-100 p-2 rounded-md text-white text-xs cursor-pointer"
+                            className="btn btn-sm btn-outline-dark flex-fill"
+                            style={{ fontSize: "11px", padding: "3px" }}
                           >
                             <FaTrashAlt />
-                          </span>
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="bg-white border border-gray-100 overflow-hidden transition-all duration-500 ease-in-out">
-            <div className="max-h-94 overflow-y-auto">
-              <table className="min-w-full border-collapse">
-                <thead className="bg-gray-700 text-left text-sm font-semibold text-white sticky top-0 z-10">
-                  <tr>
-                    <th className="py-3 px-4 border-b">Number</th>
-                    <th className="py-3 px-4 border-b ">Customer</th>
-                    <th className="py-3 px-4 border-b">Date</th>
-                    <th className="py-3 px-4 border-b">Address</th>
-                    <th className="py-3 px-4 border-b">Mobile No.</th>
-                    <th className="py-3 px-4 border-b text-center">Delete</th>
-                  </tr>
-                </thead>
-
-                <tbody className="text-gray-700 text-sm">
-                  {filteredCustomers
-                    .slice(0, visibleCount)
-                    .map((customer, i) => {
-                      return (
-                        <tr
-                          key={customer.id}
-                          className="hover:bg-gray-50 cursor-pointer transition duration-200 ease-in-out"
-                        >
-                          <td className="py-3 px-4 border-b font-medium text-gray-800">
-                            {customer.number || `INV${1000 + i}`}
-                          </td>
-
-                          <td className="py-3 px-4 border-b flex items-center gap-3 ">
-                            <img
-                              src={
-                                customer.avatar || "https://i.pravatar.cc/30"
-                              }
-                              alt="Avatar"
-                              className="w-8 h-8 rounded-full"
-                            />
-                            <span>{customer.customername || "-"}</span>
-                          </td>
-
-                          <td className="py-3 px-4 border-b ">
-                            {customer.date || "27th Jul 2021"}
-                          </td>
-
-                          <td className="py-3 px-4 border-b ">
-                            {customer.address || "-"}
-                          </td>
-
-                          <td className="py-3 px-4 border-b ">
-                            {customer.mobileno || "-"}
-                          </td>
-
-                          <td className="py-3 px-4 border-b text-center">
-                            <span
-                              onClick={(e) => {
-                                e.stopPropagation(); // Prevent Link navigation
-                                handleDeleteClick(customer.id);
-                              }}
-                              className="bg-red-400 p-2 rounded-md text-white text-xs cursor-pointer inline-flex items-center justify-center"
-                            >
-                              <FaTrashAlt />
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex justify-between items-center px-4 py-3 bg-gray-50 rounded-b-xl text-sm text-gray-600">
-              <p>
-                Showing {Math.min(visibleCount, filteredCustomers.length)} of{" "}
-                {filteredCustomers.length} results
-              </p>
-              <button
-                onClick={() => setVisibleCount((prev) => prev + 10)}
-                className="text-purple-600 hover:text-purple-800 font-medium"
-              >
-                Show More
-              </button>
-            </div>
-          </div>
-        )
-      ) : (
-        <p>No invoices found.</p>
-      )}
-      {showConfirm && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-md bg-white/20">
-          <div className="bg-white/80 backdrop-blur-xl p-6 rounded-2xl shadow-[0px_0px_15px_gray] text-center w-[90%] sm:w-[400px]">
-            <h5 className="text-lg font-semibold mb-4 text-gray-800">
-              Are you sure you want to delete this invoice?
-            </h5>
-            <div className="flex justify-center gap-5 mt-5">
-              <div
-                onClick={confirmDelete}
-                className="bg-red-500 text-white cursor-pointer px-5 rounded-md py-2 hover:bg-red-600 transition-all"
-              >
-                OK
+                ))}
               </div>
-              <div
-                onClick={cancelDelete}
-                className="bg-gray-300 px-5 py-2 cursor-pointer rounded-md hover:bg-gray-400 transition-all"
-              >
-                Cancel
-              </div>
+            )
+          ) : (
+            <div className="card shadow-sm text-center p-5" style={{ border: "1px solid #e0e0e0" }}>
+              <p className="text-muted mb-0">No customers found</p>
             </div>
-          </div>
+          )}
         </div>
-      )}
+
+        {/* Right: Detail Sidebar */}
+        <div className="col-lg-4">
+          {selectedCustomer ? (
+            <div className="card rounded-0 shadow-none" style={{ border: "1px solid #e0e0e0" }}>
+              <div className="card-body p-3">
+                <div className="mb-3 pb-3 border-bottom">
+                  <h6 className="mb-0 fw-bold" style={{ fontSize: "14px" }}>{selectedCustomer.name}</h6>
+                  <small className="text-muted" style={{ fontSize: "11px" }}>Customer ID: #{selectedCustomer.id}</small>
+                </div>
+
+                <div style={{ fontSize: "12px" }}>
+                  <div className="mb-3">
+                    <label className="text-muted d-block mb-1" style={{ fontSize: "11px" }}>CONTACT INFORMATION</label>
+                    <div className="mb-2">
+                      <i className="bi bi-telephone-fill me-2"></i>
+                      <span>{selectedCustomer.phone || "N/A"}</span>
+                    </div>
+                    {selectedCustomer.email && (
+                      <div className="mb-2">
+                        <i className="bi bi-envelope-fill me-2"></i>
+                        <span>{selectedCustomer.email}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="text-muted d-block mb-1" style={{ fontSize: "11px" }}>ADDRESS</label>
+                    <div>
+                      <i className="bi bi-geo-alt-fill me-2"></i>
+                      <span>{selectedCustomer.address || "N/A"}</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="text-muted d-block mb-1" style={{ fontSize: "11px" }}>FINANCIAL</label>
+                    <div className="d-flex justify-content-between mb-2">
+                      <span>Balance Due:</span>
+                      <span className="fw-bold">Rs. 0.00</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span>Total Invoices:</span>
+                      <span className="fw-bold">0</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="text-muted d-block mb-1" style={{ fontSize: "11px" }}>STATUS</label>
+                    <span className="badge bg-dark w-100" style={{ fontSize: "11px", padding: "5px" }}>Active</span>
+                  </div>
+
+                  <div>
+                    <label className="text-muted d-block mb-1" style={{ fontSize: "11px" }}>JOINED DATE</label>
+                    <span>{selectedCustomer.created_at ? new Date(selectedCustomer.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : "N/A"}</span>
+                  </div>
+                </div>
+
+                <div className="mt-3 pt-3 border-top">
+                  <button
+                    onClick={() => navigate(`/customer-ledger/${selectedCustomer.id}`)}
+                    className="btn btn-dark btn-sm w-100 mb-2"
+                    style={{ fontSize: "12px" }}
+                  >
+                    <i className="bi bi-receipt me-1"></i>
+                    View Ledger
+                  </button>
+                  <button
+                    onClick={() => handleEdit(selectedCustomer)}
+                    className="btn btn-outline-dark btn-sm w-100 mb-2"
+                    style={{ fontSize: "12px" }}
+                  >
+                    <RiFileEditFill className="me-1" />
+                    Edit Customer
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(selectedCustomer)}
+                    className="btn btn-outline-dark btn-sm w-100"
+                    style={{ fontSize: "12px" }}
+                  >
+                    <FaTrashAlt className="me-1" />
+                    Delete Customer
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="card shadow-sm text-center p-4" style={{ border: "1px solid #e0e0e0" }}>
+              <p className="text-muted mb-0" style={{ fontSize: "12px" }}>No customer selected</p>
+            </div>
+          )}
+        </div>
+      </div>
+
       {showEditForm && (
         <EditForm setShowEditForm={setShowEditForm} customer={selectedCustomer} />
       )}
