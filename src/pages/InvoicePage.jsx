@@ -78,110 +78,96 @@ const InvoicePage = () => {
   if (!invoice) return <p className="text-center mt-10">Loading invoice...</p>;
 
   return (
-    <div className="flex">
-      {/* Left Section */}
-      <section className="leftContainer w-[68%]">
-        <section className="invoiceHeader  px-2">
-         <div className="flex items-center justify-between w-full py-2">
-  
-  <div className="flex items-center gap-3">
-    <Link to="/invoices">
-      <div className="w-8 h-8 rounded-xl border p-[3px] hover:bg-black border-gray-400 flex items-center justify-center transition">
-        <IoChevronBackOutline className="text-gray-400 hover:text-white" />
+    <>
+      {/* Header Section */}
+      <div className="d-flex flex-wrap align-items-center justify-content-between bg-light text-dark p-3 rounded-3 border mb-4">
+        <div className="d-flex align-items-center gap-3">
+          <Link to="/invoices">
+            <button className="btn btn-outline-secondary btn-sm p-1">
+              <IoChevronBackOutline className="fs-5" />
+            </button>
+          </Link>
+          <h5 className="mb-0">Invoice #{invoice.invoice_no || invoice.id}</h5>
+        </div>
+        <div className="d-flex gap-2">
+          <button
+            onClick={handleDownloadPdf}
+            className="btn btn-outline-dark btn-sm d-flex align-items-center gap-1 px-2 py-1"
+            style={{ fontSize: "0.875rem" }}
+          >
+            <MdOutlineFileDownload />
+            Export
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="btn btn-outline-dark btn-sm d-flex align-items-center gap-1 px-2 py-1"
+            style={{ fontSize: "0.875rem" }}
+          >
+            <IoIosPrint />
+            Print
+          </button>
+        </div>
       </div>
-    </Link>
 
-    <p className="text-2xl font-semibold pt-[14px] text-gray-800">
-      | Order #{invoice.id || 89}
-    </p>
-  </div>
-
-  {/* Right Side */}
-  <div className="flex items-center gap-2 text-xs">
-    <button
-      onClick={handleDownloadPdf}
-      className="border border-gray-500 flex items-center gap-1 p-1 px-2 rounded hover:bg-black hover:text-white transition"
-    >
-      <MdOutlineFileDownload className="text-base" />
-      <span>Export</span>
-    </button>
-
-    <button
-      onClick={handleDownloadPdf}
-      className="border border-gray-500 flex items-center gap-1 p-1 px-2 rounded hover:bg-black hover:text-white transition"
-    >
-      <IoIosPrint className="text-base" />
-      <span>Print</span>
-    </button>
-  </div>
-</div>
-
-
-          <div className="flex justify-between  text-sm">
-            <div className="flex items-center flex-wrap gap-2">
-              <p className="text-gray-500">
-                Ordered <span className="text-gray-800">via Website</span>
-              </p>
-              <p>{currentDateTime.toLocaleString()}</p>
-            <div className="flex">  <FiShoppingCart className="text-gray-400 mt-[3px]" />
-              <p>Product</p></div>
-             <div className="flex"><MdStore className="text-gray-400 mt-[3px]" />
-              <p>Picked up in-store</p></div> 
-            </div>
-          </div>
-        </section>
-
-        {/* Invoice Content */}
-        <div className="min-h-screen flex justify-center px-2">
+      <div className="row g-4">
+        {/* Left Section - Invoice Preview */}
+        <div className="col-md-8">
           <div
             ref={printRef}
-            className="w-full max-w-4xl bg-white rounded-lg overflow-hidden border-gray-100 border-2"
+            className="card p-4"
           >
-            {/* Header */}
-            <div className="p-6">
-              <div className="mb-4 flex items-center gap-4">
-                <img src={company} alt="Company Logo" className="h-18 w-18 object-cover" />
-                <div>
-                  <h2 className="text-xl font-semibold">My Company</h2>
-                  <p>Phone: 123-456-7890</p>
-                </div>
+            {/* Company Header */}
+            <div className="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+              <img src={company} alt="Company Logo" className="rounded" style={{ width: "60px", height: "60px", objectFit: "cover" }} />
+              <div>
+                <h5 className="mb-1 fw-bold">My Company</h5>
+                <p className="mb-0 text-muted small">Phone: 123-456-7890</p>
+              </div>
+            </div>
+
+            {/* Bill To & Invoice Details */}
+            <div className="row g-3 mb-4">
+              <div className="col-md-6">
+                <h6 className="text-secondary mb-2">Bill To:</h6>
+                <p className="mb-1 fw-semibold">{invoice.customer?.name || "N/A"}</p>
+                <p className="mb-0 small text-muted">
+                  {invoice.customer?.address && (
+                    <>
+                      <i className="bi bi-geo-alt me-1"></i>
+                      {invoice.customer.address}
+                      <br />
+                    </>
+                  )}
+                  {invoice.customer?.phone && (
+                    <>
+                      <i className="bi bi-telephone me-1"></i>
+                      {invoice.customer.phone}
+                    </>
+                  )}
+                </p>
               </div>
 
-              <div className="flex justify-between text-sm">
-                <div>
-                  <h4>To:</h4>
-                  <p>
-                    <span className="font-semibold">{invoice.customer?.name}</span>
-                    <br />
-                    Address: {invoice.customer?.address}
-                    <br />
-                    Phone: {invoice.customer?.phone}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold">Invoice Details:</h4>
-                  <p>
-                   Invoice_no: {
-                      invoice.invoice_no
-                    }
-                    <br />
-                    Pan_no:
-                    <br />
-                    {currentDateTime.toLocaleString()}
-                  </p>
-                </div>
+              <div className="col-md-6 text-md-end">
+                <h6 className="text-secondary mb-2">Invoice Details:</h6>
+                <p className="mb-1 small">
+                  <span className="fw-semibold">Invoice No:</span> {invoice.invoice_no}
+                </p>
+                <p className="mb-1 small">
+                  <span className="fw-semibold">Date:</span> {invoice.date ? new Date(invoice.date).toLocaleDateString() : currentDateTime.toLocaleDateString()}
+                </p>
               </div>
+            </div>
 
-              {/* Table */}
-              <table className="w-full border border-gray-400 border-collapse mt-4">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border border-gray-400 p-2 text-left">#</th>
-                    <th className="border border-gray-400 p-2 text-left">Item</th>
-                    <th className="border border-gray-400 p-2 text-center">Qty</th>
-                    <th className="border border-gray-400 p-2 text-left">Rate</th>
-                    <th className="border border-gray-400 p-2 text-left">Amount</th>
+            {/* Items Table */}
+            <div className="table-responsive mb-4">
+              <table className="table table-sm table-bordered">
+                <thead className="table-light">
+                  <tr>
+                    <th style={{ width: "5%" }} className="text-center">#</th>
+                    <th style={{ width: "40%" }}>Item</th>
+                    <th style={{ width: "15%" }} className="text-center">Qty</th>
+                    <th style={{ width: "20%" }} className="text-end">Rate</th>
+                    <th style={{ width: "20%" }} className="text-end">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -190,129 +176,149 @@ const InvoicePage = () => {
                     totalValueBeforeTax += totalAmt;
                     return (
                       <tr key={index}>
-                        <td className="border border-gray-400 p-2 text-center">{index + 1}</td>
-                        <td className="border border-gray-400 p-2">{item.item}</td>
-                        <td className="border border-gray-400 p-2 text-center">{item.quantity}</td>
-                        <td className="border border-gray-400 p-2 text-left">Rs {item.rate}</td>
-                        <td className="border border-gray-400 p-2 text-left">
-                          Rs {totalAmt.toFixed(2)}
-                        </td>
+                        <td className="text-center small">{index + 1}</td>
+                        <td className="small">{item.item}</td>
+                        <td className="text-center small">{item.quantity}</td>
+                        <td className="text-end small">Rs {item.rate}</td>
+                        <td className="text-end small">Rs {totalAmt.toFixed(2)}</td>
                       </tr>
                     );
                   })}
-                  <tr>
-                    <td></td>
-                    <td className="border p-2 border-gray-400" colSpan={3}>
-                      Total
-                    </td>
-                    <td className="text-left p-2">Rs {totalValueBeforeTax.toFixed(2)}</td>
-                  </tr>
                 </tbody>
               </table>
+            </div>
 
-              {/* Totals */}
-              <div className="mt-6 flex justify-end">
-                <div className="w-1/2">
-                  <div className="flex justify-between py-1">
-                    <span>Subtotal:</span>
-                    <span>Rs {subtotal.toFixed(2)}</span>
+            {/* Totals */}
+            <div className="row justify-content-end">
+              <div className="col-md-5">
+                <div className="card bg-light border-0 p-3">
+                  <div className="d-flex justify-content-between mb-2">
+                    <span className="small">Subtotal:</span>
+                    <span className="small">Rs {parseFloat(invoice.subtotal || totalValueBeforeTax).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between py-1">
-                    <span>Tax (10%):</span>
-                    <span>Rs {tax.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between py-1 font-semibold border-t border-gray-300 pt-2">
-                    <span>Total:</span>
-                    <span>Rs {total.toFixed(2)}</span>
+                  {invoice.discount > 0 && (
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="small">Discount:</span>
+                      <span className="small text-danger">- Rs {parseFloat(invoice.discount).toFixed(2)}</span>
+                    </div>
+                  )}
+                  {invoice.tax > 0 && (
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="small">Tax:</span>
+                      <span className="small">Rs {parseFloat(invoice.tax).toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="d-flex justify-content-between border-top pt-2 mt-2">
+                    <span className="fw-bold">Grand Total:</span>
+                    <span className="fw-bold text-primary">Rs {parseFloat(invoice.grand_total || totalValueBeforeTax).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4">
-              <div className="flex justify-between items-start">
-                <p className="w-[65%] text-sm">
-                  <span className="font-semibold text-md">Terms & Conditions:</span>
-                  <br />
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Fugit iure, vel itaque aspernatur est hic quo libero!
+            <div className="row mt-4 pt-3 border-top">
+              <div className="col-md-7">
+                <h6 className="fw-semibold mb-2">Terms & Conditions:</h6>
+                <p className="small text-muted">
+                  Payment is due within 15 days. Please make checks payable to My Company.
+                  Thank you for your business!
                 </p>
-                <div className="text-center">
-                  <div className="border w-[200px] mx-auto"></div>
-                  <p className="text-xs mt-1">
-                    <span className="font-semibold">Your Name & Signature</span>
-                    <br />
-                    Account Manager
-                  </p>
-                </div>
+              </div>
+              <div className="col-md-5 text-end">
+                <div className="border-bottom mb-2" style={{ width: "200px", marginLeft: "auto" }}></div>
+                <p className="small mb-0 fw-semibold">Authorized Signature</p>
+                <p className="small text-muted">Account Manager</p>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Right Section */}
-    <section className="rightContainer w-[35%] border-l border-gray-300 px-2 py-2">
-  <div className="border border-dashed border-blue-300 rounded-md p-2 space-y-4">
-    {/* Header */}
-    <div>
-      <p className="font-semibold text-lg mb-1">Invoice Details</p>
-      <p className="text-gray-700">Azure Superstore</p>
-    </div>
+        {/* Right Section - Summary */}
+        <div className="col-md-4">
+          <div className="card p-3" style={{ backgroundColor: "#f8f9fa" }}>
+            <h6 className="mb-3 text-secondary">Invoice Summary</h6>
 
-    {/* Location */}
-    <div className="flex items-start gap-2 text-gray-500 text-sm border border-dashed border-gray-300 rounded-md p-2">
-      <MdLocationOn className="text-gray-600 mt-1" />
-      <div>
-        <p>123 Anywhere in the world</p>
-        <p>Lorem ipsum dolor sit amet</p>
-      </div>
-    </div>
+            {/* Customer Info */}
+            <div className="mb-3">
+              <label className="form-label fw-semibold small mb-1">Customer</label>
+              <p className="small mb-0">{invoice.customer?.name || "N/A"}</p>
+              {invoice.customer?.phone && (
+                <p className="small text-muted mb-0">
+                  <i className="bi bi-telephone me-1"></i>
+                  {invoice.customer.phone}
+                </p>
+              )}
+            </div>
 
-    {/* Dates */}
-    <div className="text-sm text-gray-700 space-y-1">
-      <div className="flex justify-between">
-        <span>Issue Date:</span>
-        <span>{currentDateTime.toLocaleDateString()}</span>
-      </div>
-      <div className="flex justify-between">
-        <span>Delivery Date:</span>
-        <span>20 January 2025</span>
-      </div>
-    </div>
+            {/* Dates */}
+            <div className="mb-3 pb-3 border-bottom">
+              <div className="d-flex justify-content-between mb-2">
+                <span className="small text-muted">Issue Date:</span>
+                <span className="small fw-semibold">
+                  {invoice.date ? new Date(invoice.date).toLocaleDateString() : currentDateTime.toLocaleDateString()}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <span className="small text-muted">Invoice No:</span>
+                <span className="small fw-semibold">{invoice.invoice_no}</span>
+              </div>
+            </div>
 
-    {/* Totals */}
-    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-      <span className="text-gray-800">Total:</span>
-      <span className="font-semibold text-lg text-gray-900">Rs. 5000</span>
-    </div>
+            {/* Payment Summary */}
+            <div className="mb-3">
+              <h6 className="mb-2 small fw-bold">Payment Summary</h6>
+              <div className="d-flex justify-content-between mb-1">
+                <span className="small">Subtotal:</span>
+                <span className="small">Rs. {parseFloat(invoice.subtotal || 0).toFixed(2)}</span>
+              </div>
+              {invoice.discount > 0 && (
+                <div className="d-flex justify-content-between mb-1">
+                  <span className="small">Discount:</span>
+                  <span className="small text-danger">- Rs. {parseFloat(invoice.discount).toFixed(2)}</span>
+                </div>
+              )}
+              {invoice.tax > 0 && (
+                <div className="d-flex justify-content-between mb-1">
+                  <span className="small">Tax:</span>
+                  <span className="small">Rs. {parseFloat(invoice.tax).toFixed(2)}</span>
+                </div>
+              )}
+              <div className="d-flex justify-content-between border-top pt-2 mt-2">
+                <span className="fw-bold">Grand Total:</span>
+                <span className="fw-bold text-primary">Rs. {parseFloat(invoice.grand_total || 0).toFixed(2)}</span>
+              </div>
+            </div>
 
-    {/* Order Summary */}
-    <div className="pt-2 border-t border-gray-200">
-      <span className="font-semibold text-gray-800 block mb-2">
-        Order Summary
-      </span>
+            {/* Payment Status */}
+            {invoice.payment_status && (
+              <div className="alert alert-info py-2 mb-0 small">
+                <i className="bi bi-info-circle me-2"></i>
+                Status: <span className="fw-semibold">{invoice.payment_status}</span>
+              </div>
+            )}
+          </div>
 
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span>Sub Total:</span>
-          <span>Rs. 5000</span>
+          {/* Items List */}
+          <div className="card p-3 mt-3">
+            <h6 className="mb-3 text-secondary">Items ({invoice?.invoice_items?.length || 0})</h6>
+            <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+              {invoice?.invoice_items?.map((item, idx) => (
+                <div key={idx} className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                  <div className="flex-fill">
+                    <p className="mb-0 small fw-semibold">{item.item}</p>
+                    <p className="mb-0 text-muted" style={{ fontSize: "0.75rem" }}>
+                      {item.quantity} × Rs. {item.rate}
+                    </p>
+                  </div>
+                  <span className="small fw-bold">Rs. {(item.quantity * item.rate).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="flex justify-between">
-          <span>Coupon Discount:</span>
-          <span>8%</span>
-        </div>
-        <div className="flex justify-between font-semibold text-gray-900 pt-2 border-t border-gray-200">
-          <span>Total:</span>
-          <span>Rs. 5000</span>
-        </div>
       </div>
-    </div>
-  </div>
-</section>
-
-    </div>
+    </>
   );
 };
 
