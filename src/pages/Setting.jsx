@@ -25,15 +25,14 @@ export default function Setting() {
           <button className="btn btn-outline-secondary btn-sm p-1">
             <IoChevronBackOutline className="fs-5" />
           </button>
-          <h5 className="mb-0">Create Product</h5>
+          <h5 className="mb-0">Settings</h5>
         </div>
 
-
-        <div className="d-flex gap-3">
-          <button className="btn btn-outline-secondary d-flex align-items-center gap-2 px-4">
-            Save
+        <div className="d-flex gap-2">
+          <button className="btn btn-primary px-4 py-2 rounded-3">
+            Save Changes
           </button>
-          <button className="btn btn-outline-secondary d-flex align-items-center gap-2 px-4">
+          <button className="btn btn-outline-secondary px-4 py-2 rounded-3">
             Cancel
           </button>
         </div>
@@ -69,19 +68,17 @@ export default function Setting() {
         <div className="mt-4">
           {activeTab === "general" && (
             <>
-              <div className="flex">
-                <div>
-                  <div className="mt-3">
-                    <h5 className="ps-4">General</h5>
-                  </div>
+              <div className="d-flex gap-4">
+                <div className="card flex-fill p-4">
+                  <h6 className="mb-4 text-secondary">General Settings</h6>
 
                   {/* ===== Profile Change Section ===== */}
-                  <div className="d-flex align-items-center gap-3 mt-3 ps-4">
+                  <div className="d-flex align-items-center gap-3 mb-4">
                     <div className="position-relative" style={{ width: "70px", height: "70px" }}>
                       <img
-                        src="https://via.placeholder.com/70" // replace with your profile image
+                        src="https://via.placeholder.com/70"
                         alt="Profile"
-                        className="rounded-circle border border-2 border-white shadow-sm w-100 h-100 object-fit-cover"
+                        className="rounded-circle border border-2 shadow-sm w-100 h-100 object-fit-cover"
                       />
                       <div
                         className="position-absolute top-50 start-50 translate-middle bg-dark bg-opacity-50 text-white rounded-circle d-flex align-items-center justify-content-center"
@@ -96,94 +93,110 @@ export default function Setting() {
                     </div>
                   </div>
 
-                  {/* ===== Main Form + Sidebar ===== */}
-
-                  <div className="d-flex gap-4 mt-4">
-                    {/* ===== Left Form Section ===== */}
-
-                    <div className="flex-fill px-4">
-                      {/* Company Info */}
-                      <form className="row g-3">
-                        <div className="col-md-6">
-                          <label className="form-label fw-semibold">Company Name </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Enter Company Name"
-                          />
-                        </div>
-
-                        <div className="col-md-6">
-                          <label className="form-label fw-semibold">Email/Address </label>
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Enter Email/Address"
-                          />
-                        </div>
-
-                        <div className="col-md-6">
-                          <label className="form-label fw-semibold">Phone Number </label>
-                          <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Enter Phone Number"
-                          />
-                        </div>
-
-                        <div className="col-md-6">
-                          <label className="form-label fw-semibold">Fax </label>
-                          <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Enter Fax"
-                          />
-                        </div>
-                      </form>
-
-                      {/* Address Section */}
-                      <div className="mt-5">
-                        <h5 className="mb-4 text-dark">Address</h5>
-                        <form className="row g-3">
-                          <div className="col-md-6">
-                            <label className="form-label fw-semibold">Country </label>
-                            <input type="text" className="form-control" placeholder="Enter Country" />
-                          </div>
-
-                          <div className="col-md-6">
-                            <label className="form-label fw-semibold">City </label>
-                            <input type="text" className="form-control" placeholder="Enter City" />
-                          </div>
-
-                          <div className="col-md-6">
-                            <label className="form-label fw-semibold">Street </label>
-                            <input type="text" className="form-control" placeholder="Enter Street" />
-                          </div>
-                        </form>
-                      </div>
+                  {/* Company Info */}
+                  <form className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Company Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Company Name"
+                      />
                     </div>
-                  </div>
 
-                </div>
-                <div
-                  className="card p-4 shadow-sm"
-                  style={{ width: "600px", backgroundColor: "#f8f9fa" }}
-                >
-                  <h6 className="mb-3 text-secondary">Product Preview</h6>
-                  <p className="text-muted">Your product info preview will appear here.</p>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Email Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        placeholder="Enter Email Address"
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Phone Number</label>
+                      <input
+                        type="tel"
+                        className="form-control"
+                        placeholder="Enter Phone Number"
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Fax</label>
+                      <input
+                        type="tel"
+                        className="form-control"
+                        placeholder="Enter Fax"
+                      />
+                    </div>
+
+                    {/* Address Section */}
+                    <div className="col-12 mt-4">
+                      <h6 className="mb-3 text-secondary">Address Information</h6>
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Country</label>
+                      <input type="text" className="form-control" placeholder="Enter Country" />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">City</label>
+                      <input type="text" className="form-control" placeholder="Enter City" />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Street</label>
+                      <input type="text" className="form-control" placeholder="Enter Street" />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Postal Code</label>
+                      <input type="text" className="form-control" placeholder="Enter Postal Code" />
+                    </div>
+                  </form>
                 </div>
 
+                {/* Preview Sidebar */}
+                <div className="card p-3" style={{ width: "400px", backgroundColor: "#f8f9fa" }}>
+                  <h6 className="mb-3 text-secondary">Preview</h6>
+                  <p className="text-muted">Your settings preview will appear here.</p>
+                </div>
               </div>
             </>
           )}
           {activeTab === "security" && (
-            <p className="text-muted">Security settings content here...</p>
+            <div className="card p-4">
+              <h6 className="mb-4 text-secondary">Security Settings</h6>
+              <form className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Current Password</label>
+                  <input type="password" className="form-control" placeholder="Enter Current Password" />
+                </div>
+                <div className="col-md-6"></div>
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">New Password</label>
+                  <input type="password" className="form-control" placeholder="Enter New Password" />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Confirm Password</label>
+                  <input type="password" className="form-control" placeholder="Confirm New Password" />
+                </div>
+              </form>
+            </div>
           )}
           {activeTab === "team" && (
-            <p className="text-muted">Team management content here...</p>
+            <div className="card p-4">
+              <h6 className="mb-4 text-secondary">Members & Team</h6>
+              <p className="text-muted">Team management content here...</p>
+            </div>
           )}
           {activeTab === "notifications" && (
-            <p className="text-muted">Notification preferences content here...</p>
+            <div className="card p-4">
+              <h6 className="mb-4 text-secondary">Notification Preferences</h6>
+              <p className="text-muted">Notification settings content here...</p>
+            </div>
           )}
         </div>
       </div>
