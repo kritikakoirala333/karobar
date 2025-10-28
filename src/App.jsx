@@ -858,7 +858,7 @@ function MainApp() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* backdrop (frosted glass) */}
+        {/* backdrop (frosted glass) */} 
         <div
           className={`absolute inset-0 backdrop-blur-none transition-opacity duration-200 ${
             showPaymentSlide
@@ -871,7 +871,7 @@ function MainApp() {
         {/* Payment panel (slide-in) */}
         <Payment
           show={showPaymentSlide}
-          setShowPaymentSlide={setShowPaymentSlide}
+          setShowPaymentSlide={setShowPaymentSlide}  
         />
       </div>
     </>
