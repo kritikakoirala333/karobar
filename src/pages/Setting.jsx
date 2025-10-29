@@ -3,15 +3,20 @@ import { IoChevronBackOutline } from "react-icons/io5";
 import { IoCloudUploadOutline } from "react-icons/io5"; // icon for upload
 import Nav from 'react-bootstrap/Nav';
 import { useState } from "react";
+import { FaPlus, FaEdit } from "react-icons/fa";
+import Createuser from "../ui/createuser";
+import { Button } from "react-bootstrap";
+// import Createuser from "../ui/Createuser";
 
 
 export default function Setting() {
+  const [show, setShow] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   const tabs = [
     { key: "general", label: "General" },
     { key: "security", label: "Security" },
     { key: "business", label: "Your Business" },
-    {key:"user", label:"User"},
+    { key: "user", label: "User" },
 
     { key: "notifications", label: "Notifications" },
   ];
@@ -21,10 +26,35 @@ export default function Setting() {
     discoverUpdates: true,
     researchSurveys: true,
   });
+  const [users, setUsers] = useState([
+    {
+      firstName: "Samrat",
+      lastName: "Hamal",
+      email: "samrat@test.com",
+      phone: "981239899",
+      status: true,
+    },
+    {
+      firstName: "Puja",
+      lastName: "Dawadi",
+      email: "puja@gmail.com",
+      phone: "983758245",
+      status: true,
+
+    },
+  ])
 
   const toggleSetting = (key) => {
     setSettings({ ...settings, [key]: !settings[key] });
   };
+
+
+  const toggleStatus = (index) => {
+    const updated = [...users];
+    updated[index].status = !updated[index].status;
+    setUsers(updated);
+  };
+
 
 
   return (
@@ -191,14 +221,83 @@ export default function Setting() {
           {activeTab === "security" && (
             <p className="text-muted">Security settings content here...</p>
           )}
-           {activeTab === "user" && (
-            <p className="text-muted">Security settings content here...</p>
+          {activeTab === "user" && (
+            <>
+              <div className="container mt-4">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5 className="mb-0">User Management</h5>
+                </div>
+
+                {/* Top Controls */}
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <input
+                    type="text"
+                    placeholder="Search this table"
+                    className="form-control w-25"
+                  />
+                  <div className="d-flex gap-2">
+
+
+                    <div className="p-4">
+                      <Button onClick={() => setShow(true)}>Create </Button>
+                      <Createuser show={show} handleClose={() => setShow(false)} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="table-responsive  rounded">
+                  <table className="table table-bordered align-middle">
+                    <thead className="table-light">
+                      <tr style={{ fontWeight: 600, fontSize: "16px", lineHeight: "19px" }}>
+                        <td>First Name</td>
+                        <td>Last Name</td>
+
+                        <td>Email</td>
+                        <td>Phone</td>
+                        <td>Status</td>
+                        <td>Action</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((u, i) => (
+                        <tr key={i}>
+                          <td>{u.firstName}</td>
+                          <td>{u.lastName}</td>
+
+                          <td>{u.email}</td>
+                          <td>{u.phone}</td>
+                          <td>
+                            <div className="form-check form-switch">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                checked={u.status}
+                                onChange={() => toggleStatus(i)}
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <button className="btn btn-outline-success btn-sm">
+                              <FaEdit />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+
+
+            </>
           )}
 
           {activeTab === "business" && (
             <>
               <div className="flex">
-                <div style={{width: "80%"}}>
+                <div style={{ width: "80%" }}>
                   <div className="mt-3">
                     <h5 className="ps-4">Your Business</h5>
                   </div>
@@ -251,7 +350,7 @@ export default function Setting() {
                 </div>
                 <div
                   className="card p-4 shadow-sm"
-                  style={{ width: "60%", backgroundColor: "#f8f9fa" }}
+                  style={{ width: "50%", backgroundColor: "#f8f9fa" }}
                 >
                   <h6 className="mb-3 text-secondary">Product Preview</h6>
                   <p className="text-muted">Your product info preview will appear here.</p>
@@ -340,4 +439,6 @@ export default function Setting() {
 
     </>
   );
-}
+
+
+};

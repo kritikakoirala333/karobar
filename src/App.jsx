@@ -193,6 +193,8 @@ function MainApp() {
     }
   };
 
+  // return "Hello"
+
   return (
     <>
       {/* Header */}
@@ -849,7 +851,7 @@ function MainApp() {
             <Route
               authUser={userInfo}
               path="/settings"
-              element={<Setting />}
+              element={<Setting/>}
             ></Route>
 
             <Route authUser={userInfo} path="/customer-ledger/:id" element={<CustomerLedger />} />
