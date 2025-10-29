@@ -5,6 +5,7 @@ import CardPage from "./pages/card";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { IoClose } from "react-icons/io5";
+import { FaGoogleDrive } from "react-icons/fa";
 
 import {
   BrowserRouter,
@@ -37,6 +38,7 @@ import { themeBase } from "./store/themeBase";
 import Setting from "./pages/Setting";
 import CustomerLedger from "./pages/CustomerLedger";
 import InventoryDetail from "./pages/InventoryDetail";
+import Drive from "./Drive";
 
 function App() {
   return (
@@ -240,7 +242,7 @@ function MainApp() {
                     lineHeight: "1",
                   }}
                 >
-                  Alphid - <span style={{fontWeight:"light"}}>EMS</span>
+                  Alphid - <span style={{ fontWeight: "light" }}>EMS</span>
                 </div>
                 <div
                   style={{
@@ -771,6 +773,15 @@ function MainApp() {
                 <i className="bi bi-bag sidebar-icon"></i>
                 <span>Purchases</span>
               </Link>
+              <Link
+                to="/drive"
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/drive" ? "active" : ""
+                }`}
+              >
+                <FaGoogleDrive />
+                <span>Drive</span>
+              </Link>
             </div>
           </div>
 
@@ -851,10 +862,15 @@ function MainApp() {
             <Route
               authUser={userInfo}
               path="/settings"
-              element={<Setting/>}
+              element={<Setting />}
             ></Route>
+            <Route authUser={userInfo} path="/drive" element={<Drive />} />
 
-            <Route authUser={userInfo} path="/customer-ledger/:id" element={<CustomerLedger />} />
+            <Route
+              authUser={userInfo}
+              path="/customer-ledger/:id"
+              element={<CustomerLedger />}
+            />
           </Routes>
         </div>
       </div>
@@ -866,7 +882,7 @@ function MainApp() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* backdrop (frosted glass) */} 
+        {/* backdrop (frosted glass) */}
         <div
           className={`absolute inset-0 backdrop-blur-none transition-opacity duration-200 ${
             showPaymentSlide
@@ -879,7 +895,7 @@ function MainApp() {
         {/* Payment panel (slide-in) */}
         <Payment
           show={showPaymentSlide}
-          setShowPaymentSlide={setShowPaymentSlide}  
+          setShowPaymentSlide={setShowPaymentSlide}
         />
       </div>
     </>
