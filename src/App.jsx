@@ -37,6 +37,9 @@ import { themeBase } from "./store/themeBase";
 import Setting from "./pages/Setting";
 import CustomerLedger from "./pages/CustomerLedger";
 import InventoryDetail from "./pages/InventoryDetail";
+import BankManagement from "./pages/BankManagement";
+import BankAdd from "./ui/BankAdd";
+import DisplayBank from "./ui/DisplayBank";
 
 function App() {
   return (
@@ -771,6 +774,16 @@ function MainApp() {
                 <i className="bi bi-bag sidebar-icon"></i>
                 <span>Purchases</span>
               </Link>
+               <Link
+                to="/bankmanagement"
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/bankmanagement" ? "active" : ""
+                }`}
+              >
+                <i class="bi bi-bank"></i>
+                <span>Bank Management</span>
+              </Link>
+
             </div>
           </div>
 
@@ -853,6 +866,27 @@ function MainApp() {
               path="/settings"
               element={<Setting/>}
             ></Route>
+            <Route
+            authUser={userInfo}
+            path="/bankmanagement"
+            element={<BankManagement/>}
+            />
+            <Route
+            authUser={userInfo}
+            path="/bankadd"
+            element={<BankAdd/>}
+            />
+            <Route 
+            authUser={userInfo}
+            path="displaybank"
+            element={<DisplayBank/>}
+            />
+
+            
+
+            
+
+            
 
             <Route authUser={userInfo} path="/customer-ledger/:id" element={<CustomerLedger />} />
           </Routes>
