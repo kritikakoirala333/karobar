@@ -35,6 +35,7 @@ import { appBase } from "./store/appBase";
 import { salesInvoiceState } from "./store/salesInvoiceState";
 import { themeBase } from "./store/themeBase";
 import Setting from "./pages/Setting";
+import SignUp from "./Auth/Signup.jsx";
 
 function App() {
   return (
@@ -819,6 +820,8 @@ function MainApp() {
               element={<Invoices />}
             />
             <Route authUser={userInfo} path="/signin" element={<SignIn />} />
+            {/* <Route authUser={userInfo} path="/signup" element={<SignUp />} /> */}
+          
             <Route
               authUser={userInfo}
               path="/purchase"
