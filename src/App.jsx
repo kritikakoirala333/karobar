@@ -36,6 +36,7 @@ import { salesInvoiceState } from "./store/salesInvoiceState";
 import { themeBase } from "./store/themeBase";
 import Setting from "./pages/Setting";
 import CustomerLedger from "./pages/CustomerLedger";
+import InventoryDetail from "./pages/InventoryDetail";
 
 function App() {
   return (
@@ -829,6 +830,11 @@ function MainApp() {
               authUser={userInfo}
               path="/inventory"
               element={<Inventory />}
+            />
+            <Route
+              authUser={userInfo}
+              path="/inventory/:id"
+              element={<InventoryDetail />}
             />
             <Route
               authUser={userInfo}
