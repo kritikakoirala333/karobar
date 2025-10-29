@@ -39,6 +39,7 @@ import Setting from "./pages/Setting";
 import CustomerLedger from "./pages/CustomerLedger";
 import InventoryDetail from "./pages/InventoryDetail";
 import Drive from "./Drive";
+import FileSidebar from "./FileSidebar";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function MainApp() {
   const { fetchSalesInvoices } = salesInvoiceState();
 
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
+  const [showFileSidebar, setShowFileSidebar] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [invoicesOpen, setInvoicesOpen] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
@@ -565,6 +567,13 @@ function MainApp() {
             <button className="btn btn-primary btn-sm">Settings</button>
           </header>
           <div className="flex gap-6">
+            <div
+              onClick={() => setShowFileSidebar(true)}
+              className="border-2 px-3 py-1 rounded-md text-semibold cursor-pointer"
+            >
+              {" "}
+              <span className="pr-2">+</span> Sidebar
+            </div>
             <Link to="/card" className="text-decoration-none">
               <div className="border-2 text-black  px-3 py-1 rounded-md text-semibold cursor-pointer">
                 {" "}
@@ -877,26 +886,35 @@ function MainApp() {
       <div
         /* Overlay container: always mounted so transitions can run */
         className={`fixed inset-0 z-[9999] flex justify-end transition-all duration-200 ${
-          showPaymentSlide
+          showPaymentSlide || showFileSidebar
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
       >
         {/* backdrop (frosted glass) */}
         <div
-          className={`absolute inset-0 backdrop-blur-none transition-opacity duration-200 ${
-            showPaymentSlide
+          className={`absolute inset-0 backdrop-blur-none cursor-pointer transition-opacity duration-200 ${
+            showPaymentSlide || showFileSidebar
               ? "bg-black/60 opacity-100"
               : "bg-transparent opacity-0"
           }`}
-          onClick={() => setShowPaymentSlide(false)} // click outside to close
+          onClick={() => {setShowPaymentSlide(false); setShowFileSidebar(false)}} // click outside to close
         />
 
         {/* Payment panel (slide-in) */}
-        <Payment
+        {showPaymentSlide && (
+          <Payment
           show={showPaymentSlide}
           setShowPaymentSlide={setShowPaymentSlide}
         />
+        )}
+
+        {showFileSidebar && (
+          <FileSidebar
+          show={showFileSidebar}
+          setShowFileSidebar={setShowFileSidebar}
+        />
+        )}
       </div>
     </>
   );
