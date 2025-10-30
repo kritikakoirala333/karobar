@@ -1,20 +1,57 @@
 import React, { use, useEffect } from "react";
 import { useState } from "react";
+import everestlogo from "../assets/everest-logo.png";
+import centralfinancelogo from "../assets/central-finance-logo.jpeg";
+import citizenbank from "../assets/citizen-bank.jpeg";
+import garimabank from "../assets/garima-bank.png";
+import bestfinance from "../assets/best-finance.webp";
+import agriculturaldev from "../assets/agricultural-dev.jpg";
+import globalime from "../assets/global-ime.png";
+import himalayanbank from "../assets/himalayan-bank.jpeg";
 
-export default function BankAdd({ show, handleClose }) {
+export default function BankAdd({ show, handleClose,setBanks, banks }) {
   if (!show) return null; // Hide the modal when `show` is false
 
+    const banksData = [
+      { name: "Everest Bank Ltd.", logo: everestlogo },
+      { name: "Central Finance Ltd.", logo: centralfinancelogo },
+      { name: "Citizens Bank International Ltd.", logo: citizenbank },
+      { name: "Garima Bikas Bank Ltd.", logo: garimabank },
+      { name: "Best Finance Ltd.", logo: bestfinance },
+      { name: "Agricultural Development Bank Ltd.", logo: agriculturaldev },
+      { name: "Global IME Bank Ltd.", logo: globalime },
+      { name: "Himalayan Bank Ltd.", logo: himalayanbank },
+      { name: "Agricultural Development Bank Ltd.", logo: agriculturaldev },
+    ];
+
+
   const [bank, setBank] = useState("");
+  const [logo, setLogo] = useState("");
   const [display, setDisplay] = useState(false);
   const handleBankChange = (e) => {
     setBank(e.target.value);
+
+    console.log("Name:", e.target.value);
+
+    banksData.forEach((bank) =>{
+      console.log(bank.name);
+      if(bank.name === e.target.value){
+        console.log("Logo",bank.logo);
+        setLogo(bank.logo);
+      }
+    })
   };
+  
 
   const hello = () => {
     console.log("clicked");
     handleClose();
     setDisplay(true);
     // console.log(display);
+
+    const newBank = { name: bank, logo: logo };
+
+   setBanks([...banks, newBank]); 
 
   }
 
@@ -45,14 +82,14 @@ export default function BankAdd({ show, handleClose }) {
               <label className="form-label fw-semibold">Select Bank</label>
               <select className="form-select " value={bank} onChange={handleBankChange}>
                 <option >Select Bank</option>
-                <option value="everest-bank-ltd.">Everest Bank Ltd.</option>
-                <option value="central-finance-ltd.">Central Finance Ltd.</option>
-                <option value="citizens-bank-international-ltd.">Citizens Bank International Ltd.</option>
-                <option value="garima-bikas-bank-ltd." >Garima Bikas Bank Ltd.</option>
-                <option value="best-finance-ltd.">Best Finance Ltd.</option>
-                <option value="agricultural-development-bank-ltd.">Agricultural Development Bank Ltd.</option>
-                <option value="global-ime-bank-ltd.">Global IME Bank Ltd.</option>
-                <option value="himalayan-bank-ltd.">Himalayan Bank Ltd.</option>
+                <option  value="Everest Bank Ltd.">Everest Bank Ltd.</option>
+                <option value="Central Finance Ltd.">Central Finance Ltd.</option>
+                <option value="Citizens Bank International Ltd.">Citizens Bank International Ltd.</option>
+                <option value="Garima Bikas Bank Ltd." >Garima Bikas Bank Ltd.</option>
+                <option value="Best Finance Ltd.">Best Finance Ltd.</option>
+                <option value="Agricultural Development Bank Ltd.">Agricultural Development Bank Ltd.</option>
+                <option value="Global IME Bank Ltd.">Global IME Bank Ltd.</option>
+                <option value="Himalayan Bank Ltd.">Himalayan Bank Ltd.</option>
 
 
 

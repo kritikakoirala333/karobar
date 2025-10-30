@@ -70,13 +70,20 @@ function MainApp() {
 
   const paths = [
     { path: "/", searchPath: "dashboard" },
-    { path: "/invoices", searchPath: "invoices" },
-    { path: "/purchase", searchPath: "purchase invoice" },
-    { path: "/card", searchPath: "sales invoice" },
-    { path: "/customers", searchPath: "customers" },
-    { path: "/suppliers", searchPath: "suppliers" },
-    { path: "/inventory", searchPath: "inventory" },
-    { path: "/addproduct", searchPath: "add product" },
+    { title:"Invoices", path: "/invoices", searchPath: "invoices", desc:"Search invoices by clicking here" },
+    {title:"Invoices", path:"/card", searchPath:"create invoice", desc:"Create a brand new invoices by clicking here"},
+    {title:"Invoices" ,path:"/invoices/reports", searchPath:"reports", desc:"See the reports of invoices by clicking here"},
+    {title:"Purchase", path: "/purchase", searchPath: "purchase invoice", desc:"Create a brand new pruchase invoices by clicking here"},
+    {title:"Customers", path: "/customers", searchPath: "customers", desc:"See all the customers by clicking here" },
+    {title:"Customers", path:"/customers/create", searchPath:"add customers", desc:"Add new customers by clicking here"},
+    {title:"Payment",path:"/payment", searchPath:"payment", desc:""},
+    {title:"", path: "/suppliers", searchPath: "suppliers", desc:"" },
+    {title:"Inventory", path: "/inventory", searchPath: "inventory", desc:"See all the products by clicking here" },
+    {title:"Inventory", path:"/inventory/reports", searchPath:"stock reports", desc:"See the inventory reports by clicking here"},
+    {title:"Inventory", path: "/addproduct", searchPath: "add product", desc:"Create a new products by clicking here " },
+    {title:"Bank Management", path:"/bankmanagement", searchPath:"bank management", desc:"See the banks details by clcking here"},
+    {title:"Settings", path:"/settings", searchPath:"settings", desc:"See the setting "},
+    {title:"Profile", path:"profile", searchPath:"profile", desc:"See the profile"},
   ];
 
   const navigator = useNavigate();

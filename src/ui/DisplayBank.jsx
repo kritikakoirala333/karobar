@@ -13,19 +13,19 @@ import agriculturaldev from "../assets/agricultural-dev.jpg";
 import globalime from "../assets/global-ime.png";
 import himalayanbank from "../assets/himalayan-bank.jpeg";
 
-function DisplayBank() {
+function DisplayBank({banks}) {
   // ✅ List of all bank cards
-  const banks = [
-    { name: "Everest Bank Ltd.", logo: everestlogo },
-    { name: "Central Finance Ltd.", logo: centralfinancelogo },
-    { name: "Citizens Bank International Ltd.", logo: citizenbank },
-    { name: "Garima Bikas Bank Ltd.", logo: garimabank },
-    { name: "Best Finance Ltd.", logo: bestfinance },
-    { name: "Agricultural Development Bank Ltd.", logo: agriculturaldev },
-    { name: "Global IME Bank Ltd.", logo: globalime },
-    { name: "Himalayan Bank Ltd.", logo: himalayanbank },
-    { name: "Agricultural Development Bank Ltd.", logo: agriculturaldev },
-  ];
+  // const banks = [
+  //   { name: "Everest Bank Ltd.", logo: everestlogo },
+  //   { name: "Central Finance Ltd.", logo: centralfinancelogo },
+  //   { name: "Citizens Bank International Ltd.", logo: citizenbank },
+  //   { name: "Garima Bikas Bank Ltd.", logo: garimabank },
+  //   { name: "Best Finance Ltd.", logo: bestfinance },
+  //   { name: "Agricultural Development Bank Ltd.", logo: agriculturaldev },
+  //   { name: "Global IME Bank Ltd.", logo: globalime },
+  //   { name: "Himalayan Bank Ltd.", logo: himalayanbank },
+  //   { name: "Agricultural Development Bank Ltd.", logo: agriculturaldev },
+  // ];
 
   return (
     <div className="container-fluid m-0 p-0">
