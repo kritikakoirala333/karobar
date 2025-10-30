@@ -1,19 +1,61 @@
-
-
 import React from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { IoCloudUploadOutline } from "react-icons/io5"; // icon for upload
 import Nav from 'react-bootstrap/Nav';
 import { useState } from "react";
+import { FaPlus, FaEdit } from "react-icons/fa";
+import Createuser from "../ui/createuser";
+import { Button } from "react-bootstrap";
+// import Createuser from "../ui/Createuser";
+
 
 export default function Setting() {
+  const [show, setShow] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   const tabs = [
     { key: "general", label: "General" },
     { key: "security", label: "Security" },
-    { key: "team", label: "Members & Team" },
+    { key: "business", label: "Your Business" },
+    { key: "user", label: "User" },
+
     { key: "notifications", label: "Notifications" },
   ];
+  const [settings, setSettings] = useState({
+    creativeEffects: true,
+    productUpdates: true,
+    discoverUpdates: true,
+    researchSurveys: true,
+  });
+  const [users, setUsers] = useState([
+    {
+      firstName: "Samrat",
+      lastName: "Hamal",
+      email: "samrat@test.com",
+      phone: "981239899",
+      status: true,
+    },
+    {
+      firstName: "Puja",
+      lastName: "Dawadi",
+      email: "puja@gmail.com",
+      phone: "983758245",
+      status: true,
+
+    },
+  ])
+
+  const toggleSetting = (key) => {
+    setSettings({ ...settings, [key]: !settings[key] });
+  };
+
+
+  const toggleStatus = (index) => {
+    const updated = [...users];
+    updated[index].status = !updated[index].status;
+    setUsers(updated);
+  };
+
+
 
   return (
     <>
@@ -179,14 +221,216 @@ export default function Setting() {
           {activeTab === "security" && (
             <p className="text-muted">Security settings content here...</p>
           )}
-          {activeTab === "team" && (
-            <p className="text-muted">Team management content here...</p>
+          {activeTab === "user" && (
+            <>
+              <div className="container mt-4">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5 className="mb-0">User Management</h5>
+                </div>
+
+                {/* Top Controls */}
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <input
+                    type="text"
+                    placeholder="Search this table"
+                    className="form-control w-25"
+                  />
+                  <div className="d-flex gap-2">
+
+
+                    <div className="p-4">
+                      <Button onClick={() => setShow(true)}>Create </Button>
+                      <Createuser show={show} handleClose={() => setShow(false)} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="table-responsive  rounded">
+                  <table className="table table-bordered align-middle">
+                    <thead className="table-light">
+                      <tr style={{ fontWeight: 600, fontSize: "16px", lineHeight: "19px" }}>
+                        <td>First Name</td>
+                        <td>Last Name</td>
+
+                        <td>Email</td>
+                        <td>Phone</td>
+                        <td>Status</td>
+                        <td>Action</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((u, i) => (
+                        <tr key={i}>
+                          <td>{u.firstName}</td>
+                          <td>{u.lastName}</td>
+
+                          <td>{u.email}</td>
+                          <td>{u.phone}</td>
+                          <td>
+                            <div className="form-check form-switch">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                checked={u.status}
+                                onChange={() => toggleStatus(i)}
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <button className="btn btn-outline-success btn-sm">
+                              <FaEdit />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+
+
+            </>
           )}
+
+          {activeTab === "business" && (
+            <>
+              <div className="flex">
+                <div style={{ width: "80%" }}>
+                  <div className="mt-3">
+                    <h5 className="ps-4">Your Business</h5>
+                  </div>
+                  <div className="mt-3 ml-5" style={{ maxWidth: "600px", }}>
+                    <div className="d-flex justify-content-between align-items-center mb-4  ">
+                      <div className="mt-2 ">
+                        <h6 className="fw-semibold mb-1 ">Invoice No. starts with</h6>
+
+                      </div>
+                      <input type="text" className="form-control w-50  " placeholder="" value="INVXXX" />
+
+                    </div>
+
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <div>
+                        <h6 className="fw-semibold mb-1">Payment Receipt starts with</h6>
+
+                      </div>
+                      <input type="text" className="form-control w-50 " placeholder="" value="RECXXX" />
+                    </div>
+
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <div>
+                        <h6 className="fw-semibold mb-1">Currency</h6>
+                      </div>
+                      <select className="form-select w-50">
+                        <option value="">Select currency</option>
+                        <option value="USD">USD – US Dollar</option>
+                        <option value="EUR">EUR – Euro</option>
+                        <option value="GBP">GBP – British Pound</option>
+                        <option value="NPR">NPR – Nepalese Rupee</option>
+                        <option value="INR">INR – Indian Rupee</option>
+                      </select>
+                    </div>
+
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 className="fw-semibold mb-1">Language</h6>
+                      </div>
+                      <select className="form-select w-50">
+                        <option value="">Select language</option>
+                        <option value="en">English</option>
+                        <option value="np">Nepali</option>
+                        <option value="fr">French</option>
+                        <option value="es">Spanish</option>
+                        <option value="de">German</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="card p-4 shadow-sm"
+                  style={{ width: "50%", backgroundColor: "#f8f9fa" }}
+                >
+                  <h6 className="mb-3 text-secondary">Product Preview</h6>
+                  <p className="text-muted">Your product info preview will appear here.</p>
+                </div>
+              </div>
+            </>
+          )}
+
+
           {activeTab === "notifications" && (
-            <p className="text-muted">Notification preferences content here...</p>
+
+            <>
+              <div className="flex">
+                <div >
+
+                  <div className="mt-3">
+                    <h5 className="ps-4">Notification</h5>
+                  </div>
+
+
+                  {/* Setting Item */}
+                  {[
+                    {
+                      key: "Update Me On Invoice Updates",
+                      title: "Update Me On Invoice Updates",
+                      desc: "You will get notified on invoice create and update",
+                    },
+                    {
+                      key: "When Payment Received",
+                      title: "When Payment Received",
+                      desc: "You will get notified when payment is received ",
+                    },
+                    {
+                      key: "Customer Create",
+                      title: "Customer Create",
+                      desc: "You will get notified when customer is created",
+                    },
+                    {
+                      key: "Record Deleted",
+                      title: "Record Deleted",
+                      desc: "You will get notified when customer is created",
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.key}
+                      className="d-flex align-items-center justify-content-between  py-3"
+                    >
+                      {/* Toggle on left */}
+                      <div className="form-check form-switch me-3 ml-5">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={settings[item.key]}
+                          onChange={() => toggleSetting(item.key)}
+                          style={{ width: "2.5rem", height: "1.3rem", cursor: "pointer" }}
+                        />
+                      </div>
+
+                      {/* Text content */}
+                      <div className="flex-grow-1">
+                        <p className="fw-semibold mb-0">{item.title}</p>
+                        <small className="text-muted">{item.desc}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div
+                  className="card p-4 shadow-sm ml-100"
+                  style={{ width: "600px", backgroundColor: "#f8f9fa" }}
+                >
+                  <h6 className="mb-3 text-secondary">Product Preview</h6>
+                  <p className="text-muted">Your product info preview will appear here.</p>
+                </div>
+              </div>
+
+
+            </>
           )}
         </div>
-      </div>
+      </div >
 
 
 
@@ -195,5 +439,6 @@ export default function Setting() {
 
     </>
   );
-}
 
+
+};

@@ -36,6 +36,11 @@ import { salesInvoiceState } from "./store/salesInvoiceState";
 import { themeBase } from "./store/themeBase";
 import Setting from "./pages/Setting";
 import SignUp from "./Auth/Signup.jsx";
+import CustomerLedger from "./pages/CustomerLedger";
+import InventoryDetail from "./pages/InventoryDetail";
+import BankManagement from "./pages/BankManagement";
+import BankAdd from "./ui/BankAdd";
+import DisplayBank from "./ui/DisplayBank";
 
 function App() {
   return (
@@ -66,13 +71,20 @@ function MainApp() {
 
   const paths = [
     { path: "/", searchPath: "dashboard" },
-    { path: "/invoices", searchPath: "invoices" },
-    { path: "/purchase", searchPath: "purchase invoice" },
-    { path: "/card", searchPath: "sales invoice" },
-    { path: "/customers", searchPath: "customers" },
-    { path: "/suppliers", searchPath: "suppliers" },
-    { path: "/inventory", searchPath: "inventory" },
-    { path: "/addproduct", searchPath: "add product" },
+    { title:"Invoices", path: "/invoices", searchPath: "invoices", desc:"Search invoices by clicking here" },
+    {title:"Invoices", path:"/card", searchPath:"create invoice", desc:"Create a brand new invoices by clicking here"},
+    {title:"Invoices" ,path:"/invoices/reports", searchPath:"reports", desc:"See the reports of invoices by clicking here"},
+    {title:"Purchase", path: "/purchase", searchPath: "purchase invoice", desc:"Create a brand new pruchase invoices by clicking here"},
+    {title:"Customers", path: "/customers", searchPath: "customers", desc:"See all the customers by clicking here" },
+    {title:"Customers", path:"/customers/create", searchPath:"add customers", desc:"Add new customers by clicking here"},
+    {title:"Payment",path:"/payment", searchPath:"payment", desc:""},
+    {title:"", path: "/suppliers", searchPath: "suppliers", desc:"" },
+    {title:"Inventory", path: "/inventory", searchPath: "inventory", desc:"See all the products by clicking here" },
+    {title:"Inventory", path:"/inventory/reports", searchPath:"stock reports", desc:"See the inventory reports by clicking here"},
+    {title:"Inventory", path: "/addproduct", searchPath: "add product", desc:"Create a new products by clicking here " },
+    {title:"Bank Management", path:"/bankmanagement", searchPath:"bank management", desc:"See the banks details by clcking here"},
+    {title:"Settings", path:"/settings", searchPath:"settings", desc:"See the setting "},
+    {title:"Profile", path:"profile", searchPath:"profile", desc:"See the profile"},
   ];
 
   const navigator = useNavigate();
@@ -192,11 +204,13 @@ function MainApp() {
     }
   };
 
+  // return "Hello"
+
   return (
     <>
       {/* Header */}
       <div
-        className="bg-white container-xxl"
+        className="bg-white container-xxl "
         style={{
           height: "103px",
           position: "fixed",
@@ -237,7 +251,7 @@ function MainApp() {
                     lineHeight: "1",
                   }}
                 >
-                  Invoicer {theme}
+                  Alphid - <span style={{fontWeight:"light"}}>EMS</span>
                 </div>
                 <div
                   style={{
@@ -346,14 +360,14 @@ function MainApp() {
                           >
                             <i className="bi bi-slash"></i>
                           </div>
-                          <div
-                           
-                            className="d-flex flex-column m-0 p-0 cursor-pointer"
-                          >
-                            <h6 className="mb-0 capitalize  ">{item.searchPath}</h6>
-                            <small className="text-muted">Here is the path for - {item.searchPath}</small>
+                          <div className="d-flex flex-column m-0 p-0 cursor-pointer">
+                            <h6 className="mb-0 capitalize  ">
+                              {item.searchPath}
+                            </h6>
+                            <small className="text-muted">
+                              Here is the path for - {item.searchPath}
+                            </small>
                           </div>
-                          
                         </div>
                       </div>
                     ))}
@@ -560,10 +574,10 @@ function MainApp() {
             <button className="btn btn-primary btn-sm">Settings</button>
           </header>
           <div className="flex gap-6">
-            <Link to="" className="text-decoration-none">
+            <Link to="/card" className="text-decoration-none">
               <div className="border-2 text-black  px-3 py-1 rounded-md text-semibold cursor-pointer">
                 {" "}
-                <span className="pr-2 ">+</span> Create Customer
+                <span className="pr-2 ">+</span> Create Invoice
               </div>
             </Link>
             <div
@@ -768,6 +782,16 @@ function MainApp() {
                 <i className="bi bi-bag sidebar-icon"></i>
                 <span>Purchases</span>
               </Link>
+               <Link
+                to="/bankmanagement"
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/bankmanagement" ? "active" : ""
+                }`}
+              >
+                <i class="bi bi-bank"></i>
+                <span>Bank Management</span>
+              </Link>
+
             </div>
           </div>
 
@@ -834,6 +858,11 @@ function MainApp() {
             />
             <Route
               authUser={userInfo}
+              path="/inventory/:id"
+              element={<InventoryDetail />}
+            />
+            <Route
+              authUser={userInfo}
               path="/customers"
               element={<Customers />}
             />
@@ -845,8 +874,31 @@ function MainApp() {
             <Route
               authUser={userInfo}
               path="/settings"
-              element={<Setting />}
+              element={<Setting/>}
             ></Route>
+            <Route
+            authUser={userInfo}
+            path="/bankmanagement"
+            element={<BankManagement/>}
+            />
+            <Route
+            authUser={userInfo}
+            path="/bankadd"
+            element={<BankAdd/>}
+            />
+            <Route 
+            authUser={userInfo}
+            path="displaybank"
+            element={<DisplayBank/>}
+            />
+
+            
+
+            
+
+            
+
+            <Route authUser={userInfo} path="/customer-ledger/:id" element={<CustomerLedger />} />
           </Routes>
         </div>
       </div>
@@ -858,7 +910,7 @@ function MainApp() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* backdrop (frosted glass) */}
+        {/* backdrop (frosted glass) */} 
         <div
           className={`absolute inset-0 backdrop-blur-none transition-opacity duration-200 ${
             showPaymentSlide
@@ -871,7 +923,7 @@ function MainApp() {
         {/* Payment panel (slide-in) */}
         <Payment
           show={showPaymentSlide}
-          setShowPaymentSlide={setShowPaymentSlide}
+          setShowPaymentSlide={setShowPaymentSlide}  
         />
       </div>
     </>

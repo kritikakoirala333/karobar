@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { salesInvoiceState } from "./store/salesInvoiceState";
 import axiosInstance from "./axiosConfig";
 import F1SoftLogo from "./assets/fonepay.png";
+import Swal from "sweetalert2";
 
 export default function Payment({ show, setShowPaymentSlide }) {
   const { salesInvoices } = salesInvoiceState();
@@ -67,29 +68,151 @@ export default function Payment({ show, setShowPaymentSlide }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const paymentData = {
-      customerId: selectedCustomer,
-      invoiceId: selectedInvoice,
-      description: paymentDescription,
-      amount: totalAmount,
-      paymentType: paymentType,
-      paymentDate: paymentDate,
-      status: paymentStatus,
-      referenceNumber: referenceNumber,
-      receiptNumber: receiptNumber,
-      transactionId: transactionId,
-      checkNumber: checkNumber,
-      bankName: bankName,
-      accountNumber: accountNumber,
-      notes: notes,
-      partialPayment: partialPayment,
-      dueAmount: dueAmount,
-      createdAt: new Date().toISOString(),
+
+    // Validation
+    if (!selectedCustomer) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please select a customer",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
+      return;
+    }
+
+    if (!totalAmount || parseFloat(totalAmount) <= 0) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please enter a valid payment amount",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
+      return;
+    }
+
+    // Validate partial payment doesn't exceed invoice total
+    if (selectedInvoice && invoiceTotal && parseFloat(totalAmount) > parseFloat(invoiceTotal)) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Payment amount cannot exceed invoice total",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
+      return;
+    }
+
+    // Map payment types to API format
+    const paymentMethodMap = {
+      "Cash": "cash",
+      "Check": "check",
+      "Bank Transfer": "bank_transfer",
+      "eSewa": "online",
+      "Khalti": "online",
+      "Online": "online"
     };
+
+    // Prepare API payload
+    const paymentData = {
+      receipt_no: receiptNumber || `REC-${Date.now()}`,
+      amount: parseFloat(totalAmount),
+      title: paymentDescription || `Payment ${selectedInvoice ? 'for Invoice' : 'Receipt'}`,
+      customer_id: selectedCustomer,
+      date: paymentDate,
+      payment_method: paymentMethodMap[paymentType] || "cash"
+    };
+
+    // Add optional fields
+    if (selectedInvoice) {
+      paymentData.sales_invoice_id = selectedInvoice;
+    }
+
+    // Build comprehensive note
+    let noteDetails = [];
+    if (notes) noteDetails.push(notes);
+    if (referenceNumber) noteDetails.push(`Reference: ${referenceNumber}`);
+    if (transactionId) noteDetails.push(`Transaction ID: ${transactionId}`);
+    if (checkNumber) noteDetails.push(`Check Number: ${checkNumber}`);
+    if (bankName) noteDetails.push(`Bank: ${bankName}`);
+    if (accountNumber) noteDetails.push(`Account: ${accountNumber}`);
+    if (paymentStatus && paymentStatus !== "Completed") noteDetails.push(`Status: ${paymentStatus}`);
+    if (partialPayment && dueAmount > 0) noteDetails.push(`Partial Payment - Due: Rs. ${dueAmount}`);
+
+    if (noteDetails.length > 0) {
+      paymentData.note = noteDetails.join(' | ');
+    }
+
     console.log("Payment Data:", paymentData);
-    // TODO: Submit payment data to API
-    alert("Payment recorded successfully!");
-    setShowPaymentSlide(false);
+
+    // Show loading
+    Swal.fire({
+      title: 'Processing Payment...',
+      text: 'Please wait while we record your payment',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    // Submit to API
+    axiosInstance.post('/payment-receipts', paymentData)
+      .then(response => {
+        console.log('Payment recorded:', response);
+
+        Swal.fire({
+          title: "Success!",
+          html: `Payment receipt created successfully!<br>
+                 <small>Receipt: ${paymentData.receipt_no}<br>
+                 Amount: Rs. ${totalAmount}<br>
+                 Method: ${paymentType}</small>`,
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 3000,
+          timerProgressBar: true,
+        }).then(() => {
+          // Reset form and close
+          setSelectedCustomer("");
+          setSelectedInvoice("");
+          setCustomerSearch("");
+          setInvoiceSearch("");
+          setPaymentDescription("");
+          setTotalAmount("");
+          setPaymentType("Cash");
+          setPaymentDate(new Date().toISOString().split('T')[0]);
+          setPaymentStatus("Completed");
+          setReferenceNumber("");
+          setReceiptNumber("");
+          setTransactionId("");
+          setCheckNumber("");
+          setBankName("");
+          setAccountNumber("");
+          setNotes("");
+          setPartialPayment(false);
+          setInvoiceTotal("");
+          setDueAmount("");
+          setShowPaymentSlide(false);
+        });
+      })
+      .catch(error => {
+        console.error('Payment error:', error);
+
+        let errorMessage = "Failed to record payment";
+
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response?.data?.errors) {
+          const errors = error.response.data.errors;
+          errorMessage = Object.values(errors).flat().join(', ');
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        Swal.fire({
+          title: "Error!",
+          text: errorMessage,
+          icon: "error",
+          confirmButtonText: "OK"
+        });
+      });
   };
 
   const paymentTypes = ["Cash", "Online", "Check", "eSewa", "Khalti", "Bank Transfer"];
