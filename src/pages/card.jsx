@@ -15,6 +15,13 @@ function CardPage() {
 
   console.log(showAddCustomerForm);
 
+  const items = [
+    { id: 1, name: "Notebook" },
+    { id: 2, name: "T-shirt", variants: ["Small", "Medium", "Large"] },
+    { id: 3, name: "Pen" },
+    { id: 4, name: "Coffee", variants: ["Hot", "Cold", "Iced"] },
+  ];
+
   const getCustomersFromFirebase = async () => {
     console.log("Fetch Info from API");
     axiosInstance.get("/customers").then((resp) => {
@@ -69,7 +76,9 @@ function CardPage() {
   // Calculate totals
   const calculateTotals = () => {
     const subtotal = formData.fields.reduce((sum, field) => {
-      return sum + (parseFloat(field.quantity) || 0) * (parseFloat(field.rate) || 0);
+      return (
+        sum + (parseFloat(field.quantity) || 0) * (parseFloat(field.rate) || 0)
+      );
     }, 0);
 
     const discount = parseFloat(formData.Discount) || 0;
@@ -83,7 +92,9 @@ function CardPage() {
     return {
       subtotal: subtotal.toFixed(2),
       grandTotal: grandTotal.toFixed(2),
-      remaining: paymentReceived ? (grandTotal - (parseFloat(formData.PaidAmount) || 0)).toFixed(2) : grandTotal.toFixed(2)
+      remaining: paymentReceived
+        ? (grandTotal - (parseFloat(formData.PaidAmount) || 0)).toFixed(2)
+        : grandTotal.toFixed(2),
     };
   };
 
@@ -119,9 +130,8 @@ function CardPage() {
     setFilteredCustomers(
       customerData.filter(
         (item) =>
-          item.name.toLowerCase().includes(lowerSearch) 
-        // || item.address.toLowerCase().includes(lowerSearch) 
-          ||
+          item.name.toLowerCase().includes(lowerSearch) ||
+          // || item.address.toLowerCase().includes(lowerSearch)
           item.phone.includes(lowerSearch)
       )
     );
@@ -155,30 +165,32 @@ function CardPage() {
 
   const clearForm = () => {
     setFormData({
-      customername: '',
-      mobileno: '',
-      address: '',
-      date: '',
-      dueDate: '',
-      referenceNo: '',
-      notes: '',
+      customername: "",
+      mobileno: "",
+      address: "",
+      date: "",
+      dueDate: "",
+      referenceNo: "",
+      notes: "",
       Discount: 0,
       Tax: 0,
       Shipping: 0,
       SubTotal: 0,
       GrandTotal: 0,
-      InvoiceNo: '',
+      InvoiceNo: "",
       PaidAmount: 0,
-      paymentMethod: 'cash',
-      receiptNo: '',
-      paymentNote: '',
-      fields: [{
-        sn: '',
-        name: '',
-        quantity: '',
-        rate: '',
-        amount: ''
-      }]
+      paymentMethod: "cash",
+      receiptNo: "",
+      paymentNote: "",
+      fields: [
+        {
+          sn: "",
+          name: "",
+          quantity: "",
+          rate: "",
+          amount: "",
+        },
+      ],
     });
     setSelectedCustomer(null);
     setPaymentReceived(false);
@@ -191,7 +203,7 @@ function CardPage() {
         title: "Validation Error",
         text: "Please select a customer",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       return;
     }
@@ -201,7 +213,7 @@ function CardPage() {
         title: "Validation Error",
         text: "Please enter an invoice number",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       return;
     }
@@ -211,19 +223,21 @@ function CardPage() {
         title: "Validation Error",
         text: "Please select an invoice date",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       return;
     }
 
     // Check if there are items
-    const hasItems = formData.fields.some(field => field.name && field.quantity && field.rate);
+    const hasItems = formData.fields.some(
+      (field) => field.name && field.quantity && field.rate
+    );
     if (!hasItems) {
       Swal.fire({
         title: "Validation Error",
         text: "Please add at least one item to the invoice",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       return;
     }
@@ -238,7 +252,7 @@ function CardPage() {
         title: "Validation Error",
         text: "Paid amount cannot exceed the grand total",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       return;
     }
@@ -252,7 +266,7 @@ function CardPage() {
       discount: parseFloat(formData.Discount) || 0,
       tax: parseFloat(formData.Tax) || 0,
       grand_total: grandTotal,
-      invoice_items: []
+      invoice_items: [],
     };
 
     // Add items
@@ -262,25 +276,26 @@ function CardPage() {
           item: field.name,
           quantity: parseFloat(field.quantity),
           rate: parseFloat(field.rate),
-          total: parseFloat(field.quantity) * parseFloat(field.rate)
+          total: parseFloat(field.quantity) * parseFloat(field.rate),
         });
       }
     });
 
     // Show loading
     Swal.fire({
-      title: 'Saving...',
-      text: 'Please wait while we process your invoice',
+      title: "Saving...",
+      text: "Please wait while we process your invoice",
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     // Create invoice first
-    axiosInstance.post('/sales-invoices', invoiceData)
-      .then(invoiceResp => {
-        console.log('Invoice created:', invoiceResp);
+    axiosInstance
+      .post("/sales-invoices", invoiceData)
+      .then((invoiceResp) => {
+        console.log("Invoice created:", invoiceResp);
         const invoiceId = invoiceResp.data?.data?.id || invoiceResp.data?.id;
 
         // If payment is received, create payment receipt
@@ -292,25 +307,27 @@ function CardPage() {
             sales_invoice_id: invoiceId,
             customer_id: formData.selectedCustomerId,
             date: formData.date,
-            note: formData.paymentNote || '',
-            payment_method: formData.paymentMethod
+            note: formData.paymentNote || "",
+            payment_method: formData.paymentMethod,
           };
 
-          return axiosInstance.post('/payment-receipts', paymentData)
-            .then(paymentResp => {
-              console.log('Payment receipt created:', paymentResp);
+          return axiosInstance
+            .post("/payment-receipts", paymentData)
+            .then((paymentResp) => {
+              console.log("Payment receipt created:", paymentResp);
               return { invoice: invoiceResp, payment: paymentResp };
             });
         }
 
         return { invoice: invoiceResp, payment: null };
       })
-      .then(result => {
+      .then((result) => {
         Swal.fire({
           title: "Success!",
-          html: paymentReceived && result.payment
-            ? `Sales invoice and payment receipt created successfully!<br><small>Invoice: ${formData.InvoiceNo}<br>Payment: ${formData.PaidAmount}</small>`
-            : `Sales invoice created successfully!<br><small>Invoice: ${formData.InvoiceNo}</small>`,
+          html:
+            paymentReceived && result.payment
+              ? `Sales invoice and payment receipt created successfully!<br><small>Invoice: ${formData.InvoiceNo}<br>Payment: ${formData.PaidAmount}</small>`
+              : `Sales invoice created successfully!<br><small>Invoice: ${formData.InvoiceNo}</small>`,
           icon: "success",
           confirmButtonText: "OK",
           timer: 3000,
@@ -318,8 +335,8 @@ function CardPage() {
         });
         clearForm();
       })
-      .catch(error => {
-        console.error('Error:', error);
+      .catch((error) => {
+        console.error("Error:", error);
 
         let errorMessage = "Failed to create invoice";
 
@@ -327,7 +344,7 @@ function CardPage() {
           errorMessage = error.response.data.message;
         } else if (error.response?.data?.errors) {
           const errors = error.response.data.errors;
-          errorMessage = Object.values(errors).flat().join(', ');
+          errorMessage = Object.values(errors).flat().join(", ");
         } else if (error.message) {
           errorMessage = error.message;
         }
@@ -336,7 +353,7 @@ function CardPage() {
           title: "Error!",
           text: errorMessage,
           icon: "error",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
         });
       });
   }
@@ -358,8 +375,13 @@ function CardPage() {
             <h6 className="mb-3 text-secondary">Customer Information</h6>
 
             {/* Customer Search */}
-            <div className="mb-3" style={{ display: selectedCustomer ? "none" : "block" }}>
-              <label className="form-label fw-semibold small">Search Customer</label>
+            <div
+              className="mb-3"
+              style={{ display: selectedCustomer ? "none" : "block" }}
+            >
+              <label className="form-label fw-semibold small">
+                Search Customer
+              </label>
               <div className="position-relative">
                 <input
                   type="text"
@@ -409,7 +431,12 @@ function CardPage() {
                       <h6 className="mb-0 fw-bold text-dark small">
                         {selectedCustomer?.name}
                       </h6>
-                      <span className="badge bg-primary-subtle text-primary" style={{ fontSize: "0.7rem" }}>Customer</span>
+                      <span
+                        className="badge bg-primary-subtle text-primary"
+                        style={{ fontSize: "0.7rem" }}
+                      >
+                        Customer
+                      </span>
                     </div>
                     <button
                       type="button"
@@ -423,13 +450,23 @@ function CardPage() {
 
                   <div className="d-flex gap-3 mt-2">
                     <div className="d-flex align-items-start flex-fill">
-                      <i className="bi bi-geo-alt text-muted me-1" style={{ fontSize: "0.85rem" }}></i>
-                      <span className="small text-muted">{selectedCustomer?.address || "N/A"}</span>
+                      <i
+                        className="bi bi-geo-alt text-muted me-1"
+                        style={{ fontSize: "0.85rem" }}
+                      ></i>
+                      <span className="small text-muted">
+                        {selectedCustomer?.address || "N/A"}
+                      </span>
                     </div>
 
                     <div className="d-flex align-items-start">
-                      <i className="bi bi-telephone text-muted me-1" style={{ fontSize: "0.85rem" }}></i>
-                      <span className="small text-muted">{selectedCustomer?.mobileno || "N/A"}</span>
+                      <i
+                        className="bi bi-telephone text-muted me-1"
+                        style={{ fontSize: "0.85rem" }}
+                      ></i>
+                      <span className="small text-muted">
+                        {selectedCustomer?.mobileno || "N/A"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -443,7 +480,9 @@ function CardPage() {
 
             <div className="row g-2">
               <div className="col-6">
-                <label className="form-label fw-semibold small mb-1">Invoice No</label>
+                <label className="form-label fw-semibold small mb-1">
+                  Invoice No
+                </label>
                 <input
                   type="text"
                   name="InvoiceNo"
@@ -455,7 +494,9 @@ function CardPage() {
               </div>
 
               <div className="col-6">
-                <label className="form-label fw-semibold small mb-1">Date</label>
+                <label className="form-label fw-semibold small mb-1">
+                  Date
+                </label>
                 <input
                   type="date"
                   name="date"
@@ -486,16 +527,47 @@ function CardPage() {
                 {formData.fields.map((field, index) => (
                   <tr key={index}>
                     <td className="align-middle small">{index + 1}</td>
-                    <td>
+                    <td className="relative">
                       <input
                         type="text"
                         name="name"
                         value={field.name}
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm "
                         placeholder="Item name"
                         onChange={(e) => handleChange(e, index)}
                       />
+                      {items.length > 0 && (
+                        <div className="absolute left-0 right-0  mt-1 bg-white border border-gray-300 rounded-md shadow-md z-100">
+                          {items.map((item, index) => (
+                            <div
+                              key={index}
+                              className={`px-3 flex items-center gap-2 py-2 cursor-pointer`}
+                            >
+                              <div className="d-flex justify-content-start align-items-center gap-2 ">
+                                <div
+                                  className="cursor-pointer"
+                                  style={{
+                                    width: "45px",
+                                    height: "45px",
+                                    background: "rgba(0,0,0,0.1)",
+                                    borderRadius: "10px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                ></div>
+                                <div className="d-flex flex-column m-0 p-0 cursor-pointer">
+                                  <h6 className="mb-0 capitalize  ">
+                                    {item.name}
+                                  </h6>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </td>
+
                     <td>
                       <input
                         type="number"
@@ -520,7 +592,7 @@ function CardPage() {
                       <input
                         type="number"
                         name="amount"
-                        value={field.quantity * field.rate || ''}
+                        value={field.quantity * field.rate || ""}
                         className="form-control form-control-sm bg-light"
                         placeholder="0.00"
                         readOnly
@@ -557,7 +629,10 @@ function CardPage() {
               checked={paymentReceived}
               onChange={(e) => setPaymentReceived(e.target.checked)}
             />
-            <label className="form-check-label fw-semibold" htmlFor="paymentReceivedToggle">
+            <label
+              className="form-check-label fw-semibold"
+              htmlFor="paymentReceivedToggle"
+            >
               Payment Received?
             </label>
           </div>
@@ -576,10 +651,15 @@ function CardPage() {
         </div>
 
         {/* Totals Card */}
-        <div className="card p-3" style={{ width: "350px", backgroundColor: "#f8f9fa" }}>
+        <div
+          className="card p-3"
+          style={{ width: "350px", backgroundColor: "#f8f9fa" }}
+        >
           <div className="row g-2">
             <div className="col-6">
-              <label className="form-label fw-semibold small mb-1">Discount</label>
+              <label className="form-label fw-semibold small mb-1">
+                Discount
+              </label>
               <input
                 type="number"
                 name="Discount"
@@ -591,7 +671,9 @@ function CardPage() {
             </div>
 
             <div className="col-6">
-              <label className="form-label fw-semibold small mb-1">Shipping</label>
+              <label className="form-label fw-semibold small mb-1">
+                Shipping
+              </label>
               <input
                 type="number"
                 name="Shipping"
@@ -603,7 +685,9 @@ function CardPage() {
             </div>
 
             <div className="col-6">
-              <label className="form-label fw-semibold small mb-1">Tax (%)</label>
+              <label className="form-label fw-semibold small mb-1">
+                Tax (%)
+              </label>
               <input
                 type="number"
                 name="Tax"
@@ -615,7 +699,9 @@ function CardPage() {
             </div>
 
             <div className="col-6">
-              <label className="form-label fw-semibold small mb-1">Subtotal</label>
+              <label className="form-label fw-semibold small mb-1">
+                Subtotal
+              </label>
               <input
                 type="number"
                 value={totals.subtotal}
@@ -625,7 +711,9 @@ function CardPage() {
             </div>
 
             <div className="col-12 border-top pt-2 mt-2">
-              <label className="form-label fw-bold small mb-1">Grand Total</label>
+              <label className="form-label fw-bold small mb-1">
+                Grand Total
+              </label>
               <input
                 type="number"
                 value={totals.grandTotal}
@@ -639,19 +727,23 @@ function CardPage() {
             {paymentReceived && (
               <>
                 <div className="col-12 border-top pt-2 mt-2">
-                  <label className="form-label fw-semibold small mb-1">Receipt No</label>
+                  <label className="form-label fw-semibold small mb-1">
+                    Receipt No
+                  </label>
                   <input
                     type="text"
                     name="receiptNo"
                     value={formData.receiptNo}
                     className="form-control form-control-sm"
-                    placeholder={`REC-${formData.InvoiceNo || '001'}`}
+                    placeholder={`REC-${formData.InvoiceNo || "001"}`}
                     onChange={(e) => handleChange(e)}
                   />
                 </div>
 
                 <div className="col-6">
-                  <label className="form-label fw-semibold small mb-1 text-success">Paid Amount</label>
+                  <label className="form-label fw-semibold small mb-1 text-success">
+                    Paid Amount
+                  </label>
                   <input
                     type="number"
                     name="PaidAmount"
@@ -663,7 +755,9 @@ function CardPage() {
                 </div>
 
                 <div className="col-6">
-                  <label className="form-label fw-semibold small mb-1">Payment Method</label>
+                  <label className="form-label fw-semibold small mb-1">
+                    Payment Method
+                  </label>
                   <select
                     name="paymentMethod"
                     value={formData.paymentMethod}
@@ -681,7 +775,9 @@ function CardPage() {
                 </div>
 
                 <div className="col-12">
-                  <label className="form-label fw-semibold small mb-1">Payment Note</label>
+                  <label className="form-label fw-semibold small mb-1">
+                    Payment Note
+                  </label>
                   <textarea
                     name="paymentNote"
                     value={formData.paymentNote}
@@ -693,7 +789,9 @@ function CardPage() {
                 </div>
 
                 <div className="col-12">
-                  <label className="form-label fw-bold small mb-1 text-danger">Remaining</label>
+                  <label className="form-label fw-bold small mb-1 text-danger">
+                    Remaining
+                  </label>
                   <input
                     type="number"
                     value={totals.remaining}

@@ -197,7 +197,6 @@ function MainApp() {
     }
   };
 
-  // return "Hello"
 
   return (
     <>

@@ -5,9 +5,10 @@ import axios from "axios";
 export default function FileSidebar({ show, setShowFileSidebar }) {
   const [config, setConfig] = useState();
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     axios
-      .get("http://demos.azure.com.np/edit.php?file=sample4.docx")
+      .get("https://demos.azure.com.np/edit.php?file=sample4.docx")
       .then((resp) => {
         setConfig(resp.data);
         setIsLoading(false);

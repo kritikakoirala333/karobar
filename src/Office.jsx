@@ -15,7 +15,7 @@ const OnlyOfficeEditor = ({config}) => {
         config={config}
         
         // documentServerUrl="https://02f9-141-148-219-236.ngrok-free.app"
-        documentServerUrl="http://192.168.1.4:8888"
+        documentServerUrl="http://localhost:9999/"
       />
     </div>
   );
