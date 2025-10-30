@@ -12,15 +12,33 @@ function CardPage() {
   const [showAddCustomerForm, setShowAddCustomerForm] = useState(false);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [paymentReceived, setPaymentReceived] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [searchVal, setSearchVal] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const [activeDropdownIndex, setActiveDropdownIndex] = useState(null);
 
   console.log(showAddCustomerForm);
 
-  const items = [
-    { id: 1, name: "Notebook" },
-    { id: 2, name: "T-shirt", variants: ["Small", "Medium", "Large"] },
-    { id: 3, name: "Pen" },
-    { id: 4, name: "Coffee", variants: ["Hot", "Cold", "Iced"] },
-  ];
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".item-input-wrapper")) {
+        setActiveDropdownIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const fetchInventories = () => {
+    axiosInstance
+      .get("/inventories")
+      .then((resp) => {
+        setProducts(resp.data.data.data);
+        console.log(resp.data.data.data);
+      })
+      .catch((ex) => console.log(ex));
+  };
 
   const getCustomersFromFirebase = async () => {
     console.log("Fetch Info from API");
@@ -32,6 +50,7 @@ function CardPage() {
   const [customerData, setCustomerData] = useState([]);
   useEffect(() => {
     getCustomersFromFirebase();
+    fetchInventories();
   }, []);
 
   const handleCustomerSelection = (customerInfo) => {
@@ -42,6 +61,24 @@ function CardPage() {
       ["selectedCustomerId"]: customerInfo.id, // overwrites only that key safely
     }));
     console.log(customerInfo);
+  };
+
+  // Add this function in your component
+  const handleItemSelect = (item, index) => {
+    setFormData((prev) => {
+      const updatedFields = [...prev.fields];
+      updatedFields[index] = {
+        ...updatedFields[index],
+        name: item.name,
+        rate: item.default_price, // set corresponding rate
+        amount:
+          (parseFloat(item.rate) || 0) *
+          (parseFloat(updatedFields[index].quantity) || 0), // recalc amount
+      };
+      return { ...prev, fields: updatedFields };
+    });
+
+    setActiveDropdownIndex(null); // close dropdown
   };
 
   const [formData, setFormData] = useState({
@@ -526,46 +563,60 @@ function CardPage() {
               <tbody>
                 {formData.fields.map((field, index) => (
                   <tr key={index}>
-                    <td className="align-middle small">{index + 1}</td>
-                    <td className="relative">
-                      <input
-                        type="text"
-                        name="name"
-                        value={field.name}
-                        className="form-control form-control-sm "
-                        placeholder="Item name"
-                        onChange={(e) => handleChange(e, index)}
-                      />
-                      {items.length > 0 && (
-                        <div className="absolute left-0 right-0  mt-1 bg-white border border-gray-300 rounded-md shadow-md z-100">
-                          {items.map((item, index) => (
-                            <div
-                              key={index}
-                              className={`px-3 flex items-center gap-2 py-2 cursor-pointer`}
-                            >
-                              <div className="d-flex justify-content-start align-items-center gap-2 ">
-                                <div
-                                  className="cursor-pointer"
-                                  style={{
-                                    width: "45px",
-                                    height: "45px",
-                                    background: "rgba(0,0,0,0.1)",
-                                    borderRadius: "10px",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                ></div>
-                                <div className="d-flex flex-column m-0 p-0 cursor-pointer">
-                                  <h6 className="mb-0 capitalize  ">
+                    <td className="align-middle small ">{index + 1}</td>
+                    <td className="">
+                      <div
+                        className="position-relative item-input-wrapper"
+                        style={{ overflow: "visible" }}
+                      >
+                        <input
+                          type="text"
+                          name="name"
+                          value={field.name}
+                          className="form-control form-control-sm"
+                          placeholder="Item name"
+                          autoComplete="off"
+                          onChange={(e) => {
+                            handleChange(e, index);
+                            setSearchVal(e.target.value);
+                          }}
+                          onFocus={() => setActiveDropdownIndex(index)} // show dropdown when clicked
+                        />
+
+                        {/* show dropdown only for the focused input */}
+                        {activeDropdownIndex === index && (
+                          <div
+                            className="position-absolute w-100 p-2 mt-1 bg-white border border-secondary rounded shadow overflow-y-auto"
+                            style={{
+                              maxHeight: "150px",
+                              zIndex: 1055,
+                              top: "100%",
+                              left: 0,
+                            }}
+                          >
+                            {products.map((item, i) => (
+                              <div
+                                key={i}
+                                className="px-3 py-2 cursor-pointer hover:bg-gray-200 d-flex align-items-center gap-2 hover-bg-light"
+                                onClick={() => {
+                                  handleItemSelect(item, index);
+                                }}
+                              >
+                                {!item.has_variations && (
+                                  <div className="mb-0 text-xs">
                                     {item.name}
-                                  </h6>
-                                </div>
+                                  </div>
+                                )}
+                                {item.has_variations && (
+                                  <div className="mb-0 text-xs">
+                                    {item.name}
+                                  </div>
+                                )}
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </td>
 
                     <td>
@@ -611,30 +662,26 @@ function CardPage() {
                 ))}
               </tbody>
             </table>
-          </div>
-
-          {/* ADD FIELD */}
-          <button className="add-more-btn w-100" onClick={handleAddField}>
-            Add More Item
-          </button>
-        </div>
-
-        {/* Payment Toggle */}
-        <div className="mt-3 border-top pt-3">
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="paymentReceivedToggle"
-              checked={paymentReceived}
-              onChange={(e) => setPaymentReceived(e.target.checked)}
-            />
-            <label
-              className="form-check-label fw-semibold"
-              htmlFor="paymentReceivedToggle"
-            >
-              Payment Received?
-            </label>
+            <button className="add-more-btn w-100" onClick={handleAddField}>
+              Add More Item
+            </button>
+            <div className="mt-3 border-top pt-3">
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="paymentReceivedToggle"
+                  checked={paymentReceived}
+                  onChange={(e) => setPaymentReceived(e.target.checked)}
+                />
+                <label
+                  className="form-check-label fw-semibold"
+                  htmlFor="paymentReceivedToggle"
+                >
+                  Payment Received?
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </div>

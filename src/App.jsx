@@ -96,7 +96,7 @@ function MainApp() {
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
 
-  const isSignInPage = path === "/signup";
+  const isSignInPage = path === "/signin";
 
   const checkLoginInfo = () => {
     console.log("Checking for Login Session");
@@ -151,7 +151,7 @@ function MainApp() {
     );
 
   if (isSignInPage) {
-    return <SignUp />;
+    return <SignIn />;
   }
 
   const toggleTheme = () => {
@@ -200,7 +200,6 @@ function MainApp() {
       e.preventDefault();
       const selected = suggestions[activeIndex];
       if (selected) {
-        w;
         setSearchVal(selected.searchPath);
         setSuggestions([]);
         navigator(selected.path);

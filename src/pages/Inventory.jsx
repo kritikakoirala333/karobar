@@ -6,9 +6,6 @@ import { GoPlus } from "react-icons/go";
 import { Link, useNavigate } from "react-router-dom";
 import { getAllInventories } from "../services/inventoryService";
 
-
-
-
 function Inventory() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
