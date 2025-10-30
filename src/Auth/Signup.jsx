@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import signBG from "../assets/signup_bg.jpg";
+import { Link } from "react-router-dom";
+import { MdOutlineInventory } from "react-icons/md";
+import Alphid from "../assets/Alphid.png";
 
 export default function Signup() {
   const [step, setStep] = useState(1);
@@ -45,28 +47,19 @@ export default function Signup() {
 
   const validateStep = () => {
     if (step === 1) {
-      const { nationalId, firstName, lastName, city, country, phone, email } =
-        formData;
-      if (
-        !nationalId ||
-        !firstName ||
-        !lastName ||
-        !city ||
-        !country ||
-        !phone ||
-        !email
-      ) {
+      const { nationalId, firstName, lastName, city, country, phone, email } = formData;
+      if (!nationalId || !firstName || !lastName || !city || !country || !phone || !email) {
         alert("Please fill all personal details.");
         return false;
       }
+    }
 
-      if (hasOrganization) {
-        const { businessName, businessAddress, businessCountry, panNo } =
-          formData;
-        if (!businessName || !businessAddress || !businessCountry || !panNo) {
-          alert("Please fill all organization fields.");
-          return false;
-        }
+  if (step === 2) {
+      if (!hasOrganization) return true;
+      const { businessName, businessAddress, businessCountry, panNo } = formData;
+      if (!businessName || !businessAddress || !businessCountry || !panNo) {
+        alert("Please fill all organization fields.");
+        return false;
       }
     }
 
@@ -91,68 +84,65 @@ export default function Signup() {
 
   return (
     <div
-  
+      className="min-h-screen flex items-center justify-center text-[13px]"
+    
     >
-      <div className=""></div>
 
-      <div className=" w-full h-[100vh] rounded-xl shadow-xl flex overflow-hidden">
+      <div className=" bg-white w-full h-[100vh]  shadow-xl flex overflow-hidden ">
         {/* Sidebar */}
-        <div className="w-1/3 bg-gradient-to-b  from-[#1a3d6b] to-[#274a80] p-5">
-          <div className="text-lg font-semibold text-white mb-8 text-center">
-            Invoicer
+        <div className="w-1/3 bg-[#ededed] p-5 flex flex-col justify-between">
+  <div className="flex text-center justify-center">    
+   <img src={Alphid} alt=""  className="w-[180px] h-[70px] "/>
           </div>
-          <ul className="space-y-4">
-            {[
-              "Personal Details",
-              "Organization Details",
-              "Security & Verification",
-              "Summary",
-            ].map((label, index) => {
-              const number = index + 1;
-              const active = step === number;
-              const completed = step > number;
-              return (
-                <li
-                  key={number}
-                  onClick={() => handleSidebarClick(index)}
-                  className={`flex items-center gap-2 cursor-pointer transition ${
-                    active
-                      ? "text-white font-medium"
-                      : completed
-                      ? "text-[#A8E6FF]"
-                      : "text-[#7ba0d6]"
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-xs border transition ${
-                      active
-                        ? "bg-white text-[#1a3d6b] border-white"
-                        : completed
-                        ? "bg-[#A8E6FF] text-[#1a3d6b] border-none"
-                        : "border-[#88aee0]"
+          <ul className="space-y-3 text-xl">
+            {["Personal Details", "Organization Details", "Security & Verification", "Summary"].map(
+              (label, index) => {
+                const number = index + 1;
+                const active = step === number;
+                const completed = step > number;
+                return (
+                  <li
+                    key={number}
+                    onClick={() => handleSidebarClick(index)}
+                    className={`flex items-center gap-2 cursor-pointer transition ${
+                      active ? "text-black font-medium" : completed ? "text-[black]" : "text-gray-600"
                     }`}
                   >
-                    {completed ? "✓" : number}
-                  </div>
-                  {label}
-                </li>
-              );
-            })}
+                    <div
+                      className={`w-5 h-5 rounded-full flex items-center justify-center text-xs border transition ${
+                        active
+                          ? "bg-white text-black border-black"
+                          : completed
+                          ? "bg-[#080c0e95] text-white border-none"
+                          : "border-[#000000]"
+                      }`}
+                    >
+                      {completed ? "✓" : number}
+                    </div>
+                    {label}
+                  </li>
+                );
+              }
+            )}
           </ul>
+          <Link to="/login" className="text-sm text-center text-blue-500 hover:underline">
+            Already have an account? Log in
+          </Link>
         </div>
 
         {/* Form Section */}
-        <div className="flex-1 p-6 text-[#1a3d6b] overflow-y-auto">
+        <div className="flex-1 p-6 text-black overflow-y-auto px-[110px] " >
           {/* STEP 1 */}
           {step === 1 && (
-            <div>
-              <p className="text-sm font-semibold mb-3">
-                YOUR PERSONAL DETAILS
-              </p>
+            <div className="mt-[95px]">
+               <h2 className="text-2xl font-semibold mb-1">
+                Let's start <span className="text-gray-400"> with you</span> 👋
+              </h2>
+              <p className="text-gray-400">Let's set up your profile and import your Leads, if you have some.</p>
+              <p className="text-sm font-semibold mb-3">YOUR PERSONAL DETAILS <span className="text-xl">👶</span>
+</p>
               <div className="mb-3">
-                <label className="block text-xs text-gray-600 mb-1">
-                  National Identity Number
-                </label>
+                <label className="block text-xs text-gray-600 mb-1">National Identity Number</label>
                 <input
                   type="text"
                   name="nationalId"
@@ -181,7 +171,7 @@ export default function Signup() {
                 />
               </div>
 
-              <p className="text-sm font-semibold mb-2">YOUR ADDRESS</p>
+              <p className="text-sm font-semibold mb-2">YOUR ADDRESS 📍</p>
               <div className="grid grid-cols-2 gap-2 mb-3">
                 <input
                   type="text"
@@ -212,7 +202,7 @@ export default function Signup() {
                 </select>
               </div>
 
-              <p className="text-sm font-semibold mb-2">CONTACT DETAILS</p>
+              <p className="text-sm font-semibold mb-2">CONTACT DETAILS 📞</p>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <input
                   type="text"
@@ -233,204 +223,169 @@ export default function Signup() {
               </div>
 
               <div className="flex justify-end">
-                <button
+                <div
                   onClick={handleNext}
-                  className="bg-[#2563eb] text-white px-4 py-1.5 rounded-md hover:bg-[#1d4ed8] transition-all"
+                  className="bg-gray-800 text-white px-4 py-1.5 rounded-2xl hover:bg-black transition-all cursor-pointer"
                 >
                   Next
-                </button>
+                </div>
               </div>
             </div>
           )}
 
           {/* STEP 2 */}
           {step === 2 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-6 text-gray-800">
-                Organization Details
-              </h2>
-              <div className="">
-                <div className="rounded-lg p-4 shadow-sm border border-gray-100">
-                  <label className="flex items-center text-sm text-gray-600 ">
-                    <input
-                      type="checkbox"
-                      checked={hasOrganization}
-                      onChange={() => setHasOrganization(!hasOrganization)}
-                      className="mr-2 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <span className="ml-2 "> Do you have an organization?</span>
-                  </label>
-                </div>
+            <div className={`${hasOrganization? "mt-[130px]":"mt-[230px]"}`}>
+              <h2 className="text-xl font-semibold mb-6 text-gray-800 ">Organization Details🏣</h2>
+              {/* <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-100"> */}
+                <label className="flex items-center  text-sm text-gray-600 mb-2">
+                  <input
+                    type="checkbox"
+                    checked={hasOrganization}
+                    onChange={() => setHasOrganization(!hasOrganization)}
+                    className="mt-2 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                 <span className="ml-2"> Do you have an organization?</span>
+                </label>
 
                 {hasOrganization && (
-                  <div className="space-y-4 mt-3">
+                  <div className="space-y-4">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Business Name
-                      </label>
+                      <label className="block text-xs text-gray-500 mb-1">Business Name</label>
                       <input
                         type="text"
                         name="businessName"
                         value={formData.businessName}
                         onChange={handleChange}
                         placeholder="Enter business name"
-                        className="w-full bg-white border  border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Business Address
-                      </label>
+                      <label className="block text-xs text-gray-500 mb-1">Business Address</label>
                       <input
                         type="text"
                         name="businessAddress"
                         value={formData.businessAddress}
                         onChange={handleChange}
                         placeholder="Enter business address"
-                        className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
                     </div>
 
                     <div className="flex gap-3">
                       <div className="w-1/2">
-                        <label className="block text-xs text-gray-500 mb-1">
-                          Business Country
-                        </label>
+                        <label className="block text-xs text-gray-500 mb-1">Business Country</label>
                         <input
                           type="text"
                           name="businessCountry"
                           value={formData.businessCountry}
                           onChange={handleChange}
                           placeholder="Country"
-                          className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                         />
                       </div>
                       <div className="w-1/2">
-                        <label className="block text-xs text-gray-500 mb-1">
-                          PAN Number
-                        </label>
+                        <label className="block text-xs text-gray-500 mb-1">PAN Number</label>
                         <input
                           type="text"
                           name="panNo"
                           value={formData.panNo}
                           onChange={handleChange}
                           placeholder="PAN No."
-                          className="w-full bg-white border  border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                         />
                       </div>
                     </div>
                   </div>
                 )}
-              </div>
-              <div className="flex justify-between pt-4">
-                <button
+
+                <div className="flex justify-between pt-4">
+                     <button
                   onClick={handleBack}
                   className="text-blue-600 border border-blue-600 px-6 py-2 rounded-md hover:bg-blue-50"
                 >
                   Back
                 </button>
-                <button
-                  onClick={handleNext}
-                  className="bg-[#2563eb] text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-[#1d4ed8] transition-all duration-300"
-                >
-                  {hasOrganization ? "Next" : "Skip"}
-                </button>
-              </div>
+                  <div
+                    onClick={handleNext}
+                    className="bg-gray-800 cursor-pointer text-white px-6 py-2 rounded-2xl text-sm font-medium hover:bg-[black] transition-all duration-300"
+                  >
+                    {hasOrganization ? "Next" : "Skip"}
+                  </div>
+                </div>
+              {/* </div> */}
             </div>
           )}
 
           {/* STEP 3 */}
           {step === 3 && (
-            <div>
-              <h2 className="text-lg font-semibold mb-4 text-gray-700">
-                Security & Verification
-              </h2>
-              <div className="space-y-3">
-                <label
-                  htmlFor="username"
-                  className="block text-xs text-gray-700 mb-1"
-                >
-                  Username:
-                </label>
+            <div className="mt-[160px]">
+              <h2 className="text-lg font-semibold mb-4 text-gray-700">Security & Verification 🔐</h2>
+              <div className="flex flex-col gap-3">
                 <input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="Username"
-                  className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 text-gray-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700"
                 />
-                <label
-                  htmlFor="password"
-                  className="block text-xs text-gray-700 mb-1"
-                >
-                  Password:
-                </label>
+                
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Password"
-                  className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 text-gray-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700"
                 />
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-xs text-gray-700 mb-1"
-                >
-                  Confirm Password:
-                </label>
+                
                 <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm Password"
-                  className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 text-gray-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700"
                 />
-                <div className="flex items-center text-sm text-gray-700 mt-3">
+                <label className="flex items-center text-sm text-gray-600">
                   <input
                     type="checkbox"
                     name="agreeTerms"
                     checked={formData.agreeTerms}
                     onChange={handleChange}
-                    className=""
+                    className="mr-2"
                   />
-                  <label className="ml-2 ">
-                    {" "}
-                    I agree to the Terms & Privacy Policy
-                  </label>
-                </div>
+                  <span className="text-gray-600 ml-2">I agree to the Terms & Privacy Policy</span>
+                </label>
               </div>
 
-              <div className="flex justify-between mt-6">
-                <button
+            <div className="flex justify-between pt-4">
+                     <button
                   onClick={handleBack}
                   className="text-blue-600 border border-blue-600 px-6 py-2 rounded-md hover:bg-blue-50"
                 >
                   Back
                 </button>
-                <button
-                  onClick={handleNext}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
-                >
-                  Next
-                </button>
-              </div>
+                  <div
+                    onClick={handleNext}
+                    className="bg-gray-800 cursor-pointer text-white px-6 py-2 rounded-2xl text-sm font-medium hover:bg-[black] transition-all duration-300"
+                  >
+                    Next
+                  </div>
+                </div>
             </div>
           )}
 
           {/* STEP 4 */}
           {step === 4 && (
-            <div>
-              <h2 className="text-lg font-semibold mb-4 text-gray-700">
-                Summary
-              </h2>
+            <div className={`${hasOrganization? "mt-[125px]":"mt-[210px]"}`}>
+              <h2 className="text-lg font-semibold mb-4 text-gray-700">Summary 📖</h2>
               <div className="space-y-2">
                 <p className="text-gray-600">
-                  <strong>Name:</strong> {formData.firstName}{" "}
-                  {formData.lastName}
+                  <strong>Name:</strong> {formData.firstName} {formData.lastName}
                 </p>
                 <p className="text-gray-600">
                   <strong>Email:</strong> {formData.email}
@@ -440,15 +395,35 @@ export default function Signup() {
                 </p>
                 {hasOrganization && (
                   <p className="text-gray-600">
+                    <strong>Business Name:</strong> {formData.businessName}
+                  </p>
+                )}
+                
+                {hasOrganization && (
+                  <p className="text-gray-600">
+                    <strong>Business sCountry:</strong> {formData.businessCountry}
+                  </p>
+                )}
+                {hasOrganization && (
+                  <p className="text-gray-600">
                     <strong>PAN No:</strong> {formData.panNo}
                   </p>
                 )}
               </div>
-              <div className="flex justify-end">
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-2xl hover:bg-blue-700">
-                  Finish
+           <div className="flex justify-between ">
+                  <button
+                  onClick={handleBack}
+                  className="text-blue-600 border border-blue-600 px-6 py-2 rounded-md hover:bg-blue-50"
+                >
+                  Back
                 </button>
-              </div>
+                <div
+                  onClick={handleNext}
+                  className="bg-gray-800 text-white px-4 py-1.5 rounded-2xl hover:bg-black transition-all cursor-pointer"
+                >
+                  Submit
+                </div>
+            </div>
             </div>
           )}
         </div>
