@@ -36,10 +36,14 @@ import { appBase } from "./store/appBase";
 import { salesInvoiceState } from "./store/salesInvoiceState";
 import { themeBase } from "./store/themeBase";
 import Setting from "./pages/Setting";
+import SignUp from "./Auth/Signup.jsx";
 import CustomerLedger from "./pages/CustomerLedger";
 import InventoryDetail from "./pages/InventoryDetail";
 import Drive from "./Drive";
 import FileSidebar from "./FileSidebar";
+import BankManagement from "./pages/BankManagement";
+import BankAdd from "./ui/BankAdd";
+import DisplayBank from "./ui/DisplayBank";
 
 function App() {
   return (
@@ -71,13 +75,20 @@ function MainApp() {
 
   const paths = [
     { path: "/", searchPath: "dashboard" },
-    { path: "/invoices", searchPath: "invoices" },
-    { path: "/purchase", searchPath: "purchase invoice" },
-    { path: "/card", searchPath: "sales invoice" },
-    { path: "/customers", searchPath: "customers" },
-    { path: "/suppliers", searchPath: "suppliers" },
-    { path: "/inventory", searchPath: "inventory" },
-    { path: "/addproduct", searchPath: "add product" },
+    { title:"Invoices", path: "/invoices", searchPath: "invoices", desc:"Search invoices by clicking here" },
+    {title:"Invoices", path:"/card", searchPath:"create invoice", desc:"Create a brand new invoices by clicking here"},
+    {title:"Invoices" ,path:"/invoices/reports", searchPath:"reports", desc:"See the reports of invoices by clicking here"},
+    {title:"Purchase", path: "/purchase", searchPath: "purchase invoice", desc:"Create a brand new pruchase invoices by clicking here"},
+    {title:"Customers", path: "/customers", searchPath: "customers", desc:"See all the customers by clicking here" },
+    {title:"Customers", path:"/customers/create", searchPath:"add customers", desc:"Add new customers by clicking here"},
+    {title:"Payment",path:"/payment", searchPath:"payment", desc:""},
+    {title:"", path: "/suppliers", searchPath: "suppliers", desc:"" },
+    {title:"Inventory", path: "/inventory", searchPath: "inventory", desc:"See all the products by clicking here" },
+    {title:"Inventory", path:"/inventory/reports", searchPath:"stock reports", desc:"See the inventory reports by clicking here"},
+    {title:"Inventory", path: "/addproduct", searchPath: "add product", desc:"Create a new products by clicking here " },
+    {title:"Bank Management", path:"/bankmanagement", searchPath:"bank management", desc:"See the banks details by clcking here"},
+    {title:"Settings", path:"/settings", searchPath:"settings", desc:"See the setting "},
+    {title:"Profile", path:"profile", searchPath:"profile", desc:"See the profile"},
   ];
 
   const navigator = useNavigate();
@@ -85,73 +96,73 @@ function MainApp() {
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
 
-  const isSignInPage = path === "/signin";
+  const isSignInPage = path === "/signup";
 
-  const checkLoginInfo = () => {
-    console.log("Checking for Login Session");
-    let sessionToken = localStorage.getItem("login_token");
-    console.log("Session Token:", sessionToken);
-    axiosInstance
-      .post(
-        "/auth/me",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((resp) => {
-        if (resp.data.name) {
-          console.log(resp);
-          setUserInfo(resp.data);
-        } else {
-          navigator("/signin");
-        }
-        setAuthCheck(false);
-      })
-      .catch((ex) => {
-        navigator("/signin");
-        setAuthCheck(false);
-      });
-  };
+  // const checkLoginInfo = () => {
+  //   console.log("Checking for Login Session");
+  //   let sessionToken = localStorage.getItem("login_token");
+  //   console.log("Session Token:", sessionToken);
+  //   axiosInstance
+  //     .post(
+  //       "/auth/me",
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${sessionToken}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     )
+  //     .then((resp) => {
+  //       if (resp.data.name) {
+  //         console.log(resp);
+  //         setUserInfo(resp.data);
+  //       } else {
+  //         navigator("/signin");
+  //       }
+  //       setAuthCheck(false);
+  //     })
+  //     .catch((ex) => {
+  //       navigator("/signin");
+  //       setAuthCheck(false);
+  //     });
+  // };
 
-  useEffect(() => {
-    checkLoginInfo();
-    // CALLING THOSE STATES
-    fetchSalesInvoices();
+  // useEffect(() => {
+  //   checkLoginInfo();
+  //   // CALLING THOSE STATES
+  //   fetchSalesInvoices();
 
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  //   const savedTheme = localStorage.getItem("theme");
+  //   if (savedTheme === "dark") {
+  //     setDarkMode(true);
+  //     document.documentElement.classList.add("dark");
+  //   } else {
+  //     setDarkMode(false);
+  //     document.documentElement.classList.remove("dark");
+  //   }
+  // }, []);
 
-  if (authCheck)
-    return (
-      <>
-        <h2>Wait I am Checking</h2>
-      </>
-    );
+  // if (authCheck)
+  //   return (
+  //     <>
+  //       <h2>Wait I am Checking</h2>
+  //     </>
+  //   );
 
   if (isSignInPage) {
-    return <SignIn />;
+    return <SignUp />;
   }
 
-  const toggleTheme = () => {
-    if (darkMode) {
-      localStorage.setItem("theme", "light");
-      setDarkMode(false);
-    } else {
-      localStorage.setItem("theme", "dark");
-      setDarkMode(true);
-    }
-  };
+  // const toggleTheme = () => {
+  //   if (darkMode) {
+  //     localStorage.setItem("theme", "light");
+  //     setDarkMode(false);
+  //   } else {
+  //     localStorage.setItem("theme", "dark");
+  //     setDarkMode(true);
+  //   }
+  // };
 
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -790,6 +801,16 @@ function MainApp() {
                 <FaGoogleDrive />
                 <span>Drive</span>
               </Link>
+               <Link
+                to="/bankmanagement"
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/bankmanagement" ? "active" : ""
+                }`}
+              >
+                <i class="bi bi-bank"></i>
+                <span>Bank Management</span>
+              </Link>
+
             </div>
           </div>
 
@@ -841,7 +862,9 @@ function MainApp() {
               path="/invoices"
               element={<Invoices />}
             />
-            <Route authUser={userInfo} path="/signin" element={<SignIn />} />
+            {/* <Route authUser={userInfo} path="/signin" element={<SignIn />} /> */}
+            <Route authUser={userInfo} path="/signup" element={<SignUp />} />
+          
             <Route
               authUser={userInfo}
               path="/purchase"
@@ -873,6 +896,27 @@ function MainApp() {
               element={<Setting />}
             ></Route>
             <Route authUser={userInfo} path="/drive" element={<Drive />} />
+            <Route
+            authUser={userInfo}
+            path="/bankmanagement"
+            element={<BankManagement/>}
+            />
+            <Route
+            authUser={userInfo}
+            path="/bankadd"
+            element={<BankAdd/>}
+            />
+            <Route 
+            authUser={userInfo}
+            path="displaybank"
+            element={<DisplayBank/>}
+            />
+
+            
+
+            
+
+            
 
             <Route
               authUser={userInfo}

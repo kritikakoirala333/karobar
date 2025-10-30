@@ -1,0 +1,149 @@
+import { useState } from "react";
+import {
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaGoogle,
+  FaFacebookF,
+  FaTwitter,
+} from "react-icons/fa";
+import signIn from "../assets/signIn.png";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../axiosConfig";
+import Alphid from "../assets/Alphid.png";
+
+export default function SignIn() {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("niraj@azure.com.np");
+  const [password, setPassword] = useState("password");
+
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    let sessionToken = localStorage.getItem("login_token");
+    console.log("Session Token:", sessionToken)
+
+
+    axiosInstance.post("/auth/login", {
+      email: email,
+      password: password,
+    }).then(resp => {
+        console.log(resp)
+        localStorage.setItem("login_token", resp.data.access_token)
+        navigate("/")
+    });
+    console.log(email, password);
+  };
+
+  return (
+    <div className="px-[180px]    d-flex justify-content-between align-items-center vh-100 vw-100 bg-light">
+      <div className=" w-[500px] ">
+         <img src={Alphid} alt=""  className=" "/>
+        <img src={signIn} alt="" className="w-[400px] mx-auto " />
+        <div >
+            <p className="text-center px-4 mb-4 ">
+             <span className="font-semibold">   Smart inventory. Simple control. </span> <br />
+                From tracking to reporting, manage every part of your inventory effortlessly
+                -all in one intelligent platform.
+            </p>
+        </div>
+      </div>
+      <div
+        className="card p-4 shadow"
+        style={{ maxWidth: "440px", width: "100%" }}
+      >
+        <h3 className="text-center mb-4">Sign In</h3>
+
+        <form onSubmit={handleLogin}>
+          {/* Email Field */}
+          <div className="mb-3 position-relative">
+            <FaEnvelope
+              className="position-absolute"
+              style={{ top: "10px", left: "10px", color: "#6c757d" }}
+            />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="form-control ps-5"
+            />
+          </div>
+
+          {/* Password Field */}
+          <div className="mb-3 position-relative">
+            <FaLock
+              className="position-absolute"
+              style={{ top: "10px", left: "10px", color: "#6c757d" }}
+            />
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="form-control ps-5"
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                cursor: "pointer",
+                color: "#6c757d",
+              }}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="rememberMe"
+              />
+              <label className="form-check-label" htmlFor="rememberMe">
+                Remember me
+              </label>
+            </div>
+            <a href="#" className="text-decoration-none">
+              Forgot password?
+            </a>
+          </div>
+          <button type="submit" className="btn btn-primary w-100 mb-3 mt-3">
+            Sign In
+          </button>
+        </form>
+
+        <div className="text-center mb-3">Or sign in with</div>
+
+        <div className="d-flex justify-content-center gap-3">
+          <button className="btn btn-outline-danger">
+            <FaGoogle className=" " />
+          </button>
+          <button className="btn btn-outline-primary">
+            <FaFacebookF className="" />
+          </button>
+          <button className="btn btn-outline-info">
+            <FaTwitter className="" />
+          </button>
+        </div>
+        <div className="text-center mt-3 ">
+          By logging in, you agree to our <b>Terms of Service</b> and{" "}
+          <b>Privacy Policy</b>.
+        </div>
+        <div className="text-center mt-3">
+          Don't have an account?{" "}
+          <a href="#" className="text-decoration-none">
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
