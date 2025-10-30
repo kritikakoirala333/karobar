@@ -12,6 +12,7 @@ import signIn from "../assets/signIn.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axiosConfig";
+import Alphid from "../assets/Alphid.png";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +42,7 @@ export default function SignIn() {
   return (
     <div className="px-[180px]    d-flex justify-content-between align-items-center vh-100 vw-100 bg-light">
       <div className=" w-[500px] ">
-        <div className="text-6xl text-center text-uppercase font-bold mb-3">Alphid</div>
+         <img src={Alphid} alt=""  className=" "/>
         <img src={signIn} alt="" className="w-[400px] mx-auto " />
         <div >
             <p className="text-center px-4 mb-4 ">

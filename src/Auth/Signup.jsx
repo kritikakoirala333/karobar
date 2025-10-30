@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { MdOutlineInventory } from "react-icons/md";
+import Alphid from "../assets/Alphid.png";
 
 export default function Signup() {
   const [step, setStep] = useState(1);
@@ -90,9 +91,8 @@ export default function Signup() {
       <div className=" bg-white w-full h-[100vh]  shadow-xl flex overflow-hidden ">
         {/* Sidebar */}
         <div className="w-1/3 bg-[#ededed] p-5 flex flex-col justify-between">
-  <div className="flex text-center justify-center">     
-       <MdOutlineInventory className="text-5xl text-center text-black " />
-          <p className="text-3xl font-semibold text-black text-center ">Invoicer</p>
+  <div className="flex text-center justify-center">    
+   <img src={Alphid} alt=""  className="w-[180px] h-[70px] "/>
           </div>
           <ul className="space-y-3 text-xl">
             {["Personal Details", "Organization Details", "Security & Verification", "Summary"].map(

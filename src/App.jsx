@@ -80,73 +80,73 @@ function MainApp() {
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
 
-  const isSignInPage = path === "/signin";
+  const isSignInPage = path === "/signup";
 
-  const checkLoginInfo = () => {
-    console.log("Checking for Login Session");
-    let sessionToken = localStorage.getItem("login_token");
-    console.log("Session Token:", sessionToken);
-    axiosInstance
-      .post(
-        "/auth/me",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((resp) => {
-        if (resp.data.name) {
-          console.log(resp);
-          setUserInfo(resp.data);
-        } else {
-          navigator("/signin");
-        }
-        setAuthCheck(false);
-      })
-      .catch((ex) => {
-        navigator("/signin");
-        setAuthCheck(false);
-      });
-  };
+  // const checkLoginInfo = () => {
+  //   console.log("Checking for Login Session");
+  //   let sessionToken = localStorage.getItem("login_token");
+  //   console.log("Session Token:", sessionToken);
+  //   axiosInstance
+  //     .post(
+  //       "/auth/me",
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${sessionToken}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     )
+  //     .then((resp) => {
+  //       if (resp.data.name) {
+  //         console.log(resp);
+  //         setUserInfo(resp.data);
+  //       } else {
+  //         navigator("/signin");
+  //       }
+  //       setAuthCheck(false);
+  //     })
+  //     .catch((ex) => {
+  //       navigator("/signin");
+  //       setAuthCheck(false);
+  //     });
+  // };
 
-  useEffect(() => {
-    checkLoginInfo();
-    // CALLING THOSE STATES
-    fetchSalesInvoices();
+  // useEffect(() => {
+  //   checkLoginInfo();
+  //   // CALLING THOSE STATES
+  //   fetchSalesInvoices();
 
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  //   const savedTheme = localStorage.getItem("theme");
+  //   if (savedTheme === "dark") {
+  //     setDarkMode(true);
+  //     document.documentElement.classList.add("dark");
+  //   } else {
+  //     setDarkMode(false);
+  //     document.documentElement.classList.remove("dark");
+  //   }
+  // }, []);
 
-  if (authCheck)
-    return (
-      <>
-        <h2>Wait I am Checking</h2>
-      </>
-    );
+  // if (authCheck)
+  //   return (
+  //     <>
+  //       <h2>Wait I am Checking</h2>
+  //     </>
+  //   );
 
   if (isSignInPage) {
-    return <SignIn />;
+    return <SignUp />;
   }
 
-  const toggleTheme = () => {
-    if (darkMode) {
-      localStorage.setItem("theme", "light");
-      setDarkMode(false);
-    } else {
-      localStorage.setItem("theme", "dark");
-      setDarkMode(true);
-    }
-  };
+  // const toggleTheme = () => {
+  //   if (darkMode) {
+  //     localStorage.setItem("theme", "light");
+  //     setDarkMode(false);
+  //   } else {
+  //     localStorage.setItem("theme", "dark");
+  //     setDarkMode(true);
+  //   }
+  // };
 
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -819,8 +819,8 @@ function MainApp() {
               path="/invoices"
               element={<Invoices />}
             />
-            <Route authUser={userInfo} path="/signin" element={<SignIn />} />
-            {/* <Route authUser={userInfo} path="/signup" element={<SignUp />} /> */}
+            {/* <Route authUser={userInfo} path="/signin" element={<SignIn />} /> */}
+            <Route authUser={userInfo} path="/signup" element={<SignUp />} />
           
             <Route
               authUser={userInfo}
