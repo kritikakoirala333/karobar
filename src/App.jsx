@@ -5,6 +5,7 @@ import CardPage from "./pages/card";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { IoClose } from "react-icons/io5";
+import { FaGoogleDrive } from "react-icons/fa";
 
 import {
   BrowserRouter,
@@ -38,6 +39,8 @@ import Setting from "./pages/Setting";
 import SignUp from "./Auth/Signup.jsx";
 import CustomerLedger from "./pages/CustomerLedger";
 import InventoryDetail from "./pages/InventoryDetail";
+import Drive from "./Drive";
+import FileSidebar from "./FileSidebar";
 import BankManagement from "./pages/BankManagement";
 import BankAdd from "./ui/BankAdd";
 import DisplayBank from "./ui/DisplayBank";
@@ -58,6 +61,7 @@ function MainApp() {
   const { fetchSalesInvoices } = salesInvoiceState();
 
   const [showPaymentSlide, setShowPaymentSlide] = useState(false);
+  const [showFileSidebar, setShowFileSidebar] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [invoicesOpen, setInvoicesOpen] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
@@ -204,7 +208,6 @@ function MainApp() {
     }
   };
 
-  // return "Hello"
 
   return (
     <>
@@ -251,7 +254,7 @@ function MainApp() {
                     lineHeight: "1",
                   }}
                 >
-                  Alphid - <span style={{fontWeight:"light"}}>EMS</span>
+                  Alphid - <span style={{ fontWeight: "light" }}>EMS</span>
                 </div>
                 <div
                   style={{
@@ -574,6 +577,13 @@ function MainApp() {
             <button className="btn btn-primary btn-sm">Settings</button>
           </header>
           <div className="flex gap-6">
+            <div
+              onClick={() => setShowFileSidebar(true)}
+              className="border-2 px-3 py-1 rounded-md text-semibold cursor-pointer"
+            >
+              {" "}
+              <span className="pr-2">+</span> Sidebar
+            </div>
             <Link to="/card" className="text-decoration-none">
               <div className="border-2 text-black  px-3 py-1 rounded-md text-semibold cursor-pointer">
                 {" "}
@@ -782,6 +792,15 @@ function MainApp() {
                 <i className="bi bi-bag sidebar-icon"></i>
                 <span>Purchases</span>
               </Link>
+              <Link
+                to="/drive"
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/drive" ? "active" : ""
+                }`}
+              >
+                <FaGoogleDrive />
+                <span>Drive</span>
+              </Link>
                <Link
                 to="/bankmanagement"
                 className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
@@ -874,8 +893,9 @@ function MainApp() {
             <Route
               authUser={userInfo}
               path="/settings"
-              element={<Setting/>}
+              element={<Setting />}
             ></Route>
+            <Route authUser={userInfo} path="/drive" element={<Drive />} />
             <Route
             authUser={userInfo}
             path="/bankmanagement"
@@ -898,33 +918,46 @@ function MainApp() {
 
             
 
-            <Route authUser={userInfo} path="/customer-ledger/:id" element={<CustomerLedger />} />
+            <Route
+              authUser={userInfo}
+              path="/customer-ledger/:id"
+              element={<CustomerLedger />}
+            />
           </Routes>
         </div>
       </div>
       <div
         /* Overlay container: always mounted so transitions can run */
         className={`fixed inset-0 z-[9999] flex justify-end transition-all duration-200 ${
-          showPaymentSlide
+          showPaymentSlide || showFileSidebar
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* backdrop (frosted glass) */} 
+        {/* backdrop (frosted glass) */}
         <div
-          className={`absolute inset-0 backdrop-blur-none transition-opacity duration-200 ${
-            showPaymentSlide
+          className={`absolute inset-0 backdrop-blur-none cursor-pointer transition-opacity duration-200 ${
+            showPaymentSlide || showFileSidebar
               ? "bg-black/60 opacity-100"
               : "bg-transparent opacity-0"
           }`}
-          onClick={() => setShowPaymentSlide(false)} // click outside to close
+          onClick={() => {setShowPaymentSlide(false); setShowFileSidebar(false)}} // click outside to close
         />
 
         {/* Payment panel (slide-in) */}
-        <Payment
+        {showPaymentSlide && (
+          <Payment
           show={showPaymentSlide}
-          setShowPaymentSlide={setShowPaymentSlide}  
+          setShowPaymentSlide={setShowPaymentSlide}
         />
+        )}
+
+        {showFileSidebar && (
+          <FileSidebar
+          show={showFileSidebar}
+          setShowFileSidebar={setShowFileSidebar}
+        />
+        )}
       </div>
     </>
   );

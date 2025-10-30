@@ -123,7 +123,7 @@ export default function Setting() {
                       <img
                         src="https://via.placeholder.com/70" // replace with your profile image
                         alt="Profile"
-                        className="rounded-circle border border-2 border-white shadow-sm w-100 h-100 object-fit-cover"
+                        className="rounded-circle border-2 border-white shadow-sm w-100 h-100 object-fit-cover"
                       />
                       <div
                         className="position-absolute top-50 start-50 translate-middle bg-dark bg-opacity-50 text-white rounded-circle d-flex align-items-center justify-content-center"

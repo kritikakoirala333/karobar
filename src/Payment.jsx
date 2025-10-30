@@ -601,7 +601,7 @@ export default function Payment({ show, setShowPaymentSlide }) {
                     {showQR ? "Hide QR Code" : "Show QR Code"}
                   </button>
                   {showQR && (
-                    <div className="mt-3 p-3 bg-white rounded shadow-sm border-2 rounded text-center position-relative">
+                    <div className="mt-3 p-3 bg-white shadow-sm border-2 rounded text-center position-relative">
                       <div className="bg-white d-inline-flex align-items-center justify-content-center border" style={{ width: "150px", height: "150px", background:'url("/images/qr.png")', backgroundSize: "cover" }}>
                         {/* <span className="text-muted" style={{ fontSize: "12px" }}>QR Code</span> */}
                       </div>
