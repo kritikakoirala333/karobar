@@ -15,7 +15,9 @@ function CardPage() {
   const [products, setProducts] = useState([]);
   const [searchVal, setSearchVal] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
-
+  const [selectedVariation, setSelectedVariation] = useState(0);
+  const [selectedVariationId, setSelectedVariationId] = useState(0);
+  const [selectedItemId, setSelectedItemId] = useState(0);
   const [activeDropdownIndex, setActiveDropdownIndex] = useState(null);
 
   console.log(showAddCustomerForm);
@@ -65,20 +67,46 @@ function CardPage() {
 
   // Add this function in your component
   const handleItemSelect = (item, index) => {
-    setFormData((prev) => {
-      const updatedFields = [...prev.fields];
-      updatedFields[index] = {
-        ...updatedFields[index],
-        name: item.name,
-        rate: item.default_price, // set corresponding rate
-        amount:
-          (parseFloat(item.rate) || 0) *
-          (parseFloat(updatedFields[index].quantity) || 0), // recalc amount
-      };
-      return { ...prev, fields: updatedFields };
-    });
+    setSelectedItemId(item.id);
+    if (item.has_variations) {
+      setFormData((prev) => {
+        const updatedFields = [...prev.fields];;
+        updatedFields[index] = {
+          ...updatedFields[index],
+
+          name:
+            item.name +
+            " " +
+            item.variations[selectedVariation].variation_value,
+          rate: item.variations[selectedVariation].variation_price, // set corresponding rate
+          amount:
+            (parseFloat(item.variations[selectedVariation].variation_price) ||
+              0) * (parseFloat(updatedFields[index].quantity) || 0), // recalc amount
+          inventory_id: selectedItemId,
+          variation_id: item.variations[selectedVariation].id,
+        };
+        return { ...prev, fields: updatedFields };
+      });
+    } else {
+      setFormData((prev) => {
+        const updatedFields = [...prev.fields];
+        updatedFields[index] = {
+          ...updatedFields[index],
+          name: item.name,
+          rate: item.default_price, // set corresponding rate
+          amount:
+            (parseFloat(item.rate) || 0) *
+            (parseFloat(updatedFields[index].quantity) || 0), // recalc amount
+        };
+        return { ...prev, fields: updatedFields };
+      });
+    }
 
     setActiveDropdownIndex(null); // close dropdown
+  };
+
+  const handleVariationSelect = (item, selectedIndex) => {
+    setSelectedVariation(selectedIndex);
   };
 
   const [formData, setFormData] = useState({
@@ -106,6 +134,8 @@ function CardPage() {
         quantity: "",
         rate: "",
         amount: "",
+        inventory_id: 0,
+        variation_id: 0,
       },
     ],
   });
@@ -177,8 +207,6 @@ function CardPage() {
   const handleChange = (e, index) => {
     const { name, value } = e.target;
 
-    // console.log(name, value, e, index)
-    // if index is provided, we are editing a nested field
     if (index !== undefined) {
       setFormData((prev) => {
         const updatedFields = [...prev.fields];
@@ -226,6 +254,8 @@ function CardPage() {
           quantity: "",
           rate: "",
           amount: "",
+          inventory_id: 0,
+          variation_id: 0,
         },
       ],
     });
@@ -314,8 +344,11 @@ function CardPage() {
           quantity: parseFloat(field.quantity),
           rate: parseFloat(field.rate),
           total: parseFloat(field.quantity) * parseFloat(field.rate),
+          inventory_id: field.inventory_id,
+          variation_id: field.variation_id,
         });
       }
+
     });
 
     // Show loading
@@ -328,6 +361,7 @@ function CardPage() {
       },
     });
 
+    console.log(invoiceData);
     // Create invoice first
     axiosInstance
       .post("/sales-invoices", invoiceData)
@@ -569,6 +603,7 @@ function CardPage() {
                         className="position-relative item-input-wrapper"
                         style={{ overflow: "visible" }}
                       >
+                        {console.log(field.name)}
                         <input
                           type="text"
                           name="name"
@@ -607,11 +642,41 @@ function CardPage() {
                                     {item.name}
                                   </div>
                                 )}
-                                {item.has_variations && (
-                                  <div className="mb-0 text-xs">
-                                    {item.name}
-                                  </div>
-                                )}
+                                {item.has_variations &&
+                                  item.variations &&
+                                  item.variations.length > 0 && (
+                                    <div className="flex justify-between w-full mb-0 text-xs">
+                                      <span>{item.name}</span>
+                                      <select
+                                        className="mb-0 text-xs cursor-pointer outline-0"
+                                        defaultValue={
+                                          item.variations[selectedVariation]
+                                            ?.id || item.variations[0]?.id
+                                        }
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={(e) => {
+                                          const selectedIndex = parseInt(
+                                            e.target.selectedIndex
+                                          ); // get selected index
+                                          handleVariationSelect(
+                                            item,
+                                            selectedIndex
+                                          );
+                                        }}
+                                      >
+                                        {item.variations.map(
+                                          (variation, vIndex) => (
+                                            <option
+                                              key={vIndex}
+                                              value={variation.id}
+                                            >
+                                              {variation.variation_value}
+                                            </option>
+                                          )
+                                        )}
+                                      </select>
+                                    </div>
+                                  )}
                               </div>
                             ))}
                           </div>
