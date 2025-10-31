@@ -33,9 +33,10 @@ function DisplayBank({banks}) {
         {banks.map((bank, index) => (
           <div className="col-12 col-md-4" key={index}>
             <div
-              className="card p-3 mt-4"
+              className="card p-3 mt-4 rounded-1"
               style={{
                 backgroundColor: "#f1f5f9",
+               
                 borderRadius: "8px",
               }}
             >

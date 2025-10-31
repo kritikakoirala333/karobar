@@ -44,6 +44,7 @@ import FileSidebar from "./FileSidebar";
 import BankManagement from "./pages/BankManagement";
 import BankAdd from "./ui/BankAdd";
 import DisplayBank from "./ui/DisplayBank";
+import Profile from "./pages/Profile.jsx";
 
 function App() {
   return (
@@ -96,7 +97,7 @@ function MainApp() {
   const location = useLocation(); // ✅ Now inside BrowserRouter
   const path = location.pathname;
 
-  const isSignInPage = path === "/signup";
+  const isSignInPage = path === "/signin";
 
   const checkLoginInfo = () => {
     console.log("Checking for Login Session");
@@ -151,7 +152,7 @@ function MainApp() {
     );
 
   if (isSignInPage) {
-    return <SignUp />;
+    return <SignIn />;
   }
 
   const toggleTheme = () => {
@@ -895,6 +896,15 @@ function MainApp() {
               path="/settings"
               element={<Setting />}
             ></Route>
+            <Route
+             authUser={userInfo}
+             path="/profile"
+             element={<Profile/>}
+
+
+            />
+
+            
             <Route authUser={userInfo} path="/drive" element={<Drive />} />
             <Route
             authUser={userInfo}

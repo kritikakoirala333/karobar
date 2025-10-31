@@ -1,19 +1,19 @@
-import React from 'react'
+import React from "react";
 import { FaEdit } from "react-icons/fa";
 import { IoChevronBackOutline } from "react-icons/io5";
-
-
 
 function Profile() {
   return (
     <>
-      <div className="d-flex flex-wrap align-items-center justify-content-between bg-light text-dark p-3 rounded-3 border">
+      {/* ===== Header Bar ===== */}
+      <div className="d-flex flex-wrap align-items-center justify-content-between bg-light text-dark p-3 rounded-3 border mb-4">
         <div className="d-flex align-items-center gap-3">
           <button className="btn btn-outline-secondary btn-sm p-1">
             <IoChevronBackOutline className="fs-5" />
           </button>
           <h5 className="mb-0">Create Profile</h5>
         </div>
+
         <div className="d-flex gap-3">
           <button className="btn btn-outline-secondary d-flex align-items-center gap-2 px-4">
             Save
@@ -24,8 +24,9 @@ function Profile() {
         </div>
       </div>
 
+      {/* ===== Profile Card ===== */}
       <div className="card shadow-sm border-0 p-4 rounded-3">
-        {/* ===== Header ===== */}
+        {/* ===== Profile Header ===== */}
         <div className="d-flex justify-content-between align-items-start mb-4">
           <div>
             <h5 className="fw-semibold mb-1">Profile Information</h5>
@@ -57,46 +58,57 @@ function Profile() {
           <form className="row g-3">
             <div className="col-md-6">
               <label className="form-label">First Name</label>
-              <input type="text" className="form-control" />
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter First Name"
+              />
             </div>
 
             <div className="col-md-6">
               <label className="form-label">Last Name</label>
-              <input type="text" className="form-control" />
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter Last Name"
+              />
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Email address</label>
-              <input type="email" className="form-control"/>
+              <label className="form-label">Email Address</label>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Enter email address"
+              />
             </div>
 
             <div className="col-md-6">
               <label className="form-label">Phone</label>
-              <input type="text" className="form-control"  />
-            </div>
-
-            <div className="col-md-6">
-              <label className="form-label">Bio</label>
-              <input type="text" className="form-control"  />
-            </div>
-
-            <div className="col-md-6">
-              <label className="form-label">Gender</label>
-              <input type="text" className="form-control" />
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter phone number"
+              />
             </div>
 
             <div className="col-md-6">
               <label className="form-label">Date of Birth</label>
-              <input type="text" className="form-control" />
+              <input
+                type="date"
+                className="form-control"
+                placeholder="Enter date of birth"
+              />
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">National ID</label>
-              <input
-                type="text"
-                className="form-control"
-                
-              />
+              <label className="form-label">Gender</label>
+              <select className="form-select">
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
+              </select>
             </div>
           </form>
         </div>
@@ -107,21 +119,20 @@ function Profile() {
           <form className="row g-3">
             <div className="col-md-6">
               <label className="form-label">Country</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" placeholder="Enter Country" />
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">City/State</label>
-              <input type="text" className="form-control" />
+              <label className="form-label">City / State</label>
+              <input type="text" className="form-control" placeholder="Enter City or State" />
             </div>
-
-
           </form>
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default Profile
+export default Profile;
+
 

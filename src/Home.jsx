@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import PageWrapper from "./layouts/page-wrapper";
 import axiosInstance from "./axiosConfig";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import esewalogo from "./assets/esewa-logo.avif";
+import khaltilogo from "./assets/khalti-logo.png";
+import everestlogo from "./assets/everest-logo.png";
+import garimabank from "./assets/garima-bank.png";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import {
   IoReceiptOutline,
   IoWalletOutline,
@@ -30,6 +35,14 @@ function Home() {
       unpaid: 0,
     },
   });
+  const paymentMethods = [
+    { logo: esewalogo, name: "eSewa" },
+    { logo: khaltilogo, name: "Khalti" },
+    { logo: everestlogo, name: "Everest Bank" },
+    { logo: garimabank, name: "Garima Bank" },
+  ];
+
+
 
   useEffect(() => {
     fetchDashboardData();
@@ -138,6 +151,7 @@ function Home() {
     );
   }
 
+
   return (
     <PageWrapper title="Dashboard">
       <div>
@@ -231,19 +245,17 @@ function Home() {
                       OUTSTANDING
                     </small>
                     <h4
-                      className={`mb-0 fw-light ${
-                        dashboardData.totalOutstanding > 0
-                          ? "text-danger"
-                          : "text-dark"
-                      }`}
+                      className={`mb-0 fw-light ${dashboardData.totalOutstanding > 0
+                        ? "text-danger"
+                        : "text-dark"
+                        }`}
                     >
                       Rs. {dashboardData.totalOutstanding.toFixed(2)}
                     </h4>
                   </div>
                   <div
-                    className={`${
-                      dashboardData.totalOutstanding > 0 ? "bg-dark" : "bg-dark"
-                    } rounded p-2`}
+                    className={`${dashboardData.totalOutstanding > 0 ? "bg-dark" : "bg-dark"
+                      } rounded p-2`}
                   >
                     <IoReceiptOutline
                       className="text-white"
@@ -307,6 +319,52 @@ function Home() {
           </div>
         </div>
 
+        <div className="row g-3 mb-4 ">
+          {paymentMethods.map((paymentMethod, index) => {
+            return (
+              <div className="col-md-3">
+                <div className="card rounded-1 shadow-none  border-1">
+                  <div className="card-body p-2">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      {/* Left section: logo + name */}
+                      <div className="d-flex align-items-center gap-2">
+                        <img
+                          src={paymentMethod.logo}
+                          alt={`${paymentMethod.name} logo`}
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            objectFit: "contain",
+                          }}
+                        />
+                        <span
+                          className="fw-semibold text-dark"
+                          style={{ fontSize: "14px" }}
+                        >
+                          {paymentMethod.name}
+                        </span>
+
+                      </div>
+                      <div className="ms-auto" style={{ cursor: "pointer" }}>  
+                        <BsThreeDotsVertical size={18} color="#000" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="d-flex align-items-center gap-1" 
+                    style={{ fontSize: "12px" }}
+                  >
+                    <div className="fs-5 fw-normal ml-4 mb-2">NPR 0.00</div>  
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+
+
         {/* Invoice Status Overview */}
         <div className="row g-3 mb-4">
           <div className="col-md-4">
@@ -330,10 +388,10 @@ function Home() {
                   >
                     {dashboardData.totalInvoices > 0
                       ? (
-                          (dashboardData.invoiceStats.paid /
-                            dashboardData.totalInvoices) *
-                          100
-                        ).toFixed(0)
+                        (dashboardData.invoiceStats.paid /
+                          dashboardData.totalInvoices) *
+                        100
+                      ).toFixed(0)
                       : 0}
                     %
                   </span>
@@ -362,10 +420,10 @@ function Home() {
                   >
                     {dashboardData.totalInvoices > 0
                       ? (
-                          (dashboardData.invoiceStats.partial /
-                            dashboardData.totalInvoices) *
-                          100
-                        ).toFixed(0)
+                        (dashboardData.invoiceStats.partial /
+                          dashboardData.totalInvoices) *
+                        100
+                      ).toFixed(0)
                       : 0}
                     %
                   </span>
@@ -394,10 +452,10 @@ function Home() {
                   >
                     {dashboardData.totalInvoices > 0
                       ? (
-                          (dashboardData.invoiceStats.unpaid /
-                            dashboardData.totalInvoices) *
-                          100
-                        ).toFixed(0)
+                        (dashboardData.invoiceStats.unpaid /
+                          dashboardData.totalInvoices) *
+                        100
+                      ).toFixed(0)
                       : 0}
                     %
                   </span>
@@ -407,7 +465,7 @@ function Home() {
           </div>
         </div>
 
-       
+
 
         {/* Recent Invoices & Top Customers */}
         <div className="row g-3 mb-4">
@@ -480,13 +538,12 @@ function Home() {
                             </td>
                             <td className="py-2">
                               <span
-                                className={`badge ${
-                                  invoice.payment_status === "paid"
-                                    ? "bg-success"
-                                    : invoice.payment_status === "partial"
+                                className={`badge ${invoice.payment_status === "paid"
+                                  ? "bg-success"
+                                  : invoice.payment_status === "partial"
                                     ? "bg-warning"
                                     : "bg-danger"
-                                }`}
+                                  }`}
                                 style={{ fontSize: "10px" }}
                               >
                                 {invoice.payment_status}
@@ -673,8 +730,9 @@ function Home() {
           </div>
         </div>
       </div>
-    </PageWrapper>
+    </PageWrapper >
   );
+
 }
 
 export default Home;
