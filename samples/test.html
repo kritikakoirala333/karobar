@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ONLYOFFICE Editor Demo</title>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      #editorContainer {
+        width: 100%;
+        height: 80%;
+        border: 1px solid #ccc;
+        margin-top: 10px;
+      }
+      #uploadForm {
+        padding: 10px;
+      }
+      button {
+        padding: 8px 12px;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="uploadForm">
+      <input type="file" id="fileInput" />
+      <button onclick="uploadFile()">Upload & Edit</button>
+    </div>
+
+    <div id="editorContainer"></div>
+
+    <!-- ONLYOFFICE API -->
+    <script src="http://20.194.10.108/web-apps/apps/api/documents/api.js"></script>
+
+    <script>
+      async function Testing() {
+        const fileName = "dMGOlRMroYUbfY2WMTc89sR5fogZ3M8cjYApTLfW.docx";
+
+        // 2️⃣ Get editor config from Laravel backend
+        const configRes = await fetch(
+          "https://9ad428bf0ff3.ngrok-free.app/api/onlyoffice/editor-config",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ file_name: fileName }),
+          }
+        );
+
+        const configData = await configRes.json();
+        console.log(configData);
+
+        // 3️⃣ Initialize ONLYOFFICE editor
+        const docEditor = new DocsAPI.DocEditor("editorContainer", {
+          width: "100%",
+          height: "100%",
+          token: configData.token,
+          document: {
+            fileType: configData.document.fileType,
+            key: configData.document.key,
+            title: configData.document.title,
+            url: configData.document.url,
+          },
+          editorConfig: {
+            mode: "edit",
+            lang: "en",
+            callbackUrl:
+              "https://9ad428bf0ff3.ngrok-free.app/api/onlyoffice/callback",
+            user: {
+              id: 1,
+              name: "User 1",
+            },
+          },
+        });
+      }
+
+      Testing();
+
+        async function uploadFile() {
+            const input = document.getElementById('fileInput');
+            if (!input.files.length) {
+                alert("Please select a file first!");
+                return;
+            }
+
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // 1️⃣ Upload file to Laravel backend
+                const uploadRes = await fetch('https://9ad428bf0ff3.ngrok-free.app/api/onlyoffice/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                // const fileName = uploadData.file_name;
+                const fileName = "761893593_sample3.docx";
+
+                // 2️⃣ Get editor config from Laravel backend
+                const configRes = await fetch('https://9ad428bf0ff3.ngrok-free.app/api/onlyoffice/editor-config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_name: fileName })
+                });
+
+                const configData = await configRes.json();
+
+                // 3️⃣ Initialize ONLYOFFICE editor
+                const docEditor = new DocsAPI.DocEditor("editorContainer", {
+                    width: "100%",
+                    height: "100%",
+                    token: configData.token,
+                    document: {
+                        fileType: file.name.split('.').pop(),
+                        key: configData.documentKey,
+                        title: file.name,
+                        url: 'https://9ad428bf0ff3.ngrok-free.app' + configData.fileUrl
+                    },
+                    editorConfig: {
+                        mode: "edit",
+                        lang: "en",
+                        callbackUrl: "https://9ad428bf0ff3.ngrok-free.app/api/onlyoffice/callback",
+                        user: {
+                            id: 1,
+                            name: "User 1"
+                        }
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+                alert("Error uploading or opening the document.");
+            }
+        }
+    </script>
+  </body>
+</html>

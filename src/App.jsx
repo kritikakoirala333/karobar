@@ -23,7 +23,11 @@ import axios from "axios";
 import company from "./assets/company.jpg";
 
 import Purchase from "./pages/Purchase";
+import PurchaseInvoices from "./pages/PurchaseInvoices";
+import PurchaseInvoiceDetail from "./pages/PurchaseInvoiceDetail";
 import Inventory from "./pages/Inventory";
+import Orders from "./pages/Orders";
+import OrderDetail from "./pages/OrderDetail";
 import Customers from "./Customers";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaBell } from "react-icons/fa";
@@ -44,6 +48,7 @@ import FileSidebar from "./FileSidebar";
 import BankManagement from "./pages/BankManagement";
 import BankAdd from "./ui/BankAdd";
 import DisplayBank from "./ui/DisplayBank";
+import ShopCustomization from "./pages/ShopCustomization";
 
 function App() {
   return (
@@ -66,6 +71,8 @@ function MainApp() {
   const [invoicesOpen, setInvoicesOpen] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [customersOpen, setCustomersOpen] = useState(false);
+  const [purchasesOpen, setPurchasesOpen] = useState(false);
+  const [ordersOpen, setOrdersOpen] = useState(false);
 
   const [userInfo, setUserInfo] = useState();
 
@@ -78,15 +85,19 @@ function MainApp() {
     { title:"Invoices", path: "/invoices", searchPath: "invoices", desc:"Search invoices by clicking here" },
     {title:"Invoices", path:"/card", searchPath:"create invoice", desc:"Create a brand new invoices by clicking here"},
     {title:"Invoices" ,path:"/invoices/reports", searchPath:"reports", desc:"See the reports of invoices by clicking here"},
-    {title:"Purchase", path: "/purchase", searchPath: "purchase invoice", desc:"Create a brand new pruchase invoices by clicking here"},
+    {title:"Purchase", path: "/purchase-invoices", searchPath: "purchase invoices", desc:"See all purchase invoices by clicking here"},
+    {title:"Purchase", path: "/purchase", searchPath: "create purchase invoice", desc:"Create a brand new purchase invoices by clicking here"},
     {title:"Customers", path: "/customers", searchPath: "customers", desc:"See all the customers by clicking here" },
     {title:"Customers", path:"/customers/create", searchPath:"add customers", desc:"Add new customers by clicking here"},
     {title:"Payment",path:"/payment", searchPath:"payment", desc:""},
+    {title:"Orders", path: "/orders", searchPath: "orders", desc:"See all customer orders by clicking here"},
     {title:"", path: "/suppliers", searchPath: "suppliers", desc:"" },
     {title:"Inventory", path: "/inventory", searchPath: "inventory", desc:"See all the products by clicking here" },
     {title:"Inventory", path:"/inventory/reports", searchPath:"stock reports", desc:"See the inventory reports by clicking here"},
     {title:"Inventory", path: "/addproduct", searchPath: "add product", desc:"Create a new products by clicking here " },
     {title:"Bank Management", path:"/bankmanagement", searchPath:"bank management", desc:"See the banks details by clcking here"},
+    {title:"E-commerce", path:"/shop-customization", searchPath:"shop customization", desc:"Customize your shop landing page"},
+    {title:"E-commerce", path:"/shop-customization", searchPath:"customize shop", desc:"Customize your e-commerce storefront"},
     {title:"Settings", path:"/settings", searchPath:"settings", desc:"See the setting "},
     {title:"Profile", path:"profile", searchPath:"profile", desc:"See the profile"},
   ];
@@ -152,6 +163,7 @@ function MainApp() {
 
   if (isSignInPage) {
     return <SignIn />;
+    // return <SignUp />;
   }
 
   const toggleTheme = () => {
@@ -723,6 +735,37 @@ function MainApp() {
                 <i className="bi bi-credit-card sidebar-icon"></i>
                 <span>Payments</span>
               </Link>
+
+              {/* Orders with submenu */}
+              <div>
+                <div
+                  className="sidebar-toggle d-flex align-items-center justify-content-between px-3 py-2"
+                  onClick={() => setOrdersOpen(!ordersOpen)}
+                >
+                  <div className="d-flex align-items-center gap-2 fw-semibold">
+                    <i className="bi bi-cart-check sidebar-icon"></i>
+                    <span style={{ fontSize: "14px" }}>Orders</span>
+                  </div>
+                  <i
+                    className={`bi bi-chevron-${
+                      ordersOpen ? "down" : "right"
+                    } sidebar-chevron`}
+                  ></i>
+                </div>
+                {ordersOpen && (
+                  <div className="ps-4">
+                    <Link
+                      to="/orders"
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/orders" ? "active" : ""
+                      }`}
+                    >
+                      <i className="bi bi-list-ul sidebar-icon-sm"></i>
+                      <span>All Orders</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -781,16 +824,45 @@ function MainApp() {
                 )}
               </div>
 
-              {/* Purchase */}
-              <Link
-                to="/purchase"
-                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
-                  path === "/purchase" ? "active" : ""
-                }`}
-              >
-                <i className="bi bi-bag sidebar-icon"></i>
-                <span>Purchases</span>
-              </Link>
+              {/* Purchases with submenu */}
+              <div>
+                <div
+                  className="sidebar-toggle d-flex align-items-center justify-content-between px-3 py-2"
+                  onClick={() => setPurchasesOpen(!purchasesOpen)}
+                >
+                  <div className="d-flex align-items-center gap-2 fw-semibold">
+                    <i className="bi bi-bag sidebar-icon"></i>
+                    <span style={{ fontSize: "14px" }}>Purchases</span>
+                  </div>
+                  <i
+                    className={`bi bi-chevron-${
+                      purchasesOpen ? "down" : "right"
+                    } sidebar-chevron`}
+                  ></i>
+                </div>
+                {purchasesOpen && (
+                  <div className="ps-4">
+                    <Link
+                      to="/purchase-invoices"
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/purchase-invoices" ? "active" : ""
+                      }`}
+                    >
+                      <i className="bi bi-list-ul sidebar-icon-sm"></i>
+                      <span>All Purchase Invoices</span>
+                    </Link>
+                    <Link
+                      to="/purchase"
+                      className={`sidebar-submenu-item d-flex align-items-center gap-2 px-3 py-1 ${
+                        path === "/purchase" ? "active" : ""
+                      }`}
+                    >
+                      <i className="bi bi-plus-circle sidebar-icon-sm"></i>
+                      <span>Create Purchase Invoice</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
               <Link
                 to="/drive"
                 className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
@@ -810,6 +882,24 @@ function MainApp() {
                 <span>Bank Management</span>
               </Link>
 
+            </div>
+          </div>
+
+          {/* E-commerce Section */}
+          <div className="mb-2">
+            <div className="px-3 py-1">
+              <span className="sidebar-section-header">E-commerce</span>
+            </div>
+            <div>
+              <Link
+                to="/shop-customization"
+                className={`sidebar-menu-item d-flex align-items-center gap-2 px-3 py-2 ${
+                  path === "/shop-customization" ? "active" : ""
+                }`}
+              >
+                <i className="bi bi-palette sidebar-icon"></i>
+                <span>Shop Customization</span>
+              </Link>
             </div>
           </div>
 
@@ -871,6 +961,26 @@ function MainApp() {
             />
             <Route
               authUser={userInfo}
+              path="/purchase-invoices"
+              element={<PurchaseInvoices />}
+            />
+            <Route
+              authUser={userInfo}
+              path="/purchase-invoice/:id"
+              element={<PurchaseInvoiceDetail />}
+            />
+            <Route
+              authUser={userInfo}
+              path="/orders"
+              element={<Orders />}
+            />
+            <Route
+              authUser={userInfo}
+              path="/order/:id"
+              element={<OrderDetail />}
+            />
+            <Route
+              authUser={userInfo}
               path="/inventory"
               element={<Inventory />}
             />
@@ -905,17 +1015,16 @@ function MainApp() {
             path="/bankadd"
             element={<BankAdd/>}
             />
-            <Route 
+            <Route
             authUser={userInfo}
             path="displaybank"
             element={<DisplayBank/>}
             />
-
-            
-
-            
-
-            
+            <Route
+              authUser={userInfo}
+              path="/shop-customization"
+              element={<ShopCustomization />}
+            />
 
             <Route
               authUser={userInfo}

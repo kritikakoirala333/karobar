@@ -1,75 +1,103 @@
-import React, { useEffect } from 'react'
-import { db } from '../firebase'
-import { addDoc,getDocs, collection, doc } from 'firebase/firestore'
-import { useState } from 'react'
-import SupplierCard from '../ui/SupplierCard';
-import AddSupplier from './AddSupplier';
-
-
+import React, { useEffect, useState } from "react";
+import SupplierCard from "../ui/SupplierCard";
+import AddSupplier from "./AddSupplier";
+import axiosInstance from "../axiosConfig";
+import Swal from "sweetalert2";
 
 function Purchase() {
-
   const [selectedSupplier, setSelectedSupplier] = useState();
   const [showAddSupplierForm, setShowAddSupplierForm] = useState(false);
-  const [filteredsuppliers, setFilteredSuppliers] = useState([]);
-  
-  console.log(showAddSupplierForm)
+  const [filteredSuppliers, setFilteredSuppliers] = useState([]);
+  const [paymentSent, setPaymentSent] = useState(false);
 
-  const [supplierData, setSupplierData] = useState([ ]);
-   useEffect(() => {
-      const getSuppliersFromFirebase = async () => {
-        const resp = await getDocs(collection(db, "suppliers"));
-        const data = resp.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setSupplierData(data);
-      }
-      getSuppliersFromFirebase();
-  
-    }, [])
+  const [supplierData, setSupplierData] = useState([]);
 
+  const getSuppliersFromBackend = async () => {
+    console.log("Fetching suppliers from API");
+    axiosInstance.get("/suppliers").then((resp) => {
+      setSupplierData(resp.data.data.data);
+    });
+  };
+
+  useEffect(() => {
+    getSuppliersFromBackend();
+  }, []);
 
   const handleSupplierSelection = (supplierInfo) => {
     setSelectedSupplier(supplierInfo);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      ['selectedSupplierName']: supplierInfo.suppliername,   // overwrites only that key safely
-      ['selectedSupplierId']: supplierInfo.id   // overwrites only that key safely
+      selectedSupplierName: supplierInfo.name,
+      selectedSupplierId: supplierInfo.id,
     }));
-    console.log(supplierInfo)
-  }
+    console.log(supplierInfo);
+  };
 
   const [formData, setFormData] = useState({
-    suppliername: '',
-    mobileno: '',
-    address: '',
-    date: '',
-    Discount: '',
-    Tax: '',
-    Shipping: '',
-    SubTotal: '',
-    GrandTotal: '',
-    InvoiceNo: '',
+    suppliername: "",
+    date: "",
+    dueDate: "",
+    notes: "",
+    Discount: 0,
+    Tax: 0,
+    Shipping: 0,
+    SubTotal: 0,
+    GrandTotal: 0,
+    InvoiceNo: "",
+    PaidAmount: 0,
+    paymentMethod: "cash",
+    receiptNo: "",
+    paymentNote: "",
     fields: [
       {
-        sn: '',
-        name: '',
-        quantity: '',
-        rate: '',
-        amount: '',
-
-      }
-    ]
+        sn: "",
+        name: "",
+        quantity: "",
+        rate: "",
+        amount: "",
+      },
+    ],
   });
+
+  // Calculate totals
+  const calculateTotals = () => {
+    const subtotal = formData.fields.reduce((sum, field) => {
+      return (
+        sum + (parseFloat(field.quantity) || 0) * (parseFloat(field.rate) || 0)
+      );
+    }, 0);
+
+    const discount = parseFloat(formData.Discount) || 0;
+    const shipping = parseFloat(formData.Shipping) || 0;
+    const taxPercent = parseFloat(formData.Tax) || 0;
+
+    const afterDiscount = subtotal - discount;
+    const taxAmount = (afterDiscount * taxPercent) / 100;
+    const grandTotal = afterDiscount + taxAmount + shipping;
+
+    return {
+      subtotal: subtotal.toFixed(2),
+      grandTotal: grandTotal.toFixed(2),
+      remaining: paymentSent
+        ? (grandTotal - (parseFloat(formData.PaidAmount) || 0)).toFixed(2)
+        : grandTotal.toFixed(2),
+    };
+  };
+
+  const totals = calculateTotals();
+
+  const handleCallbackFromSupplierCreation = (callbackSupplierInfo) => {
+    console.log("Handling Callback", callbackSupplierInfo);
+    getSuppliersFromBackend();
+  };
 
   const handleAddField = () => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       fields: [
         ...prevFormData.fields,
-        { sn: '', name: '', quantity: '', rate: '', amount: '' } // new field appended
-      ]
+        { sn: "", name: "", quantity: "", rate: "", amount: "" },
+      ],
     }));
   };
 
@@ -80,383 +108,670 @@ function Purchase() {
     }));
   };
 
-
   const handleFilter = (e) => {
-    console.log("Handling Filters", e.target.value)
-
+    console.log("Handling Filters", e.target.value);
 
     const lowerSearch = e.target.value.toLowerCase();
 
-    setFilteredSuppliers(supplierData.filter(item =>
-      item.suppliername.toLowerCase().includes(lowerSearch) ||
-      item.address.toLowerCase().includes(lowerSearch) ||
-      item.mobileno.includes(lowerSearch)
-    ));
-  }
-
+    setFilteredSuppliers(
+      supplierData.filter(
+        (item) =>
+          item.name.toLowerCase().includes(lowerSearch) ||
+          (item.phone && item.phone.includes(lowerSearch))
+      )
+    );
+  };
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
 
-    // console.log(name, value, e, index)
-    // if index is provided, we are editing a nested field
     if (index !== undefined) {
-      setFormData(prev => {
+      setFormData((prev) => {
         const updatedFields = [...prev.fields];
         updatedFields[index] = {
           ...updatedFields[index],
-          [name]: value
+          [name]: value,
         };
         return {
           ...prev,
-          fields: updatedFields
+          fields: updatedFields,
         };
       });
     } else {
-      // otherwise, it's a top-level field
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
   };
 
-
   const clearForm = () => {
-    const cleared = Object.keys(formData).reduce((acc, key) => {
-      acc[key] = '';
-      return acc;
-    }, {});
-    setFormData(cleared);
+    setFormData({
+      suppliername: "",
+      date: "",
+      dueDate: "",
+      notes: "",
+      Discount: 0,
+      Tax: 0,
+      Shipping: 0,
+      SubTotal: 0,
+      GrandTotal: 0,
+      InvoiceNo: "",
+      PaidAmount: 0,
+      paymentMethod: "cash",
+      receiptNo: "",
+      paymentNote: "",
+      fields: [
+        {
+          sn: "",
+          name: "",
+          quantity: "",
+          rate: "",
+          amount: "",
+        },
+      ],
+    });
+    setSelectedSupplier(null);
+    setPaymentSent(false);
   };
 
   function saveform() {
+    // Validation
+    if (!formData.selectedSupplierId) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please select a supplier",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
 
+    if (!formData.InvoiceNo) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please enter an invoice number",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
 
+    if (!formData.date) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please select an invoice date",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
 
+    // Check if there are items
+    const hasItems = formData.fields.some(
+      (field) => field.name && field.quantity && field.rate
+    );
+    if (!hasItems) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please add at least one item to the invoice",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
 
-    console.log(formData)
+    // Calculate totals
+    const calculatedTotals = calculateTotals();
+    const grandTotal = parseFloat(calculatedTotals.grandTotal);
 
+    // Validate payment amount if payment is sent
+    if (paymentSent && parseFloat(formData.PaidAmount) > grandTotal) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Paid amount cannot exceed the grand total",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
 
+    // Prepare invoice data
+    let invoiceData = {
+      invoice_no: formData.InvoiceNo,
+      supplier_id: formData.selectedSupplierId,
+      date: formData.date,
+      subtotal: parseFloat(calculatedTotals.subtotal),
+      discount: parseFloat(formData.Discount) || 0,
+      tax: parseFloat(formData.Tax) || 0,
+      shipping: parseFloat(formData.Shipping) || 0,
+      grand_total: grandTotal,
+      note: formData.notes,
+      invoice_items: [],
+    };
 
-    addDoc(collection(db, 'purchaseinvoices'), formData)
+    // Add items
+    formData.fields.forEach((field, index) => {
+      if (field.name && field.quantity && field.rate) {
+        invoiceData.invoice_items.push({
+          item: field.name,
+          quantity: parseFloat(field.quantity),
+          rate: parseFloat(field.rate),
+          total: parseFloat(field.quantity) * parseFloat(field.rate),
+        });
+      }
+    });
 
-      .then(resp => {
-        console.log('DataAdded')
-        clearForm()
+    // Add paid_amount if payment is sent
+    if (paymentSent && parseFloat(formData.PaidAmount) > 0) {
+      invoiceData.paid_amount = parseFloat(formData.PaidAmount);
+    }
+
+    // Show loading
+    Swal.fire({
+      title: "Saving...",
+      text: "Please wait while we process your purchase invoice",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // Create invoice
+    axiosInstance
+      .post("/purchase-invoices", invoiceData)
+      .then((invoiceResp) => {
+        console.log("Purchase Invoice created:", invoiceResp);
+        const invoiceId = invoiceResp.data?.data?.id || invoiceResp.data?.id;
+
+        // If payment is sent and paid_amount was not sufficient, create additional payment receipt
+        if (paymentSent && parseFloat(formData.PaidAmount) > 0 && formData.receiptNo) {
+          const paymentData = {
+            receipt_no: formData.receiptNo || `PREC-${formData.InvoiceNo}`,
+            amount: parseFloat(formData.PaidAmount),
+            title: `Payment for Purchase Invoice ${formData.InvoiceNo}`,
+            purchase_invoice_id: invoiceId,
+            supplier_id: formData.selectedSupplierId,
+            date: formData.date,
+            note: formData.paymentNote || "",
+            payment_method: formData.paymentMethod,
+          };
+
+          return axiosInstance
+            .post("/purchase-payment-receipts", paymentData)
+            .then((paymentResp) => {
+              console.log("Payment receipt created:", paymentResp);
+              return { invoice: invoiceResp, payment: paymentResp };
+            });
+        }
+
+        return { invoice: invoiceResp, payment: null };
       })
+      .then((result) => {
+        Swal.fire({
+          title: "Success!",
+          html:
+            paymentSent && result.payment
+              ? `Purchase invoice and payment receipt created successfully!<br><small>Invoice: ${formData.InvoiceNo}<br>Payment: ${formData.PaidAmount}</small>`
+              : `Purchase invoice created successfully!<br><small>Invoice: ${formData.InvoiceNo}</small>`,
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 3000,
+          timerProgressBar: true,
+        });
+        clearForm();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+
+        let errorMessage = "Failed to create purchase invoice";
+
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response?.data?.errors) {
+          const errors = error.response.data.errors;
+          errorMessage = Object.values(errors).flat().join(", ");
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        Swal.fire({
+          title: "Error!",
+          text: errorMessage,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      });
   }
-
-
-
- 
-
-
 
   return (
     <>
-      <div className='container p-2'>
-        <div className='card p-3 '>
-          <div className='d-flex justify-content-between p-3 border-bottom '>
-            <div className='fw-bold fs-5'>Purchase Invoice</div>
-            <div className='fw-bold fs-5'>Invoice No:</div>
-            <div className='fw-bold fs-5'>Date:</div>
-          </div>
+      {/* Header Section */}
+      <div className="d-flex flex-wrap align-items-center justify-content-between bg-light text-dark p-3 rounded-3 border mb-4">
+        <div className="d-flex align-items-center gap-3">
+          <h5 className="mb-0">Purchase Invoice</h5>
+        </div>
+      </div>
 
+      {/* Main Card */}
+      <div className="card p-3">
+        <div className="row g-3">
+          {/* Left Column - Supplier Details */}
+          <div className="col-md-6 border-end">
+            <h6 className="mb-3 text-secondary">Supplier Information</h6>
 
-
-
-          <div className="row m-0 p-0 col-12 mt-4">
-            <div className='col-md-6 border-end'>
-              {/* {selectedCustomer ? selectedCustomer.name : 'No Customer'} */}
-              <div className='mb-3 position-relative' style={{ display: selectedSupplier ? 'none' : 'block' }}>
-
+            {/* Supplier Search */}
+            <div
+              className="mb-3"
+              style={{ display: selectedSupplier ? "none" : "block" }}
+            >
+              <label className="form-label fw-semibold small">
+                Search Supplier
+              </label>
+              <div className="position-relative">
                 <input
                   type="text"
                   name="suppliername"
+                  autoComplete="false"
+                  aria-autocomplete="false"
                   value={formData.suppliername}
-                  className='form-control p-2 border border-2 rounded-3'
-                  placeholder="Enter Supplier Name"
+                  className="form-control"
+                  placeholder="Type supplier name to search..."
                   onChange={(e) => {
-                    handleChange(e),
-                      handleFilter(e)
+                    handleChange(e), handleFilter(e);
                   }}
                 />
-                <div className={formData.suppliername ? 'col-12 position-absolute p-2 bg-white shadow ' : 'col-12 position-absolute bg-white shadow d-none'} style={{ zIndex: 100 }}>
-                  {filteredsuppliers.map(supplierInfo => <SupplierCard key={supplierInfo.suppliername} handler={handleSupplierSelection} onClick={() =>
-                    handleSupplierSelection(supplierInfo)
-                  } supplierInfo={supplierInfo} />)}
-                  <button onClick={() => setShowAddSupplierForm(true)} className='add-more-btn form-control'>Add Supplier</button>
-
-                </div>
-
-
-              </div>
-              <div className='mb-3' style={{ display: !selectedSupplier ? 'none' : 'block' }}>
-                <div className="row m-0 p-0 bg-light rounded border p-2">
-                  <div className="col-11">
-                    <span className="fw-semibold">
-                      Supplier Name : {selectedSupplier?.suppliername}
-                    </span>
-                    <br />
-                    <span className="fw-normal">
-                      {selectedSupplier?.address}, <span className="px-1"></span>
-                      {selectedSupplier?.mobileno}
-                    </span>
-                  </div>
-                  <div className="col-1">
-                    <button onClick={() => setSelectedSupplier()}><i className="bi bi-x"></i></button>
-                  </div>
+                <div
+                  className={
+                    formData.suppliername
+                      ? "position-absolute w-100 p-2 bg-white shadow rounded-3 mt-1"
+                      : "d-none"
+                  }
+                  style={{ zIndex: 100 }}
+                >
+                  {filteredSuppliers.map((supplierInfo) => (
+                    <SupplierCard
+                      key={supplierInfo.id}
+                      handler={handleSupplierSelection}
+                      onClick={() => handleSupplierSelection(supplierInfo)}
+                      supplierInfo={supplierInfo}
+                    />
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setShowAddSupplierForm(true)}
+                    className="add-more-btn form-control"
+                  >
+                    + Add New Supplier
+                  </button>
                 </div>
               </div>
-              <div className='mb-3' >
+            </div>
 
-                <input
-                  type="number"
-                  name="mobileno"
-                  value={formData.mobileno}
-                  className='form-control  p-2 border border-2 rounded-3'
-                  placeholder="Enter Mobile No."
-                  onChange={handleChange}
-                />
+            {/* Selected Supplier Card */}
+            <div style={{ display: !selectedSupplier ? "none" : "block" }}>
+              <div className="card bg-white border-2 shadow-sm border-dark rounded-3">
+                <div className="card-body p-2">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <div className="d-flex align-items-center gap-2">
+                      <h6 className="mb-0 fw-bold text-dark small">
+                        {selectedSupplier?.name}
+                      </h6>
+                      <span
+                        className="badge bg-primary-subtle text-primary"
+                        style={{ fontSize: "0.7rem" }}
+                      >
+                        Supplier
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-dark py-1 px-2"
+                      style={{ fontSize: "0.75rem" }}
+                      onClick={() => setSelectedSupplier()}
+                    >
+                      Change
+                    </button>
+                  </div>
+
+                  <div className="d-flex gap-3 mt-2">
+                    <div className="d-flex align-items-start flex-fill">
+                      <i
+                        className="bi bi-geo-alt text-muted me-1"
+                        style={{ fontSize: "0.85rem" }}
+                      ></i>
+                      <span className="small text-muted">
+                        {selectedSupplier?.address || "N/A"}
+                      </span>
+                    </div>
+
+                    <div className="d-flex align-items-start">
+                      <i
+                        className="bi bi-telephone text-muted me-1"
+                        style={{ fontSize: "0.85rem" }}
+                      ></i>
+                      <span className="small text-muted">
+                        {selectedSupplier?.phone || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className='mb-3'>
+            </div>
+          </div>
 
+          {/* Right Column - Invoice Details */}
+          <div className="col-md-6">
+            <h6 className="mb-3 text-secondary">Invoice Details</h6>
+
+            <div className="row g-2">
+              <div className="col-6">
+                <label className="form-label fw-semibold small mb-1">
+                  Invoice No
+                </label>
                 <input
                   type="text"
-                  name="address"
-                  value={formData.address}
-                  className='form-control  p-2 border border-2 rounded-3 '
-                  placeholder="Enter Address"
+                  name="InvoiceNo"
+                  value={formData.InvoiceNo}
+                  className="form-control form-control-sm"
+                  placeholder="PI-0001"
                   onChange={handleChange}
                 />
               </div>
 
-
-            </div>
-            <div className='col-md-6'>
-              <div className='mb-3 d-flex align-items-center' >
-                <div className='text-dark fs-6 me-2'>Date:</div>
+              <div className="col-6">
+                <label className="form-label fw-semibold small mb-1">
+                  Date
+                </label>
                 <input
                   type="date"
                   name="date"
                   value={formData.date}
-                  className='form-control  p-2 border border-2 rounded-3 '
-                  placeholder="Enter Date"
+                  className="form-control form-control-sm"
                   onChange={handleChange}
                 />
               </div>
-
-              <div className='d-flex align-items-center' >
-                <div>
-                  <p className='text-dark fs-6 mb-0 me-2 '>Invoice No-</p>
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    name="InvoiceNo"
-                    value={formData.InvoiceNo}
-                    className='form-control  p-2 border border-2 rounded-3'
-                    placeholder="Enter InvoiceNo."
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
             </div>
           </div>
-
-          <div className='card mt-4 p-3'>
-            <div className='row' >
-              <div className='col-md-1'>
-                <p className='fs-6 fw-bold text-muted'>SN</p>
-              </div>
-              <div className='col-md-3'>
-                <p className='fs-6 fw-bold text-muted'>Item Description</p>
-              </div>
-              <div className='col-md-3'>
-                <p className='fs-6 fw-bold text-muted'>Qty</p>
-              </div>
-              <div className='col-md-2'>
-                <p className='fs-6 fw-bold text-muted'>Rate</p>
-              </div>
-              <div className='col-md-2'>
-                <p className='fs-6 fw-bold text-muted'>Amount</p>
-
-              </div>
-              <div className='col-md-1'>
-
-              </div>
-
-
-
-            </div>
-            {formData.fields.map((field, index) => <>
-              <div className='row mb-2' key={index} >
-                <div className='col-md-1'>
-                  <p>{index + 1}</p>
-                </div>
-
-
-                <div className='col-md-3'>
-                  <input
-                    type="text"
-                    name="name"
-                    value={field.name}
-                    className='form-control  p-1 border border-2 rounded-3 '
-                    placeholder="Enter name"
-                    onChange={(e) => handleChange(e, index)}
-                  />
-                </div>
-                <div className='col-md-3'>
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={field.quantity}
-                    className='form-control  p-1 border border-2 rounded-3 '
-                    placeholder="Enter quantity"
-                    onChange={(e) => handleChange(e, index)}
-                  />
-                </div>
-                <div className='col-md-2'>
-                  <input
-                    type="text"
-                    name="rate"
-                    value={field.rate}
-                    className='form-control p-1 border border-2 rounded-3'
-                    placeholder="Enter rate"
-                    onChange={(e) => handleChange(e, index)}
-                  />
-
-
-                </div>
-                <div className='col-md-2'>
-                  <input
-                    type="text"
-                    name="amount"
-                    value={field.quantity * field.rate}
-                    className='form-control p-1 border border-2 rounded-3'
-                    placeholder="Enter amount"
-                    onChange={(e) => handleChange(e, index)}
-                  />
-
-                </div>
-                <div className='col-md-1'>
-
-                  <button
-                    type="button"
-                    className="btn btn-danger btn-sm "
-                    onChange={(e) => handleChange(e, index)}
-                    onClick={() => handleRemoveField(index)}
-                  >
-                    <i className='bi bi-x'></i>
-                  </button>
-
-                </div>
-
-              </div>
-
-
-            </>)}
-
-          </div>
-          {/* ADD FIELD */}
-          <button className='add-more-btn' onClick={handleAddField}>Add More</button>
-
-
         </div>
 
+        {/* Items Section */}
+        <div className="mt-3">
+          <div className="table-responsive">
+            <table className="table table-sm">
+              <thead>
+                <tr className="text-muted small">
+                  <th style={{ width: "5%" }}>SN</th>
+                  <th style={{ width: "35%" }}>Item Description</th>
+                  <th style={{ width: "15%" }}>Qty</th>
+                  <th style={{ width: "15%" }}>Rate</th>
+                  <th style={{ width: "20%" }}>Amount</th>
+                  <th style={{ width: "5%" }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.fields.map((field, index) => (
+                  <tr key={index}>
+                    <td className="align-middle small">{index + 1}</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="name"
+                        value={field.name}
+                        className="form-control form-control-sm"
+                        placeholder="Item name"
+                        onChange={(e) => handleChange(e, index)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={field.quantity}
+                        className="form-control form-control-sm"
+                        placeholder="0"
+                        onChange={(e) => handleChange(e, index)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="rate"
+                        value={field.rate}
+                        className="form-control form-control-sm"
+                        placeholder="0.00"
+                        onChange={(e) => handleChange(e, index)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="amount"
+                        value={field.quantity * field.rate || ""}
+                        className="form-control form-control-sm bg-light"
+                        placeholder="0.00"
+                        readOnly
+                      />
+                    </td>
+                    <td className="align-middle">
+                      <button
+                        type="button"
+                        className="btn btn-sm p-0 text-danger"
+                        onClick={() => handleRemoveField(index)}
+                      >
+                        <i className="bi bi-x fs-5"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
+          {/* ADD FIELD */}
+          <button className="add-more-btn w-100" onClick={handleAddField}>
+            Add More Item
+          </button>
+        </div>
+
+        {/* Payment Toggle */}
+        <div className="mt-3 border-top pt-3">
+          <div className="form-check form-switch">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="paymentSentToggle"
+              checked={paymentSent}
+              onChange={(e) => setPaymentSent(e.target.checked)}
+            />
+            <label
+              className="form-check-label fw-semibold"
+              htmlFor="paymentSentToggle"
+            >
+              Payment Sent?
+            </label>
+          </div>
+        </div>
       </div>
-      <div className="d-flex justify-content-between align-items-start mt-4">
 
-        <div>
+      {/* Footer with Totals */}
+      <div className="d-flex gap-3 mt-3">
+        {/* Actions */}
+        <div className="flex-fill d-flex align-items-start">
           <button
-            className="btn btn-primary px-4 py-2 rounded-3 shadow-sm"
+            className="btn btn-primary px-4 py-2 rounded-3"
             onClick={saveform}
           >
-            Save
+            Save Invoice
           </button>
-          
-
         </div>
 
+        {/* Totals Card */}
+        <div
+          className="card p-3"
+          style={{ width: "350px", backgroundColor: "#f8f9fa" }}
+        >
+          <div className="row g-2">
+            <div className="col-6">
+              <label className="form-label fw-semibold small mb-1">
+                Discount
+              </label>
+              <input
+                type="number"
+                name="Discount"
+                value={formData.Discount}
+                className="form-control form-control-sm"
+                placeholder="0.00"
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
 
+            <div className="col-6">
+              <label className="form-label fw-semibold small mb-1">
+                Shipping
+              </label>
+              <input
+                type="number"
+                name="Shipping"
+                value={formData.Shipping}
+                className="form-control form-control-sm"
+                placeholder="0.00"
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
 
-        <div className="p-3 rounded-3 bg-light" style={{ minWidth: "280px" }}>
+            <div className="col-6">
+              <label className="form-label fw-semibold small mb-1">
+                Tax (%)
+              </label>
+              <input
+                type="number"
+                name="Tax"
+                value={formData.Tax}
+                className="form-control form-control-sm"
+                placeholder="0"
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
 
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <p className="text-dark fs-6 mb-0 me-2">SubTotal:</p>
-            <input
-              type="number"
-              name="subtotal"
-              // value={field.quantity * field.rate}
-              className='form-control form-control-sm border border-2 rounded-3'
-              placeholder="0.00"
-              onChange={(e) => handleChange(e)}
-            ></input>
+            <div className="col-6">
+              <label className="form-label fw-semibold small mb-1">
+                Subtotal
+              </label>
+              <input
+                type="number"
+                value={totals.subtotal}
+                className="form-control form-control-sm bg-white"
+                readOnly
+              />
+            </div>
 
-          </div>
-          <div className="d-flex justify-content-between align-items-center mb-2 border-top pt-2">
-            <p className="text-dark fs-6 mb-0 me-2">Discount:</p>
-            <input
-              type="number"
-              name="discount"
-              // value={field.quantity * field.rate}
-              className='form-control  form-control-sm border border-2 rounded-3'
-              placeholder="0"
-              onChange={(e) => handleChange(e)}
-            ></input>
+            <div className="col-12 border-top pt-2 mt-2">
+              <label className="form-label fw-bold small mb-1">
+                Grand Total
+              </label>
+              <input
+                type="number"
+                value={totals.grandTotal}
+                className="form-control form-control-sm fw-bold bg-white"
+                readOnly
+                style={{ fontSize: "1rem" }}
+              />
+            </div>
 
-          </div>
+            {/* Payment Section */}
+            {paymentSent && (
+              <>
+                <div className="col-12 border-top pt-2 mt-2">
+                  <label className="form-label fw-semibold small mb-1">
+                    Receipt No
+                  </label>
+                  <input
+                    type="text"
+                    name="receiptNo"
+                    value={formData.receiptNo}
+                    className="form-control form-control-sm"
+                    placeholder={`PREC-${formData.InvoiceNo || "001"}`}
+                    onChange={(e) => handleChange(e)}
+                  />
+                </div>
 
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <p className="text-dark fs-6 mb-0 me-2">Shipping:</p>
-            <input
-              type="number"
-              name="shipping"
-              // value={field.quantity * field.rate}
-              className='form-control  border border-1 rounded-3'
-              placeholder="0"
-              onChange={(e) => handleChange(e)}
-            ></input>
+                <div className="col-6">
+                  <label className="form-label fw-semibold small mb-1 text-success">
+                    Paid Amount
+                  </label>
+                  <input
+                    type="number"
+                    name="PaidAmount"
+                    value={formData.PaidAmount}
+                    className="form-control form-control-sm"
+                    placeholder="0.00"
+                    onChange={(e) => handleChange(e)}
+                  />
+                </div>
 
-          </div>
+                <div className="col-6">
+                  <label className="form-label fw-semibold small mb-1">
+                    Payment Method
+                  </label>
+                  <select
+                    name="paymentMethod"
+                    value={formData.paymentMethod}
+                    className="form-select form-select-sm"
+                    onChange={(e) => handleChange(e)}
+                  >
+                    <option value="cash">Cash</option>
+                    <option value="check">Check</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                    <option value="credit_card">Credit Card</option>
+                    <option value="debit_card">Debit Card</option>
+                    <option value="online">Online</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
 
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <p className="text-dark fs-6 mb-0 me-2">Tax:</p>
-            <input
-              type="number"
-              name="tax"
-              className="form-control form-control-sm border border-2 rounded-3 text-end w-50"
-              placeholder="10%"
-              onChange={(e) => handleChange(e)}
-            />
+                <div className="col-12">
+                  <label className="form-label fw-semibold small mb-1">
+                    Payment Note
+                  </label>
+                  <textarea
+                    name="paymentNote"
+                    value={formData.paymentNote}
+                    className="form-control form-control-sm"
+                    rows="2"
+                    placeholder="Add payment notes..."
+                    onChange={(e) => handleChange(e)}
+                  ></textarea>
+                </div>
 
-          </div>
-          <div className="d-flex justify-content-between align-items-center border-top pt-3">
-            <p className="text-dark fs-5 fw-semibold mb-0">GrandTotal:</p>
-            <input
-              type="number"
-              name="grandtotal"
-              // value={field.quantity * field.rate}
-              className='form-control form-control-sm border-0 bg-transparent fw-bold text-end w-50  rounded-3'
-              placeholder="0.00"
-              onChange={(e) => handleChange(e)}
-            ></input>
-
+                <div className="col-12">
+                  <label className="form-label fw-bold small mb-1 text-danger">
+                    Remaining
+                  </label>
+                  <input
+                    type="number"
+                    value={totals.remaining}
+                    className="form-control form-control-sm fw-bold bg-white"
+                    readOnly
+                    style={{ fontSize: "1rem" }}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
-
       </div>
 
       {showAddSupplierForm && (
-        <AddSupplier setShowAddSupplierForm={setShowAddSupplierForm} />
+        <AddSupplier
+          setShowAddSupplierForm={setShowAddSupplierForm}
+          handleCallbackFromSupplierCreation={
+            handleCallbackFromSupplierCreation
+          }
+        />
       )}
-
-      
     </>
-  )
+  );
 }
 
 export default Purchase;

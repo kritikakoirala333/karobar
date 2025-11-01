@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    <title>Open DOCX for editing</title>
+</head>
+<body style="height: 100%; margin: 0;">
+    <div id="placeholder" style="height: 100%"></div>
+    <script type="text/javascript" src="https://02f9-141-148-219-236.ngrok-free.app/web-apps/apps/api/documents/api.js"></script>
+    <script type="text/javascript">
+        window.docEditor = new DocsAPI.DocEditor("placeholder",
+            {
+                "document": {
+                    "fileType": "docx",
+                    "key": "E7FAFC9C22A8",
+                    "title": "Example Document Title.docx",
+                    "url": "https://filesamples.com/samples/document/docx/sample4.docx"
+                },
+                "documentType": "word",
+                
+                
+                "height": "100%",
+                "width": "100%"
+            });
+    </script>
+</body>
+</html>
