@@ -1,13 +1,12 @@
 import React from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { IoCloudUploadOutline } from "react-icons/io5"; // icon for upload
-import Nav from 'react-bootstrap/Nav';
+import Nav from "react-bootstrap/Nav";
 import { useState } from "react";
 import { FaPlus, FaEdit } from "react-icons/fa";
 import Createuser from "../ui/createuser";
 import { Button } from "react-bootstrap";
 // import Createuser from "../ui/Createuser";
-
 
 export default function Setting() {
   const [show, setShow] = useState(false);
@@ -17,8 +16,8 @@ export default function Setting() {
     { key: "security", label: "Security" },
     { key: "business", label: "Your Business" },
     { key: "user", label: "User" },
-
     { key: "notifications", label: "Notifications" },
+    { key: "preferences", label: "Preferences" },
   ];
   const [settings, setSettings] = useState({
     creativeEffects: true,
@@ -40,14 +39,12 @@ export default function Setting() {
       email: "puja@gmail.com",
       phone: "983758245",
       status: true,
-
     },
-  ])
+  ]);
 
   const toggleSetting = (key) => {
     setSettings({ ...settings, [key]: !settings[key] });
   };
-
 
   const toggleStatus = (index) => {
     const updated = [...users];
@@ -55,12 +52,36 @@ export default function Setting() {
     setUsers(updated);
   };
 
-
+  const [activeTheme, setActiveTheme] = useState("light");
+  const themes = [
+    {
+      id: "light",
+      name: "Light mode",
+      color: "bg-gray-200",
+      active: "bg-teal-700",
+    },
+    {
+      id: "dark",
+      name: "Dark mode",
+      color: "bg-gray-900",
+      active: "bg-teal-800",
+    },
+    {
+      id: "red",
+      name: "Red Mode",
+      color: "bg-red-600",
+      active: "bg-red-800",
+    },
+    {
+      id: "custom",
+      name: "Custom color",
+      color: "bg-blue-600",
+      active: "bg-blue-800",
+    },
+  ];
 
   return (
     <>
-
-
       {/* ===== Header Section ===== */}
       <div className="d-flex flex-wrap align-items-center justify-content-between bg-light text-dark p-3 rounded-3 border">
         <div className="d-flex align-items-center gap-3">
@@ -69,7 +90,6 @@ export default function Setting() {
           </button>
           <h5 className="mb-0">Create Product</h5>
         </div>
-
 
         <div className="d-flex gap-3">
           <button className="btn btn-outline-secondary d-flex align-items-center gap-2 px-4">
@@ -91,10 +111,11 @@ export default function Setting() {
             <Nav.Item key={tab.key}>
               <Nav.Link
                 eventKey={tab.key}
-                className={`px-0 pb-2 border-0 ${activeTab === tab.key
-                  ? "text-dark fw-semibold border-bottom border-2 border-dark"
-                  : "text-secondary"
-                  }`}
+                className={`px-0 pb-2 border-0 ${
+                  activeTab === tab.key
+                    ? "text-dark fw-semibold border-bottom border-2 border-dark"
+                    : "text-secondary"
+                }`}
                 style={{
                   background: "transparent",
                   fontSize: "16px",
@@ -119,7 +140,10 @@ export default function Setting() {
 
                   {/* ===== Profile Change Section ===== */}
                   <div className="d-flex align-items-center gap-3 mt-3 ps-4">
-                    <div className="position-relative" style={{ width: "70px", height: "70px" }}>
+                    <div
+                      className="position-relative"
+                      style={{ width: "70px", height: "70px" }}
+                    >
                       <img
                         src="https://via.placeholder.com/70" // replace with your profile image
                         alt="Profile"
@@ -127,14 +151,22 @@ export default function Setting() {
                       />
                       <div
                         className="position-absolute top-50 start-50 translate-middle bg-dark bg-opacity-50 text-white rounded-circle d-flex align-items-center justify-content-center"
-                        style={{ width: "70px", height: "70px", cursor: "pointer" }}
+                        style={{
+                          width: "70px",
+                          height: "70px",
+                          cursor: "pointer",
+                        }}
                       >
                         <IoCloudUploadOutline className="fs-3" />
                       </div>
                     </div>
                     <div>
-                      <p className="mb-1 fw-semibold text-dark">Change profile photo</p>
-                      <small className="text-muted">Make sure the file is below 2 Mb</small>
+                      <p className="mb-1 fw-semibold text-dark">
+                        Change profile photo
+                      </p>
+                      <small className="text-muted">
+                        Make sure the file is below 2 Mb
+                      </small>
                     </div>
                   </div>
 
@@ -147,7 +179,9 @@ export default function Setting() {
                       {/* Company Info */}
                       <form className="row g-3">
                         <div className="col-md-6">
-                          <label className="form-label fw-semibold">Company Name </label>
+                          <label className="form-label fw-semibold">
+                            Company Name{" "}
+                          </label>
                           <input
                             type="text"
                             className="form-control"
@@ -156,7 +190,9 @@ export default function Setting() {
                         </div>
 
                         <div className="col-md-6">
-                          <label className="form-label fw-semibold">Email/Address </label>
+                          <label className="form-label fw-semibold">
+                            Email/Address{" "}
+                          </label>
                           <input
                             type="email"
                             className="form-control"
@@ -165,7 +201,9 @@ export default function Setting() {
                         </div>
 
                         <div className="col-md-6">
-                          <label className="form-label fw-semibold">Phone Number </label>
+                          <label className="form-label fw-semibold">
+                            Phone Number{" "}
+                          </label>
                           <input
                             type="number"
                             className="form-control"
@@ -188,33 +226,51 @@ export default function Setting() {
                         <h5 className="mb-4 text-dark">Address</h5>
                         <form className="row g-3">
                           <div className="col-md-6">
-                            <label className="form-label fw-semibold">Country </label>
-                            <input type="text" className="form-control" placeholder="Enter Country" />
+                            <label className="form-label fw-semibold">
+                              Country{" "}
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Country"
+                            />
                           </div>
 
                           <div className="col-md-6">
-                            <label className="form-label fw-semibold">City </label>
-                            <input type="text" className="form-control" placeholder="Enter City" />
+                            <label className="form-label fw-semibold">
+                              City{" "}
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter City"
+                            />
                           </div>
 
                           <div className="col-md-6">
-                            <label className="form-label fw-semibold">Street </label>
-                            <input type="text" className="form-control" placeholder="Enter Street" />
+                            <label className="form-label fw-semibold">
+                              Street{" "}
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Street"
+                            />
                           </div>
                         </form>
                       </div>
                     </div>
                   </div>
-
                 </div>
                 <div
                   className="card p-4 shadow-sm"
                   style={{ width: "600px", backgroundColor: "#f8f9fa" }}
                 >
                   <h6 className="mb-3 text-secondary">Product Preview</h6>
-                  <p className="text-muted">Your product info preview will appear here.</p>
+                  <p className="text-muted">
+                    Your product info preview will appear here.
+                  </p>
                 </div>
-
               </div>
             </>
           )}
@@ -236,11 +292,12 @@ export default function Setting() {
                     className="form-control w-25"
                   />
                   <div className="d-flex gap-2">
-
-
                     <div className="p-4">
                       <Button onClick={() => setShow(true)}>Create </Button>
-                      <Createuser show={show} handleClose={() => setShow(false)} />
+                      <Createuser
+                        show={show}
+                        handleClose={() => setShow(false)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -249,7 +306,13 @@ export default function Setting() {
                 <div className="table-responsive  rounded">
                   <table className="table table-bordered align-middle">
                     <thead className="table-light">
-                      <tr style={{ fontWeight: 600, fontSize: "16px", lineHeight: "19px" }}>
+                      <tr
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "16px",
+                          lineHeight: "19px",
+                        }}
+                      >
                         <td>First Name</td>
                         <td>Last Name</td>
 
@@ -288,9 +351,6 @@ export default function Setting() {
                   </table>
                 </div>
               </div>
-
-
-
             </>
           )}
 
@@ -301,22 +361,33 @@ export default function Setting() {
                   <div className="mt-3">
                     <h5 className="ps-4">Your Business</h5>
                   </div>
-                  <div className="mt-3 ml-5" style={{ maxWidth: "600px", }}>
+                  <div className="mt-3 ml-5" style={{ maxWidth: "600px" }}>
                     <div className="d-flex justify-content-between align-items-center mb-4  ">
                       <div className="mt-2 ">
-                        <h6 className="fw-semibold mb-1 ">Invoice No. starts with</h6>
-
+                        <h6 className="fw-semibold mb-1 ">
+                          Invoice No. starts with
+                        </h6>
                       </div>
-                      <input type="text" className="form-control w-50  " placeholder="" value="INVXXX" />
-
+                      <input
+                        type="text"
+                        className="form-control w-50  "
+                        placeholder=""
+                        value="INVXXX"
+                      />
                     </div>
 
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <div>
-                        <h6 className="fw-semibold mb-1">Payment Receipt starts with</h6>
-
+                        <h6 className="fw-semibold mb-1">
+                          Payment Receipt starts with
+                        </h6>
                       </div>
-                      <input type="text" className="form-control w-50 " placeholder="" value="RECXXX" />
+                      <input
+                        type="text"
+                        className="form-control w-50 "
+                        placeholder=""
+                        value="RECXXX"
+                      />
                     </div>
 
                     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -353,23 +424,21 @@ export default function Setting() {
                   style={{ width: "50%", backgroundColor: "#f8f9fa" }}
                 >
                   <h6 className="mb-3 text-secondary">Product Preview</h6>
-                  <p className="text-muted">Your product info preview will appear here.</p>
+                  <p className="text-muted">
+                    Your product info preview will appear here.
+                  </p>
                 </div>
               </div>
             </>
           )}
 
-
           {activeTab === "notifications" && (
-
             <>
               <div className="flex">
-                <div >
-
+                <div>
                   <div className="mt-3">
                     <h5 className="ps-4">Notification</h5>
                   </div>
-
 
                   {/* Setting Item */}
                   {[
@@ -405,7 +474,11 @@ export default function Setting() {
                           type="checkbox"
                           checked={settings[item.key]}
                           onChange={() => toggleSetting(item.key)}
-                          style={{ width: "2.5rem", height: "1.3rem", cursor: "pointer" }}
+                          style={{
+                            width: "2.5rem",
+                            height: "1.3rem",
+                            cursor: "pointer",
+                          }}
                         />
                       </div>
 
@@ -422,23 +495,109 @@ export default function Setting() {
                   style={{ width: "600px", backgroundColor: "#f8f9fa" }}
                 >
                   <h6 className="mb-3 text-secondary">Product Preview</h6>
-                  <p className="text-muted">Your product info preview will appear here.</p>
+                  <p className="text-muted">
+                    Your product info preview will appear here.
+                  </p>
                 </div>
               </div>
+            </>
+          )}
 
+          {activeTab === "preferences" && (
+            <>
+              <div>
+                <div className="min-h-screen bg-white text-gray-900  ">
+                  {/* Header
+      <div className=" pb-1 mb-1 shadow-sm border-b border-gray-200">
+        <h1 className="text-sm font-semibold">Preferences</h1>
+        <p className="text-xs text-gray-500">
+          Customize until it matches your workflows
+        </p>
+      </div> */}
 
+                  {/* Select Theme */}
+                  <div className="mb-10 px-4 ">
+                    <h2 className="text-xs mb-3">Select Theme</h2>
+                    <div className="flex gap-8">
+                      {themes.map((theme) => (
+                        <div
+                          key={theme.id}
+                          onClick={() => setActiveTheme(theme.id)}
+                          className={`cursor-pointer border-4 rounded-xl overflow-hidden w-[220px] transition-all duration-300 ${
+                            activeTheme === theme.id
+                              ? "border-gray-800 shadow-lg"
+                              : "border-gray-200"
+                          }`}
+                        >
+                          {/* Preview */}
+                          <div className={`h-[130px] flex`}>
+                            <div className={`flex-1 ${theme.color}  `}>
+                              <div className="flex flex-col space-y-4 my-3 px-1">
+                                <div className="h-6 w-auto bg-white"></div>
+                                <div className="h-6 w-auto bg-white"></div>
+                                <div className="h-6 w-auto bg-white"></div>
+                              </div>
+                            </div>
+                            <div className={`flex-[1.5] ${theme.active}`}>
+                              <div className="flex flex-col space-y-4 my-3 px-1">
+                                <div className="h-[104px] w-auto bg-white"></div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Label */}
+                          <div className="py-3 text-center text-sm font-medium">
+                            {theme.name}
+                            {activeTheme === theme.id && (
+                              <span className="text-xs ml-1 text-gray-500">
+                                (Active)
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Settings */}
+                  <div className="space-y-6 px-4">
+                    <div>
+                      <label className="block text-lg font-medium mb-2">
+                        Time zone
+                      </label>
+                      <select className="w-full border rounded-lg p-2 text-sm text-gray-600">
+                        <option>(UTC)_time.........</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-lg font-medium mb-2">
+                        Language
+                      </label>
+                      <select className="w-full border rounded-lg p-2 text-sm text-gray-600">
+                        <option>English (US)</option>
+                        <option>English (UK)</option>
+                        <option>Nepali (NP)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-lg font-medium mb-2">
+                        Sidebar size
+                      </label>
+                      <select className="w-full border rounded-lg p-2 text-sm text-gray-600">
+                        <option>small (12px)</option>
+                        <option>medium (14px)</option>
+                        <option>large (16px)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </>
           )}
         </div>
-      </div >
-
-
-
-
-
-
+      </div>
     </>
   );
-
-
-};
+}

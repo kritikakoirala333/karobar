@@ -212,7 +212,6 @@ function MainApp() {
       e.preventDefault();
       const selected = suggestions[activeIndex];
       if (selected) {
-        w;
         setSearchVal(selected.searchPath);
         setSuggestions([]);
         navigator(selected.path);
