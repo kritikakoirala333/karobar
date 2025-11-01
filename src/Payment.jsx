@@ -253,9 +253,13 @@ export default function Payment({ show, setShowPaymentSlide }) {
 
   return (
     <div
-      className={`fixed top-0 right-0 z-[100] h-screen w-1/2 bg-white shadow-2xl border-l border-gray-200 transform transition-transform duration-500 ease-in-out overflow-y-auto ${
-        show ? "translate-x-0" : "translate-x-full"
-      }`}
+      className={`position-fixed top-0 end-0 h-100 bg-white shadow-lg border-start overflow-auto`}
+      style={{
+        width: "50%",
+        zIndex: 1050,
+        transform: show ? "translateX(0)" : "translateX(100%)",
+        transition: "transform 500ms ease-in-out"
+      }}
     >
       {/* Header */}
       <div className="d-flex align-items-center justify-content-between px-4 py-3 border-bottom sticky-top bg-white">

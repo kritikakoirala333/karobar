@@ -407,7 +407,83 @@ function Home() {
           </div>
         </div>
 
-       
+        {/* Shop Customization Card */}
+        <div className="row g-3 mb-4">
+          <div className="col-12">
+            <div
+              className="card shadow-sm rounded-3 border-0"
+              style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                cursor: "pointer",
+                transition: "transform 0.2s",
+              }}
+              onClick={() => navigate("/shop-customization")}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+            >
+              <div className="card-body p-4">
+                <div className="row align-items-center">
+                  <div className="col-md-8">
+                    <div className="d-flex align-items-center gap-3 mb-2">
+                      <div
+                        className="bg-white rounded-3 d-flex align-items-center justify-content-center"
+                        style={{ width: "60px", height: "60px" }}
+                      >
+                        <i
+                          className="bi bi-palette-fill"
+                          style={{ fontSize: "32px", color: "#667eea" }}
+                        ></i>
+                      </div>
+                      <div>
+                        <h4 className="text-white mb-1 fw-bold">
+                          Customize Your Shop Landing Page
+                        </h4>
+                        <p className="text-white mb-0" style={{ opacity: 0.9, fontSize: "14px" }}>
+                          Personalize your e-commerce storefront with logos, banners, colors, and more
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-4 text-md-end">
+                    <button
+                      className="btn btn-light btn-lg px-4 fw-semibold"
+                      style={{ borderRadius: "8px" }}
+                    >
+                      Get Started
+                      <i className="bi bi-arrow-right ms-2"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="row mt-3">
+                  <div className="col-md-3 col-6">
+                    <div className="text-white" style={{ opacity: 0.9 }}>
+                      <i className="bi bi-image me-2"></i>
+                      <small>Upload Logos</small>
+                    </div>
+                  </div>
+                  <div className="col-md-3 col-6">
+                    <div className="text-white" style={{ opacity: 0.9 }}>
+                      <i className="bi bi-images me-2"></i>
+                      <small>Slider Images</small>
+                    </div>
+                  </div>
+                  <div className="col-md-3 col-6">
+                    <div className="text-white" style={{ opacity: 0.9 }}>
+                      <i className="bi bi-palette me-2"></i>
+                      <small>Theme Colors</small>
+                    </div>
+                  </div>
+                  <div className="col-md-3 col-6">
+                    <div className="text-white" style={{ opacity: 0.9 }}>
+                      <i className="bi bi-globe me-2"></i>
+                      <small>Social Links</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Recent Invoices & Top Customers */}
         <div className="row g-3 mb-4">

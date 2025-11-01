@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple A4 Document Writer</title>
+  <style>
+    :root{
+      --toolbar-h:60px;
+      --paper-w:210mm;
+      --paper-h:297mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body{
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+      margin:0;
+      background:#f5f5f5;
+      padding:0;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .app{
+      width:100%;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* Fixed floating toolbar */
+    .toolbar{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      height:var(--toolbar-h);
+      display:flex;
+      gap:4px;
+      align-items:center;
+      padding:8px 16px;
+      background:linear-gradient(to bottom, #fafafa 0%, #f0f0f0 100%);
+      border-bottom:1px solid #c8c8c8;
+      box-shadow:0 1px 0 rgba(255,255,255,0.5) inset, 0 1px 3px rgba(0,0,0,.1);
+      z-index:1000;
+      overflow-x:auto;
+      overflow-y:hidden;
+    }
+
+    .toolbar::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .toolbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .toolbar::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    .toolbar button{
+      height:32px;
+      min-width:32px;
+      padding:4px 10px;
+      border-radius:5px;
+      border:1px solid rgba(0,0,0,.12);
+      background:linear-gradient(to bottom, #ffffff 0%, #f8f8f8 100%);
+      box-shadow:0 1px 2px rgba(0,0,0,.08), 0 1px 0 rgba(255,255,255,.8) inset;
+      font-size:13px;
+      font-weight:500;
+      color:#333;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:all 0.15s ease;
+      user-select:none;
+    }
+
+    .toolbar button:hover{
+      background:linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+      border-color:rgba(0,0,0,.18);
+      box-shadow:0 1px 3px rgba(0,0,0,.12), 0 1px 0 rgba(255,255,255,.9) inset;
+    }
+
+    .toolbar button:active{
+      background:linear-gradient(to bottom, #e8e8e8 0%, #f0f0f0 100%);
+      box-shadow:0 1px 2px rgba(0,0,0,.15) inset;
+      transform:translateY(0.5px);
+    }
+
+    .toolbar select,
+    .toolbar input[type=number]{
+      height:28px;
+      padding:4px 8px;
+      border-radius:5px;
+      border:1px solid #c0c0c0;
+      background:#fff;
+      font-size:13px;
+      color:#333;
+      transition:all 0.15s ease;
+      box-shadow:0 1px 2px rgba(0,0,0,.06) inset;
+    }
+
+    .toolbar select:focus,
+    .toolbar input[type=number]:focus{
+      outline:none;
+      border-color:#4a9eff;
+      box-shadow:0 0 0 3px rgba(74,158,255,.25), 0 1px 2px rgba(0,0,0,.06) inset;
+    }
+
+    .toolbar input[type=range]{
+      height:28px;
+      -webkit-appearance:none;
+      background:transparent;
+      cursor:pointer;
+    }
+
+    .toolbar input[type=range]::-webkit-slider-track{
+      height:4px;
+      background:#d0d0d0;
+      border-radius:2px;
+      box-shadow:0 1px 2px rgba(0,0,0,.1) inset;
+    }
+
+    .toolbar input[type=range]::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+      border:1px solid #b0b0b0;
+      box-shadow:0 1px 3px rgba(0,0,0,.15);
+      cursor:pointer;
+      margin-top:-6px;
+    }
+
+    .toolbar input[type=range]::-webkit-slider-thumb:hover{
+      background:linear-gradient(to bottom, #ffffff 0%, #f8f8f8 100%);
+      border-color:#999;
+    }
+
+    .toolbar input[type=range]::-webkit-slider-thumb:active{
+      background:#e8e8e8;
+      box-shadow:0 1px 2px rgba(0,0,0,.2) inset;
+    }
+
+    .toolbar .divider{
+      width:1px;
+      height:24px;
+      background:linear-gradient(to bottom, transparent 0%, #c0c0c0 20%, #c0c0c0 80%, transparent 100%);
+      margin:0 6px;
+    }
+
+    .toolbar label{
+      font-size:12px;
+      color:#555;
+      font-weight:500;
+      user-select:none;
+    }
+
+    .toolbar input[type=file]{
+      font-size:0;
+      width:32px;
+      height:28px;
+      position:relative;
+      cursor:pointer;
+    }
+
+    .toolbar input[type=file]::file-selector-button{
+      width:100%;
+      height:100%;
+      border:1px solid rgba(0,0,0,.12);
+      background:linear-gradient(to bottom, #ffffff 0%, #f8f8f8 100%);
+      box-shadow:0 1px 2px rgba(0,0,0,.08), 0 1px 0 rgba(255,255,255,.8) inset;
+      border-radius:5px;
+      font-size:16px;
+      font-weight:400;
+      color:#333;
+      cursor:pointer;
+      transition:all 0.15s ease;
+      padding:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #fileImg::file-selector-button{
+      content:'📷';
+    }
+
+    #fileImg::file-selector-button::before{
+      content:'📷';
+      font-size:16px;
+    }
+
+    #fileOverlay::file-selector-button::before{
+      content:'🖼';
+      font-size:16px;
+    }
+
+    .toolbar input[type=file]::file-selector-button:hover{
+      background:linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+      border-color:rgba(0,0,0,.18);
+      box-shadow:0 1px 3px rgba(0,0,0,.12), 0 1px 0 rgba(255,255,255,.9) inset;
+    }
+
+    .toolbar input[type=file]::file-selector-button:active{
+      background:linear-gradient(to bottom, #e8e8e8 0%, #f0f0f0 100%);
+      box-shadow:0 1px 2px rgba(0,0,0,.15) inset;
+      transform:translateY(0.5px);
+    }
+
+    #zoomPercent{
+      font-size:12px;
+      color:#555;
+      font-weight:500;
+      min-width:42px;
+      text-align:center;
+      user-select:none;
+    }
+
+    /* Workspace below toolbar */
+    .workspace{
+      margin-top:var(--toolbar-h);
+      display:flex;
+      gap:0;
+      height:calc(100vh - var(--toolbar-h));
+      overflow:hidden;
+    }
+
+    .paper-wrap{
+      flex:1;
+      background:#f5f5f5;
+      padding:40px 20px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      display:flex;
+      justify-content:center;
+    }
+
+    .paper-wrap::-webkit-scrollbar{
+      width:14px;
+      background:#f5f5f5;
+    }
+
+    .paper-wrap::-webkit-scrollbar-track{
+      background:#f5f5f5;
+      border-left:1px solid #d8d8d8;
+    }
+
+    .paper-wrap::-webkit-scrollbar-thumb{
+      background:linear-gradient(to right, #d8d8d8 0%, #c0c0c0 100%);
+      border:2px solid #f5f5f5;
+      border-radius:7px;
+    }
+
+    .paper-wrap::-webkit-scrollbar-thumb:hover{
+      background:linear-gradient(to right, #c0c0c0 0%, #a8a8a8 100%);
+    }
+
+    .paper-container{
+      width:fit-content;
+      height:fit-content;
+    }
+
+    /* A4 Paper */
+    .paper{
+      width:var(--paper-w);
+      height:var(--paper-h);
+      background:#fff;
+      box-shadow:0 2px 8px rgba(0,0,0,.12), 0 8px 24px rgba(0,0,0,.08);
+      position:relative;
+      overflow:hidden;
+      transform-origin:top center;
+      margin:0 auto;
+      border:1px solid #d8d8d8;
+    }
+
+    /* Editable content area */
+    .editor{
+      padding:25mm 20mm;
+      outline:none;
+      height:100%;
+      overflow:auto;
+      line-height:1.6;
+      font-size:12pt;
+    }
+
+    .editor:focus{
+      outline:none;
+    }
+
+    /* Overlay images */
+    .overlay-layer{
+      position:absolute;
+      left:0;
+      top:0;
+      right:0;
+      bottom:0;
+      pointer-events:none;
+    }
+
+    .overlay-img{
+      position:absolute;
+      pointer-events:auto;
+      cursor:move;
+      border:2px dashed transparent;
+      transition:border-color 0.2s;
+    }
+
+    .overlay-img:hover{
+      border-color:#0d6efd;
+    }
+
+    .overlay-img img{
+      display:block;
+      max-width:100%;
+      height:auto;
+    }
+
+    .resize-handle{
+      width:12px;
+      height:12px;
+      background:#0d6efd;
+      border:2px solid #fff;
+      position:absolute;
+      right:-6px;
+      bottom:-6px;
+      cursor:nwse-resize;
+      border-radius:2px;
+      opacity:0;
+      transition:opacity 0.2s;
+    }
+
+    .overlay-img:hover .resize-handle{
+      opacity:1;
+    }
+
+    /* Sidebar controls */
+    .controls{
+      width:260px;
+      background:linear-gradient(to right, #f8f8f8 0%, #fafafa 100%);
+      border-left:1px solid #d0d0d0;
+      box-shadow:-1px 0 0 rgba(255,255,255,0.8) inset;
+      padding:16px;
+      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .controls::-webkit-scrollbar{
+      width:12px;
+    }
+
+    .controls::-webkit-scrollbar-track{
+      background:#f5f5f5;
+    }
+
+    .controls::-webkit-scrollbar-thumb{
+      background:#c0c0c0;
+      border:2px solid #f5f5f5;
+      border-radius:6px;
+    }
+
+    .controls::-webkit-scrollbar-thumb:hover{
+      background:#a8a8a8;
+    }
+
+    .controls .section{
+      border-bottom:1px solid #e0e0e0;
+      padding-bottom:14px;
+    }
+
+    .controls .section:last-child{
+      border-bottom:none;
+    }
+
+    .controls label{
+      font-size:12px;
+      font-weight:600;
+      color:#444;
+      display:block;
+      margin-bottom:8px;
+      user-select:none;
+    }
+
+    .controls input[type=number],
+    .controls select{
+      width:100%;
+      padding:5px 8px;
+      border:1px solid #c0c0c0;
+      border-radius:5px;
+      font-size:13px;
+      background:#fff;
+      box-shadow:0 1px 2px rgba(0,0,0,.06) inset;
+      transition:all 0.15s ease;
+    }
+
+    .controls input[type=number]:focus,
+    .controls select:focus{
+      outline:none;
+      border-color:#4a9eff;
+      box-shadow:0 0 0 3px rgba(74,158,255,.25), 0 1px 2px rgba(0,0,0,.06) inset;
+    }
+
+    .controls input[type=range]{
+      width:100%;
+      height:20px;
+      -webkit-appearance:none;
+      background:transparent;
+      cursor:pointer;
+    }
+
+    .controls input[type=range]::-webkit-slider-track{
+      height:4px;
+      background:#d0d0d0;
+      border-radius:2px;
+      box-shadow:0 1px 2px rgba(0,0,0,.1) inset;
+    }
+
+    .controls input[type=range]::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+      border:1px solid #b0b0b0;
+      box-shadow:0 1px 3px rgba(0,0,0,.15);
+      cursor:pointer;
+      margin-top:-6px;
+    }
+
+    .controls input[type=range]::-webkit-slider-thumb:hover{
+      background:linear-gradient(to bottom, #ffffff 0%, #f8f8f8 100%);
+      border-color:#999;
+    }
+
+    .controls input[type=range]::-webkit-slider-thumb:active{
+      background:#e8e8e8;
+      box-shadow:0 1px 2px rgba(0,0,0,.2) inset;
+    }
+
+    .controls .hint{
+      font-size:11px;
+      color:#555;
+      line-height:1.5;
+      background:#fff;
+      padding:10px;
+      border-radius:5px;
+      border:1px solid #d8d8d8;
+      box-shadow:0 1px 2px rgba(0,0,0,.04);
+    }
+
+    .controls .hint strong{
+      color:#333;
+      display:block;
+      margin-bottom:4px;
+    }
+
+    .controls small{
+      font-size:11px;
+      color:#666;
+      display:block;
+      margin-top:6px;
+    }
+
+    /* Print styles */
+    @media print{
+      body{background:#fff}
+      .toolbar,.controls,.paper-wrap{display:none!important}
+      .workspace{margin-top:0;height:auto}
+      .paper{box-shadow:none;margin:0;width:100%;height:auto}
+      .editor{padding:0;overflow:visible}
+    }
+
+    /* Helper classes */
+    .small{font-size:13px}
+    .ml-auto{margin-left:auto}
+
+    /* Font selector preview */
+    #fontName option[value="Arial"],
+    #fontName option:nth-child(2){font-family:Arial}
+    #fontName option:nth-child(3){font-family:'Times New Roman'}
+    #fontName option:nth-child(4){font-family:Georgia}
+    #fontName option:nth-child(5){font-family:Calibri}
+    #fontName option:nth-child(6){font-family:'Courier New'}
+
+    #fontName optgroup[label="Nepali Fonts"] option:nth-child(1){font-family:Preeti}
+    #fontName optgroup[label="Nepali Fonts"] option:nth-child(2){font-family:'Devanagari MT'}
+    #fontName optgroup[label="Nepali Fonts"] option:nth-child(3){font-family:'Devanagari Sangam MN'}
+    #fontName optgroup[label="Nepali Fonts"] option:nth-child(4){font-family:'Kohinoor Devanagari'}
+    #fontName optgroup[label="Nepali Fonts"] option:nth-child(5){font-family:'ITF Devanagari'}
+    #fontName optgroup[label="Nepali Fonts"] option:nth-child(6){font-family:'Shree Devanagari 714'}
+
+    #fontName optgroup{
+      font-size:12px;
+      font-weight:600;
+      color:#666;
+      background:#f5f5f5;
+      padding:4px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Fixed Floating Toolbar -->
+    <div class="toolbar" role="toolbar" aria-label="Editor toolbar">
+      <button onclick="exec('undo')" title="Undo (Ctrl+Z)">↶</button>
+      <button onclick="exec('redo')" title="Redo (Ctrl+Y)">↷</button>
+
+      <div class="divider"></div>
+
+      <select id="fontName" onchange="setFont(this.value)" title="Font family">
+        <option value="">Font</option>
+        <optgroup label="English Fonts">
+          <option>Arial</option>
+          <option>Times New Roman</option>
+          <option>Georgia</option>
+          <option>Calibri</option>
+          <option>Courier New</option>
+        </optgroup>
+        <optgroup label="Nepali Fonts">
+          <option>Preeti</option>
+          <option>Devanagari MT</option>
+          <option>Devanagari Sangam MN</option>
+          <option>Kohinoor Devanagari</option>
+          <option>ITF Devanagari</option>
+          <option>Shree Devanagari 714</option>
+        </optgroup>
+      </select>
+
+      <input type="number" id="fontSize" min="8" max="72" value="12" title="Font size (pt)" onchange="setFontSize(this.value)" style="width:70px" />
+
+      <div class="divider"></div>
+
+      <button onclick="format('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+      <button onclick="format('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+      <button onclick="format('underline')" title="Underline (Ctrl+U)"><u>U</u></button>
+
+      <div class="divider"></div>
+
+      <button onclick="format('justifyLeft')" title="Align Left">⇤</button>
+      <button onclick="format('justifyCenter')" title="Align Center">⇥</button>
+      <button onclick="format('justifyRight')" title="Align Right">⇥</button>
+
+      <div class="divider"></div>
+
+      <button onclick="format('insertUnorderedList')" title="Bullet List">•</button>
+      <button onclick="format('insertOrderedList')" title="Numbered List">1.</button>
+
+      <div class="divider"></div>
+
+      <button onclick="insertTablePrompt()" title="Insert table">⊞</button>
+
+      <input type="file" id="fileImg" accept="image/*" onchange="insertImageInline(event)" title="Insert inline image" />
+
+      <input type="file" id="fileOverlay" accept="image/*" onchange="insertImageOverlay(event)" title="Add overlay image" />
+
+      <div class="divider"></div>
+
+      <label style="font-size:13px">Zoom:</label>
+      <input type="range" id="zoomRange" min="50" max="150" value="100" onchange="setZoom(this.value)" style="width:100px" />
+      <span id="zoomPercent" style="font-size:13px;min-width:40px">100%</span>
+
+      <div class="divider"></div>
+
+      <button onclick="printPaper()" title="Print or Save as PDF">🖨 Print</button>
+      <button onclick="downloadHTML()" title="Download as HTML">⬇ Save</button>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+      <!-- Paper Area -->
+      <div class="paper-wrap">
+        <div class="paper-container">
+          <div id="paper" class="paper" style="transform:scale(1)">
+            <div id="overlay" class="overlay-layer"></div>
+            <div id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Document editor">
+              <h2 style="text-align:center">[Your Name]</h2>
+              <p>Address line 1<br/>Address line 2</p>
+              <p>Date: <span id="date"></span></p>
+              <p>Dear Sir/Madam,</p>
+              <p><br/></p>
+              <p>Sincerely,</p>
+              <p>[Your signature]</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Controls -->
+      <div class="controls">
+        <div class="section">
+          <div class="hint"><strong>💡 Quick Tips</strong><br/>Click the paper to start typing. Use toolbar buttons or keyboard shortcuts (Ctrl+B, Ctrl+I, Ctrl+U) for formatting.</div>
+        </div>
+
+        <div class="section">
+          <label>Line Height</label>
+          <input type="range" id="lineHeight" min="1" max="2.5" step="0.1" value="1.6" onchange="setLineHeight(this.value)" />
+          <small style="color:#6c757d;font-size:12px">Current: <span id="lineHeightVal">1.6</span></small>
+        </div>
+
+        <div class="section">
+          <label>Page Margins (mm)</label>
+          <input type="number" id="marginVal" min="10" max="50" value="25" onchange="setMargins(this.value)" />
+        </div>
+
+        <div class="section">
+          <label>Page Size</label>
+          <select id="pageSize" onchange="setPage(this.value)">
+            <option value="A4">A4 (210 × 297 mm)</option>
+            <option value="Letter">Letter (216 × 279 mm)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const editor = document.getElementById('editor');
+    const overlay = document.getElementById('overlay');
+    const paper = document.getElementById('paper');
+
+    // initialize date
+    document.getElementById('date').innerText = new Date().toLocaleDateString();
+
+    function exec(cmd){
+      document.execCommand(cmd, false, null);
+      editor.focus();
+    }
+
+    function format(cmd, val=null){
+      document.execCommand(cmd, false, val);
+      editor.focus();
+    }
+
+    function setFont(font){
+      format('fontName', font);
+    }
+
+    function setFontSize(size){
+      // execCommand 'fontSize' expects integer 1-7; instead wrap selection in span
+      const sel = window.getSelection();
+      if(!sel.rangeCount) return;
+      const range = sel.getRangeAt(0);
+      if(range.collapsed) return;
+      const span = document.createElement('span');
+      span.style.fontSize = size + 'px';
+      range.surroundContents(span);
+    }
+
+    function setZoom(v){
+      const scale = v/100;
+      paper.style.transform = `scale(${scale})`;
+      document.getElementById('zoomPercent').innerText = v + '%';
+    }
+
+    function printPaper(){
+      window.print();
+    }
+
+    function downloadHTML(){
+      const doc = document.documentElement.outerHTML;
+      const blob = new Blob([doc], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'document.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function setLineHeight(v){
+      editor.style.lineHeight = v;
+      document.getElementById('lineHeightVal').innerText = v;
+    }
+
+    function setMargins(mm){
+      editor.style.padding = mm + 'mm 20mm';
+    }
+
+    function setPage(sz){
+      if(sz==='A4'){
+        paper.style.width='210mm';paper.style.height='297mm';
+      } else if(sz==='Letter'){
+        paper.style.width='216mm';paper.style.height='279mm';
+      }
+    }
+
+    // Table insertion
+    function insertTablePrompt(){
+      const rows = parseInt(prompt('Rows', '3')) || 1;
+      const cols = parseInt(prompt('Cols', '2')) || 1;
+      const tbl = document.createElement('table');
+      tbl.style.width='100%'; tbl.style.borderCollapse='collapse';
+      for(let r=0;r<rows;r++){
+        const tr = document.createElement('tr');
+        for(let c=0;c<cols;c++){
+          const td = document.createElement('td');
+          td.style.border='1px solid #999'; td.style.padding='6px';
+          td.appendChild(document.createTextNode('\u00A0')); // non-breaking space
+          tr.appendChild(td);
+        }
+        tbl.appendChild(tr);
+      }
+      insertNodeAtCursor(tbl);
+    }
+
+    function insertNodeAtCursor(node){
+      const sel = window.getSelection();
+      if(!sel.rangeCount) { editor.appendChild(node); return }
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(node);
+      // move caret after node
+      range.setStartAfter(node);
+      range.collapse(true);
+      sel.removeAllRanges(); sel.addRange(range);
+      editor.focus();
+    }
+
+    function insertImageInline(e){
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        const img = document.createElement('img');
+        img.src = evt.target.result;
+        img.style.maxWidth='100%';
+        img.style.display='block';
+        insertNodeAtCursor(img);
+      }
+      reader.readAsDataURL(file);
+      e.target.value='';
+    }
+
+    // Overlay image: draggable & resizable
+    function insertImageOverlay(e){
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        const wrapper = document.createElement('div');
+        wrapper.className='overlay-img';
+        wrapper.style.left='40px'; wrapper.style.top='40px'; wrapper.style.width='120px'; wrapper.style.height='120px';
+        wrapper.style.display='flex'; wrapper.style.alignItems='center'; wrapper.style.justifyContent='center';
+        wrapper.style.background='transparent'; wrapper.style.padding='4px';
+
+        const img = document.createElement('img');
+        img.src = evt.target.result; img.style.maxWidth='100%'; img.style.maxHeight='100%';
+        wrapper.appendChild(img);
+
+        const handle = document.createElement('div');
+        handle.className='resize-handle';
+        wrapper.appendChild(handle);
+
+        overlay.appendChild(wrapper);
+        makeDraggableResizable(wrapper);
+      }
+      reader.readAsDataURL(file);
+      e.target.value='';
+    }
+
+    function makeDraggableResizable(el){
+      el.style.position='absolute';
+      el.style.pointerEvents='auto';
+
+      // Drag
+      let isDragging=false, sx=0, sy=0, ox=0, oy=0;
+      el.addEventListener('pointerdown', (ev)=>{
+        if(ev.target.classList.contains('resize-handle')) return; // avoid conflict
+        isDragging=true; el.setPointerCapture(ev.pointerId);
+        sx = ev.clientX; sy = ev.clientY;
+        const rect = el.getBoundingClientRect();
+        ox = rect.left; oy = rect.top;
+      });
+      window.addEventListener('pointermove', (ev)=>{
+        if(!isDragging) return;
+        const dx = ev.clientX - sx; const dy = ev.clientY - sy;
+        el.style.left = (ox + dx - paper.getBoundingClientRect().left) + 'px';
+        el.style.top = (oy + dy - paper.getBoundingClientRect().top) + 'px';
+      });
+      window.addEventListener('pointerup', ()=>{ isDragging=false; });
+
+      // Resize
+      const handle = el.querySelector('.resize-handle');
+      let isResizing=false, rw=0, rh=0, rx=0, ry=0;
+      handle.addEventListener('pointerdown',(ev)=>{ ev.stopPropagation(); isResizing=true; handle.setPointerCapture(ev.pointerId); const rect=el.getBoundingClientRect(); rw=rect.width; rh=rect.height; rx=ev.clientX; ry=ev.clientY; });
+      window.addEventListener('pointermove',(ev)=>{ if(!isResizing) return; const dx = ev.clientX - rx; const dy = ev.clientY - ry; el.style.width = Math.max(30, rw + dx) + 'px'; el.style.height = Math.max(30, rh + dy) + 'px'; });
+      window.addEventListener('pointerup',()=>{ isResizing=false; });
+
+      // context menu to remove
+      el.addEventListener('contextmenu', (e)=>{ e.preventDefault(); if(confirm('Remove overlay image?')) el.remove(); });
+    }
+
+    function insertTextAtCursor(text){
+      const node = document.createTextNode(text);
+      insertNodeAtCursor(node);
+    }
+
+    // support keyboard shortcuts for basic format
+    document.addEventListener('keydown', (e)=>{
+      if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='b'){ e.preventDefault(); format('bold'); }
+      if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='i'){ e.preventDefault(); format('italic'); }
+      if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='u'){ e.preventDefault(); format('underline'); }
+    });
+
+    // Make sure overlay acts inside paper - convert coordinates on resize of window
+    window.addEventListener('resize', ()=>{
+      // no-op for now
+    });
+
+    // initial settings
+    setLineHeight(1.6);
+    setMargins(25);
+
+    // Update file input button labels
+    const fileImgInput = document.getElementById('fileImg');
+    const fileOverlayInput = document.getElementById('fileOverlay');
+
+    // Set custom text for file selector buttons
+    Object.defineProperty(fileImgInput, 'value', {
+      get() { return this._value || ''; },
+      set(val) { this._value = val; }
+    });
+
+    Object.defineProperty(fileOverlayInput, 'value', {
+      get() { return this._value || ''; },
+      set(val) { this._value = val; }
+    });
+  </script>
+</body>
+</html>
